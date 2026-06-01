@@ -137,8 +137,8 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
         # nav
         "home_href": href("", lang),
         "projects_href": href("projects/", lang),
-        "constitution_href": href("constitution.html", lang),
-        "lyra_href": href("projects/lyra.html", lang),
+        "constitution_href": href("constitution/", lang),
+        "lyra_href": href("projects/lyra/", lang),
         "lang_alt_href": href(path, other),
         "projects_current": ' aria-current="page"' if p["active"] == "projects" else "",
         "constitution_current": ' aria-current="page"' if p["active"] == "constitution" else "",
