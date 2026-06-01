@@ -1,0 +1,172 @@
+# roxabi-site — build manifest (single source of truth)
+# Consumed by src/build.py. All SEO (canonical, hreflang, og:url, og:locale,
+# breadcrumbs) is DERIVED from (path, lang) below — never hand-written per page.
+
+base       = "https://roxabi.dev"
+github     = "https://github.com/Roxabi"
+org_name   = "Roxabi"
+lastmod    = "2026-06-01"          # sitemap <lastmod>; bump on content change
+
+# ── Per-language chrome strings (nav, footer, locale, og image) ──────────────
+[lang.en]
+prefix            = ""
+locale            = "en_US"
+locale_alt        = "fr_FR"
+og_image          = "/assets/og/roxabi-og.png"
+inlanguage        = ["en", "fr"]
+nav_primary_label = "Primary"
+brand_aria        = "Roxabi home"
+nav_projects      = "Projects"
+nav_constitution  = "Constitution"
+nav_docs          = "Docs"
+github_aria       = "Roxabi on GitHub"
+theme_aria        = "Switch theme"
+lang_label        = "EN"           # shows CURRENT language (like the theme toggle)
+lang_hreflang     = "fr"           # the toggle points at the OTHER language
+lang_aria         = "Voir en français"
+lang_title        = "Français"
+home_crumb        = "Home"
+footer_note       = "Built in the open. No telemetry. No lock-in."
+footer_tagline    = "The operating layer for your agentic stack. Pre-wired. Open. Yours."
+f_product         = "Product"
+f_resources       = "Resources"
+f_portfolio       = "Portfolio"
+f_github          = "GitHub"
+f_docs_soon       = "Docs (soon)"
+f_changelog_soon  = "Changelog (soon)"
+f_sibling         = "Sibling brand — shared amber family."
+f_copyright       = "© 2026 Roxabi · AGPL-3.0 License"
+
+[lang.fr]
+prefix            = "/fr"
+locale            = "fr_FR"
+locale_alt        = "en_US"
+og_image          = "/assets/og/roxabi-og-fr.png"
+inlanguage        = ["fr", "en"]
+nav_primary_label = "Principale"
+brand_aria        = "Accueil Roxabi"
+nav_projects      = "Projets"
+nav_constitution  = "Constitution"
+nav_docs          = "Docs"
+github_aria       = "Roxabi sur GitHub"
+theme_aria        = "Changer de thème"
+lang_label        = "FR"
+lang_hreflang     = "en"
+lang_aria         = "View in English"
+lang_title        = "English"
+home_crumb        = "Accueil"
+footer_note       = "Construit à ciel ouvert. Aucune télémétrie. Aucun verrouillage."
+footer_tagline    = "La couche d'exploitation de ta stack agentique. Pré-câblé. Ouvert. À toi."
+f_product         = "Produit"
+f_resources       = "Ressources"
+f_portfolio       = "Portfolio"
+f_github          = "GitHub"
+f_docs_soon       = "Docs (bientôt)"
+f_changelog_soon  = "Changelog (bientôt)"
+f_sibling         = "Marque sœur — famille ambre partagée."
+f_copyright       = "© 2026 Roxabi · Licence AGPL-3.0"
+
+# ── Pages. `path` is lang-agnostic and lang-prefix-free ("" = site root). ─────
+# `active` highlights a nav item. `jsonld` selects the structured-data builder.
+
+[[page]]
+id          = "home"
+path        = ""
+body        = "home"
+og_type     = "website"
+footer      = "full"
+shader      = true
+active      = ""
+jsonld      = "home"
+og_alt      = true            # emit og:image:alt (= title)
+changefreq  = "weekly"
+priority    = "1.0"
+  [page.en]
+  title    = "Roxabi — One person. Team-scale output."
+  desc     = "Roxabi ships open-source primitives that compound — the operating layer for agentic systems. Pre-wired, open, yours. AGPL-3.0, self-hostable, no lock-in."
+  og_title = "Roxabi — One person. Team-scale output."
+  og_desc  = "Open-source primitives that compound. Pre-wired. Open. Yours."
+  org_desc = "Open-source primitives that compound — the operating layer for agentic systems."
+  [page.fr]
+  title    = "Roxabi — Une personne. Le rendement d'une équipe."
+  desc     = "Roxabi publie des primitives open-source qui se composent — la couche d'exploitation des systèmes agentiques. Pré-câblé, ouvert, à toi. AGPL-3.0, auto-hébergeable, sans verrouillage."
+  og_title = "Roxabi — Une personne. Le rendement d'une équipe."
+  og_desc  = "Des primitives open-source qui se composent. Pré-câblé. Ouvert. À toi."
+  org_desc = "Des primitives open-source qui se composent — la couche d'exploitation des systèmes agentiques."
+
+[[page]]
+id          = "constitution"
+path        = "constitution.html"
+body        = "constitution"
+og_type     = "article"
+footer      = "min"
+shader      = false
+active      = "constitution"
+jsonld      = "breadcrumb"
+ancestors   = ["home"]
+changefreq  = "monthly"
+priority    = "0.7"
+  [page.en]
+  title    = "Constitution — Roxabi"
+  desc     = "The Constitution of Roxabi — the principles behind open-by-architecture infrastructure: the operating layer, sovereignty, compounding foundations, built for builders."
+  og_title = "Constitution — Roxabi"
+  og_desc  = "The principles behind open-by-architecture infrastructure."
+  crumb    = "Constitution"
+  [page.fr]
+  title    = "Constitution — Roxabi"
+  desc     = "La Constitution de Roxabi — les principes derrière une infrastructure ouverte par architecture : la couche d'exploitation, la souveraineté, des fondations qui se composent, faite pour les builders."
+  og_title = "Constitution — Roxabi"
+  og_desc  = "Les principes derrière une infrastructure ouverte par architecture."
+  crumb    = "Constitution"
+
+[[page]]
+id          = "projects"
+path        = "projects/"
+body        = "projects"
+og_type     = "website"
+footer      = "min"
+shader      = false
+active      = "projects"
+jsonld      = "breadcrumb"
+ancestors   = ["home"]
+changefreq  = "weekly"
+priority    = "0.8"
+  [page.en]
+  title    = "Projects — Roxabi"
+  desc     = "The Roxabi portfolio — open-source primitives you can fork and run. Each works standalone; together they compound. AGPL-3.0, self-hostable."
+  og_title = "Projects — Roxabi"
+  og_desc  = "Open-source primitives you can fork and run. Together they compound."
+  crumb    = "Projects"
+  [page.fr]
+  title    = "Projets — Roxabi"
+  desc     = "Le portfolio Roxabi — des primitives open-source à forker et exécuter. Chacune fonctionne seule ; ensemble, elles se composent. AGPL-3.0, auto-hébergeable."
+  og_title = "Projets — Roxabi"
+  og_desc  = "Des primitives open-source à forker et exécuter. Ensemble, elles se composent."
+  crumb    = "Projets"
+
+[[page]]
+id          = "lyra"
+path        = "projects/lyra.html"
+body        = "lyra"
+og_type     = "article"
+footer      = "min"
+shader      = false
+active      = ""              # original Lyra page did not highlight a nav item
+jsonld      = "breadcrumb+software"
+ancestors   = ["home", "projects"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title         = "Lyra — Roxabi"
+  desc          = "Lyra — an AI agent across Telegram and Discord, hub-and-spoke, persona-driven, built on the Roxabi foundation. Self-hostable, AGPL-3.0."
+  og_title      = "Lyra — Roxabi"
+  og_desc       = "An AI agent across Telegram and Discord, built on the Roxabi foundation."
+  crumb         = "Lyra"
+  software_desc = "An AI agent across Telegram and Discord, hub-and-spoke, built on the Roxabi foundation."
+  [page.fr]
+  title         = "Lyra — Roxabi"
+  desc          = "Lyra — un agent IA sur Telegram et Discord, en hub-and-spoke, piloté par persona, construit sur la fondation Roxabi. Auto-hébergeable, AGPL-3.0."
+  og_title      = "Lyra — Roxabi"
+  og_desc       = "Un agent IA sur Telegram et Discord, construit sur la fondation Roxabi."
+  crumb         = "Lyra"
+  software_desc = "Un agent IA sur Telegram et Discord, en hub-and-spoke, construit sur la fondation Roxabi."

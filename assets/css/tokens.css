@@ -1,0 +1,56 @@
+/* Roxabi design tokens — from ~/.roxabi/forge/roxabi-site/brand/DESIGN.md (Brand Book v1.5 §6) */
+:root {
+  /* Dark palette — marketing default */
+  --bg: #0d1117;
+  --panel: #13191f;
+  --surface: #161b22;
+  --accent: #f0b429;
+  --accent-hover: #fbbf24;
+  --accent-on: #0d1117;
+  --text: #f0ede6;
+  --text-muted: #9ca3af;
+  --text-dim: #6b7280;
+  --border: #21262d;
+  --border-hi: #30363d;
+
+  /* Code surface — ALWAYS dark, regardless of theme (Brand Book §6 rule) */
+  --code-bg: #0d1117;
+  --code-text: #f0ede6;
+  --code-keyword: #f0b429;
+  --code-muted: #6b7280;
+  --code-string: #9ecbff;
+
+  /* Radius */
+  --r-sm: 4px; --r-md: 8px; --r-lg: 12px; --r-xl: 20px; --r-full: 9999px;
+  /* Spacing */
+  --s-xs: 4px; --s-sm: 8px; --s-md: 16px; --s-lg: 24px; --s-xl: 40px; --s-2xl: 64px;
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.4);
+  --glow-accent: 0 0 40px rgba(240,180,41,.22);
+  /* Motion */
+  --dur-fast: 120ms; --dur: 200ms; --ease: cubic-bezier(.2,0,0,1);
+  /* Type */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Layout */
+  --maxw: 1080px;
+  --maxw-prose: 720px;
+}
+
+/* Light palette — authorized for docs/reading; marketing default stays dark (Brand Book §6).
+   Exposed via the navbar theme toggle per product decision 2026-06-01. */
+:root[data-theme="light"] {
+  --bg: #f8f7f4;
+  --panel: #f0ede8;
+  --surface: #f0ede8;
+  --accent: #d97706;
+  --accent-hover: #b45309;
+  --accent-on: #f8f7f4;
+  --text: #1c1917;
+  --text-muted: #57534e;
+  --text-dim: #78716c;
+  --border: #d6cfc8;
+  --border-hi: #c4bbb2;
+  /* code surface intentionally NOT overridden — stays dark */
+}
