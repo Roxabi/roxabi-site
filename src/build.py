@@ -161,7 +161,7 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
     nav = render(nav_t, ctx)
     footer = render(foot_full_t if p["footer"] == "full" else foot_min_t, ctx)
     body = load(SRC / "bodies" / lang / f"{p['body']}.html").rstrip("\n")
-    scripts = ('<script src="/assets/vendor/fluid-amber.js"></script>\n'
+    scripts = ('<script src="/assets/vendor/aurora-curtain.js"></script>\n'
                '<script src="/assets/js/app.js"></script>') if p["shader"] \
         else '<script src="/assets/js/app.js"></script>'
 
