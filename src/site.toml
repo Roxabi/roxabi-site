@@ -96,7 +96,7 @@ priority    = "1.0"
 
 [[page]]
 id          = "constitution"
-path        = "constitution.html"
+path        = "constitution/"
 body        = "constitution"
 og_type     = "article"
 footer      = "min"
@@ -146,7 +146,7 @@ priority    = "0.8"
 
 [[page]]
 id          = "lyra"
-path        = "projects/lyra.html"
+path        = "projects/lyra/"
 body        = "lyra"
 og_type     = "article"
 footer      = "min"
