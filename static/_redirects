@@ -1,0 +1,5 @@
+# Lyra product parked 2026-06-01 (repo → roxabi-factory). Preserve old URLs.
+/projects/lyra/       /projects/       301
+/projects/lyra        /projects/       301
+/fr/projects/lyra/    /fr/projects/    301
+/fr/projects/lyra     /fr/projects/    301

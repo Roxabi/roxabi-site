@@ -144,29 +144,5 @@ priority    = "0.8"
   og_desc  = "Des primitives open-source à forker et exécuter. Ensemble, elles se composent."
   crumb    = "Projets"
 
-[[page]]
-id          = "lyra"
-path        = "projects/lyra/"
-body        = "lyra"
-og_type     = "article"
-footer      = "min"
-shader      = false
-active      = ""              # original Lyra page did not highlight a nav item
-jsonld      = "breadcrumb+software"
-ancestors   = ["home", "projects"]
-changefreq  = "monthly"
-priority    = "0.6"
-  [page.en]
-  title         = "Lyra — Roxabi"
-  desc          = "Lyra — an AI agent across Telegram and Discord, hub-and-spoke, persona-driven, built on the Roxabi foundation. Self-hostable, AGPL-3.0."
-  og_title      = "Lyra — Roxabi"
-  og_desc       = "An AI agent across Telegram and Discord, built on the Roxabi foundation."
-  crumb         = "Lyra"
-  software_desc = "An AI agent across Telegram and Discord, hub-and-spoke, built on the Roxabi foundation."
-  [page.fr]
-  title         = "Lyra — Roxabi"
-  desc          = "Lyra — un agent IA sur Telegram et Discord, en hub-and-spoke, piloté par persona, construit sur la fondation Roxabi. Auto-hébergeable, AGPL-3.0."
-  og_title      = "Lyra — Roxabi"
-  og_desc       = "Un agent IA sur Telegram et Discord, construit sur la fondation Roxabi."
-  crumb         = "Lyra"
-  software_desc = "Un agent IA sur Telegram et Discord, en hub-and-spoke, construit sur la fondation Roxabi."
+# [[page]] "lyra" removed 2026-06-01 — Lyra product parked; repo renamed → roxabi-factory.
+# /projects/lyra/ now 301-redirects to /projects/ (static/_redirects). See artifacts/plans/lyra-to-roxabi-factory-rename.md

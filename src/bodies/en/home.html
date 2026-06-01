@@ -7,7 +7,7 @@
     <h1 data-reveal>One person. Team-scale output.</h1>
     <p class="lead" data-reveal>
       <span class="sub">Pre-wired. Open. Yours.</span><br>
-      Roxabi ships open-source primitives that compound — the same foundation a 50-person engineering org has, pre-wired, yours to own.
+      An agent &amp; worker factory — and open-source tools that plug into it over NATS, CLI, skills, or API. Fork the pieces you need.
     </p>
     <div class="hero-cta" data-reveal>
       <a class="btn btn-primary" href="/projects/">Explore the projects →</a>
@@ -16,19 +16,40 @@
         GitHub
       </a>
     </div>
-    <div class="code" data-reveal aria-label="Example: composing Roxabi primitives">
-      <div class="code-head"><span class="d"></span><span class="d"></span><span class="d"></span><span class="name">compose.ts</span></div>
-<pre><span class="c">// each primitive is standalone — together they compound</span>
-<span class="k">import</span> { harness, router, state } <span class="k">from</span> <span class="s">"roxabi"</span>
-
-<span class="k">const</span> stack = harness({
-  route: router(),       <span class="c">// task → agent</span>
-  store: state(),        <span class="c">// persisted between runs</span>
-  onError: <span class="s">"recover"</span>,    <span class="c">// resume from last checkpoint</span>
-})
-
-stack.add(myAgent)       <span class="c">// wire in your logic — that's the part that's yours</span></pre>
-    </div>
+    <svg data-reveal class="rox-dia" viewBox="0 0 560 380" role="img" aria-label="roxabi-factory hub — open-source tools plug in over NATS, CLI, skills, or API" style="width:100%;max-width:520px;height:auto;display:block;margin-top:var(--s-lg)">
+      <style>
+        .rox-edge{stroke:var(--border);stroke-width:1.5;fill:none}
+        .rox-edge.on{stroke:var(--accent);stroke-opacity:.5}
+        .rox-node{fill:var(--panel);stroke:var(--border)}
+        .rox-lbl{font-family:var(--font-mono);font-size:11px;fill:var(--text)}
+        .rox-if{font-family:var(--font-mono);font-size:10.5px;fill:var(--accent)}
+        .rox-core{fill:var(--accent)}
+        .rox-core-t{fill:var(--accent-on);font-family:var(--font-mono);font-weight:600}
+        .rox-core-s{fill:var(--accent-on);opacity:.6;font-family:var(--font-mono);font-size:9px}
+      </style>
+      <circle cx="280" cy="190" r="92" class="rox-edge" stroke-dasharray="3 5" stroke-opacity=".4"/>
+      <text x="280" y="86" text-anchor="middle" class="rox-if">NATS</text>
+      <text x="392" y="194" text-anchor="middle" class="rox-if">API</text>
+      <text x="280" y="302" text-anchor="middle" class="rox-if">CLI</text>
+      <text x="166" y="194" text-anchor="middle" class="rox-if">skills</text>
+      <line class="rox-edge on" x1="280" y1="190" x2="280" y2="68"/>
+      <line class="rox-edge on" x1="280" y1="190" x2="401" y2="120"/>
+      <line class="rox-edge" x1="280" y1="190" x2="401" y2="260"/>
+      <line class="rox-edge" x1="280" y1="190" x2="280" y2="312"/>
+      <line class="rox-edge" x1="280" y1="190" x2="159" y2="260"/>
+      <line class="rox-edge on" x1="280" y1="190" x2="159" y2="120"/>
+      <g>
+        <rect x="240" y="46" width="80" height="30" rx="7" class="rox-node"/><text x="280" y="65" text-anchor="middle" class="rox-lbl">llmCLI</text>
+        <rect x="361" y="105" width="80" height="30" rx="7" class="rox-node"/><text x="401" y="124" text-anchor="middle" class="rox-lbl">voiceCLI</text>
+        <rect x="361" y="245" width="80" height="30" rx="7" class="rox-node"/><text x="401" y="264" text-anchor="middle" class="rox-lbl">imageCLI</text>
+        <rect x="240" y="297" width="80" height="30" rx="7" class="rox-node"/><text x="280" y="316" text-anchor="middle" class="rox-lbl">postiz</text>
+        <rect x="119" y="245" width="80" height="30" rx="7" class="rox-node"/><text x="159" y="264" text-anchor="middle" class="rox-lbl">intel</text>
+        <rect x="119" y="105" width="80" height="30" rx="7" class="rox-node"/><text x="159" y="124" text-anchor="middle" class="rox-lbl">idna</text>
+      </g>
+      <rect x="222" y="166" width="116" height="48" rx="10" class="rox-core"/>
+      <text x="280" y="187" text-anchor="middle" class="rox-core-t" font-size="13">roxabi-factory</text>
+      <text x="280" y="203" text-anchor="middle" class="rox-core-s">agents · workers</text>
+    </svg>
   </div>
 </section>
 
@@ -50,14 +71,14 @@ stack.add(myAgent)       <span class="c">// wire in your logic — that's the pa
     <h2 data-reveal>Primitives you can fork today</h2>
     <p class="lead" data-reveal style="max-width:620px;margin-top:var(--s-md)">Each one works standalone. Together they give a solo developer a full-stack foundation. More land here as they open up.</p>
     <div class="grid grid-2" style="margin-top:var(--s-xl)">
-      <a class="card proj-card" href="/projects/lyra/" data-reveal>
-        <div class="top"><h3>Lyra</h3><span class="tag live">Live</span></div>
-        <p>An AI agent across Telegram and Discord, hub-and-spoke. Persona, voice, tool passthroughs — wired on the Roxabi foundation.</p>
-        <p class="portfolio-note" style="margin-top:var(--s-md)">View project <span class="arrow">→</span></p>
+      <a class="card proj-card" href="https://github.com/Roxabi/roxabi-factory" rel="noopener" data-reveal>
+        <div class="top"><h3>roxabi-factory</h3><span class="tag">In construction</span></div>
+        <p>An agent &amp; worker factory. Tools plug in over NATS, CLI, skills, or API — self-hostable, fork what you need.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">View on GitHub <span class="arrow">→</span></p>
       </a>
       <div class="card proj-card" style="opacity:.6" data-reveal>
         <div class="top"><h3>More, soon</h3><span class="tag">Opening up</span></div>
-        <p>voiceCLI, llmCLI, the vault and more are being prepared for public release. The foundation is already shared between them.</p>
+        <p>voiceCLI, llmCLI, imageCLI, cortex and more — they plug into the factory over NATS, CLI, skills, or API.</p>
       </div>
     </div>
   </div>
