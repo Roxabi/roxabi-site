@@ -526,10 +526,11 @@
   }
 
   window.RadiantKineticGrid = { init: init };
-  // Runs in BOTH themes (the kinetic grid carries its own dark backdrop). The
-  // `started` guard keeps init idempotent if called more than once.
+  // Don't run in light mode — the grid carries its own near-black backdrop, which
+  // would bleed dark over the light hero. app.js calls init() on switch to dark;
+  // the `started` guard keeps that idempotent.
   document.addEventListener('DOMContentLoaded', function () {
     var c = document.getElementById('hero-bg');
-    if (c) init(c);
+    if (c && document.documentElement.getAttribute('data-theme') !== 'light') init(c);
   });
 })();
