@@ -283,21 +283,42 @@
       <div class="titre" id="sec-8">
         <span class="label">08</span>
         <h2>The Cost, Honestly</h2>
-        <p>Time is hard data, read straight off PR timestamps. Tokens are not — only two of roughly thirty agent invocations were instrumented, so the full-run total is an order-of-magnitude estimate, and it is labelled as one.</p>
+        <p>Time is hard data, read straight off PR timestamps. Tokens are not — the harness never captured per-agent usage, so the run total is a <em>bottom-up estimate</em>: count the agents the pipeline actually spawns, multiply by what one agent costs. It is labelled as an estimate, but the order of magnitude is not in doubt.</p>
         <div class="kpi">
           <div class="kpi-item"><span class="kpi-value">4 h 32 m</span><span class="kpi-label">first PR &rarr; last merge</span></div>
           <div class="kpi-item"><span class="kpi-value">~3 min</span><span class="kpi-label">mean CI per PR</span></div>
           <div class="kpi-item"><span class="kpi-value">~96</span><span class="kpi-label">commits</span></div>
           <div class="kpi-item"><span class="kpi-value">+4.6k / −1.5k</span><span class="kpi-label">lines changed</span></div>
         </div>
+
+        <h3 style="margin-top:var(--s-xl)">How many agents per issue?</h3>
+        <p>The run was never <em>thirty</em> agents — that was the count of top-level <code>/dev</code> invocations. The real fan-out is the per-issue pipeline (§4) spawning a fresh sub-agent at every step, and the heavy steps fanning out again. Read straight off <a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/plans/epic-1662-wave.mjs" rel="noopener"><code>epic-1662-wave.mjs</code></a>:</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Step (§4)</th><th>Agents, one round</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Implement</strong> — small leaf</td><td>2</td><td>1 impl (isolated worktree) + 1 out-of-band diff harvest</td></tr>
+              <tr><td><strong>Implement</strong> — large leaf</td><td>5–6</td><td>1 <code>PLAN</code> + 2–3 parallel sub-impl + 1 <code>INTEGRATE</code> + 1 diff</td></tr>
+              <tr><td><strong>Review</strong> panel</td><td>5</td><td>one specialist agent per lens, in parallel</td></tr>
+              <tr><td><strong>Validate</strong></td><td>2 × each finding</td><td>two independent skeptics per finding (~3 findings &rarr; ~6 agents)</td></tr>
+              <tr><td><strong>Fix</strong></td><td>1 / round</td><td>the review&rarr;validate&rarr;fix loop runs up to 2 rounds</td></tr>
+              <tr><td><strong>Defer</strong></td><td>0–1</td><td>once, only if residual findings survive 2 rounds</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>A representative small leaf, single review round, ~3 findings: <strong>2 + 5 + 6 + 1 ≈ 14 agents</strong>. A second round nearly doubles the review/validate/fix block, pushing a contested leaf toward ~25. Blended across the nineteen merged leaves (mostly small, four large), call it <strong>~18 agents per issue → ~340 agent invocations</strong> for the run.</p>
+        <p><strong>Plus debug.</strong> The opening overload storm (§7) spawned a full wave that died on first inference — <strong>9 agents, ≈ 0 tokens each</strong> (the <code>API 529</code> hit before any real work), so it cost wall-clock and a re-run, not tokens. Add a handful of re-devs and the #1697 stale-base hand-recovery on top.</p>
+
+        <h3 style="margin-top:var(--s-xl)">Tokens, estimated</h3>
+        <p>A live dev, review, or fix agent reads its slice of the repo, the PR diff, and runs the full gate suite — that lands a single agent at <strong>100–200k tokens, sometimes more</strong>. The one hard datapoint sits at the <em>low</em> end of that band, exactly as expected: the two instrumented agents were <em>post-compaction</em> recovery runs, resumed from a shrunk context. So ~340 agents × ~150k ≈ <strong>~50M tokens</strong> for the run — a ~35–70M band at the 100–200k bounds — and <strong>~2.5–3M tokens per issue</strong>. The earlier &ldquo;~1.5–2.5M for the whole run&rdquo; guess was off by ~20×: it was roughly the cost of a <em>single</em> issue.</p>
         <div class="caveat-grid">
           <div class="caveat-card">
             <div class="caveat-q">What was measured?</div>
-            <div class="caveat-body">Two post-compaction recovery agents reported <strong>122,505 tokens</strong> with high confidence, straight from their task notifications.</div>
+            <div class="caveat-body">Two post-compaction recovery agents reported <strong>122,505 tokens</strong> combined (~61k each) with high confidence, straight from their task notifications — the low-end anchor for one agent.</div>
           </div>
           <div class="caveat-card">
             <div class="caveat-q">What was estimated?</div>
-            <div class="caveat-body">The workflow agents and the orchestrator loop were never instrumented. Full run: <strong>~1.5–2.5 M tokens</strong>, low confidence.</div>
+            <div class="caveat-body">~340 agent invocations × 100–200k tokens each ⇒ <strong>~35–70M tokens</strong> for the full run (central ~50M), ≈ <strong>~2.5–3M per issue</strong>. Low confidence on the exact multiplier; high confidence it is tens of millions, not single-digit.</div>
             <div class="caveat-direction"><strong>Next:</strong> per-agent token capture in the harness — you cannot optimize what you cannot see.</div>
           </div>
         </div>

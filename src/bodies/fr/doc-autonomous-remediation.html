@@ -283,21 +283,42 @@
       <div class="titre" id="sec-8">
         <span class="label">08</span>
         <h2>Le coût, sans fard</h2>
-        <p>Le temps est une donnée dure, lue directement sur les horodatages des PR. Les tokens, non — seules deux invocations d'agents sur une trentaine étaient instrumentées, donc le total du run complet est une estimation à l'ordre de grandeur, et elle est étiquetée comme telle.</p>
+        <p>Le temps est une donnée dure, lue directement sur les horodatages des PR. Les tokens, non — le harnais n'a jamais capté l'usage par agent, donc le total du run est une <em>estimation ascendante</em> : compter les agents que le pipeline lance réellement, multiplier par ce que coûte un agent. C'est étiqueté comme une estimation, mais l'ordre de grandeur ne fait pas de doute.</p>
         <div class="kpi">
           <div class="kpi-item"><span class="kpi-value">4 h 32 m</span><span class="kpi-label">1ʳᵉ PR &rarr; dernière fusion</span></div>
           <div class="kpi-item"><span class="kpi-value">~3 min</span><span class="kpi-label">CI moyen par PR</span></div>
           <div class="kpi-item"><span class="kpi-value">~96</span><span class="kpi-label">commits</span></div>
           <div class="kpi-item"><span class="kpi-value">+4,6k / −1,5k</span><span class="kpi-label">lignes modifiées</span></div>
         </div>
+
+        <h3 style="margin-top:var(--s-xl)">Combien d'agents par issue ?</h3>
+        <p>Le run n'a jamais été <em>trente</em> agents — c'était le compte des invocations <code>/dev</code> de premier niveau. Le vrai fan-out, c'est le pipeline par issue (§4) qui lance un sous-agent neuf à chaque étape, et les étapes lourdes qui re-fan-out à leur tour. Lu directement sur <a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/plans/epic-1662-wave.mjs" rel="noopener"><code>epic-1662-wave.mjs</code></a> :</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Étape (§4)</th><th>Agents, un tour</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Implémenter</strong> — petite feuille</td><td>2</td><td>1 impl (worktree isolé) + 1 récupération de diff hors bande</td></tr>
+              <tr><td><strong>Implémenter</strong> — grosse feuille</td><td>5–6</td><td>1 <code>PLAN</code> + 2–3 sous-impl en parallèle + 1 <code>INTEGRATE</code> + 1 diff</td></tr>
+              <tr><td><strong>Revue</strong> (panel)</td><td>5</td><td>un agent spécialiste par lentille, en parallèle</td></tr>
+              <tr><td><strong>Validation</strong></td><td>2 × chaque constat</td><td>deux sceptiques indépendants par constat (~3 constats &rarr; ~6 agents)</td></tr>
+              <tr><td><strong>Correctif</strong></td><td>1 / tour</td><td>la boucle revue&rarr;validation&rarr;correctif tourne deux fois au plus</td></tr>
+              <tr><td><strong>Report</strong></td><td>0–1</td><td>une fois, seulement si un résiduel survit à 2 tours</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Une petite feuille représentative, un seul tour de revue, ~3 constats : <strong>2 + 5 + 6 + 1 ≈ 14 agents</strong>. Un second tour double presque le bloc revue/validation/correctif, poussant une feuille contestée vers ~25. Moyenné sur les dix-neuf feuilles fusionnées (majoritairement petites, quatre grosses), comptez <strong>~18 agents par issue → ~340 invocations d'agents</strong> sur le run.</p>
+        <p><strong>Plus le debug.</strong> La tempête de surcharge d'ouverture (§7) a lancé une vague entière morte à la première inférence — <strong>9 agents, ≈ 0 token chacun</strong> (l'<code>API 529</code> a frappé avant tout travail réel) : ça a coûté du temps mural et un re-run, pas des tokens. Ajoutez une poignée de re-devs et la récupération à la main du #1697 (base périmée) par-dessus.</p>
+
+        <h3 style="margin-top:var(--s-xl)">Les tokens, estimés</h3>
+        <p>Un agent vivant d'impl, de revue ou de correctif lit sa tranche du dépôt, le diff de la PR, et exécute toute la suite de gates — ce qui place un seul agent à <strong>100–200k tokens, parfois plus</strong>. L'unique donnée dure se situe au <em>bas</em> de cette fourchette, exactement comme attendu : les deux agents instrumentés étaient des récupérations <em>post-compaction</em>, reprises depuis un contexte rétréci. Donc ~340 agents × ~150k ≈ <strong>~50 M tokens</strong> pour le run — une fourchette de ~35–70 M aux bornes 100–200k — et <strong>~2,5–3 M tokens par issue</strong>. L'estimation antérieure de &laquo;&nbsp;~1,5–2,5 M pour tout le run&nbsp;&raquo; était fausse d'un facteur ~20 : c'était à peu près le coût d'une <em>seule</em> issue.</p>
         <div class="caveat-grid">
           <div class="caveat-card">
             <div class="caveat-q">Qu'est-ce qui a été mesuré ?</div>
-            <div class="caveat-body">Deux agents de récupération post-compaction ont rapporté <strong>122 505 tokens</strong> avec une confiance élevée, directement depuis leurs notifications de tâche.</div>
+            <div class="caveat-body">Deux agents de récupération post-compaction ont rapporté <strong>122 505 tokens</strong> cumulés (~61k chacun) avec une confiance élevée, directement depuis leurs notifications de tâche — l'ancre basse pour un agent.</div>
           </div>
           <div class="caveat-card">
             <div class="caveat-q">Qu'est-ce qui a été estimé ?</div>
-            <div class="caveat-body">Les agents de workflow et la boucle orchestratrice n'ont jamais été instrumentés. Run complet : <strong>~1,5–2,5 M tokens</strong>, confiance faible.</div>
+            <div class="caveat-body">~340 invocations d'agents × 100–200k tokens chacune ⇒ <strong>~35–70 M tokens</strong> pour le run complet (central ~50 M), ≈ <strong>~2,5–3 M par issue</strong>. Confiance faible sur le multiplicateur exact ; confiance élevée sur l'ordre : des dizaines de millions, pas un chiffre unique.</div>
             <div class="caveat-direction"><strong>Suite :</strong> capture de tokens par agent dans le harnais — on n'optimise pas ce qu'on ne mesure pas.</div>
           </div>
         </div>
