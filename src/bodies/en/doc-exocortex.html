@@ -1,10 +1,10 @@
 <main>
 <section class="doc-hero">
   <div class="wrap">
-    <p class="section-label">DOC-01 · LIVING MEMORY</p>
+    <p class="section-label">LIVING MEMORY</p>
     <h1>The Exocortex</h1>
     <p class="lead prose" style="margin:var(--s-md) auto 0">Thousands of siloed agent sessions, zero consolidation — the exocortex is the cognitive organ that captures, structures, and feeds it all back.</p>
-    <p class="meta">Chapter 1 of 6 · Roxabi Cortex</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
   </div>
 </section>
 
@@ -91,7 +91,7 @@
           <li><strong>Analysers</strong> (<code>cortex-insight</code>) turn events into typed findings — the behavioural pipeline over Claude Code sessions. <em>Replaceable.</em> A single repo can be both producer and analyser when the roles are inseparable.</li>
           <li><strong>Consumers</strong> read the graph to act — Claude Code <code>/dev</code> assembly, Lyra recall for chat context, the weekly behavioural digest. <em>Autonomous.</em></li>
         </ul>
-        <p>At the boundary, producers speak to the substrate through a typed envelope, and the substrate emits <code>Observation</code> objects on NATS (<code>roxabi.memory.observations.publish</code>, <code>roxabi.memory.query.*</code>). That contract is the subject of the next chapter.</p>
+        <p>At the boundary, producers speak to the substrate through a typed envelope, and the substrate emits <code>Observation</code> objects on NATS (<code>roxabi.memory.observations.publish</code>, <code>roxabi.memory.query.*</code>). That contract is the subject of the Observation Contract document.</p>
       </div>
 
       <div class="titre" id="sec-5">
@@ -143,13 +143,13 @@
         <span class="label">06</span>
         <h2>Memory Strength: Decay, Retrieval, Emotion</h2>
         <p>A node's strength in the graph is continuous and dynamic, never binary. It is computed from a handful of terms, each mapped to a validated cognitive phenomenon.</p>
-        <pre class="code"><code>strength(t)          = base × decay × retrieval_boost × emotional_mult
+        <div class="formula-box"><pre><code>strength(t)          = base × decay × retrieval_boost × emotional_mult
 decay                = 0.5 ^ (Δt / effective_half_life)
 effective_half_life  = half_life × reward_factor
 reward_factor        = 1 + 0.5 × ((pos − neg) / (pos + neg + 1))
 retrieval_boost      = 1 + 0.1 × log₂(retrieval_count + 1)
-emotional_mult       = neutral 1.0 · positive 1.3 · negative 1.5 · critical 2.0</code></pre>
-        <p>Half-lives vary by entity class: ~30 days for behavioural patterns, 60 for instructions, 90 for world entities. Each term has a lineage — <code>decay</code> → Ebbinghaus's forgetting curve (1885); <code>retrieval_boost</code> → the testing effect (Roediger &amp; Karpicke 2006); <code>emotional_mult</code> → amygdala modulation (Cahill &amp; McGaugh 1998); <code>reward_factor</code> → dopaminergic plasticity (Schultz 1998); <code>schema_fit</code> → Piaget's assimilation/accommodation. The model is biologically plausible and needs no LLM in Phase&nbsp;1. Chapter&nbsp;5 develops decay in full.</p>
+emotional_mult       = neutral 1.0 · positive 1.3 · negative 1.5 · critical 2.0</code></pre></div>
+        <p>Half-lives vary by entity class: ~30 days for behavioural patterns, 60 for instructions, 90 for world entities. Each term has a lineage — <code>decay</code> → Ebbinghaus's forgetting curve (1885); <code>retrieval_boost</code> → the testing effect (Roediger &amp; Karpicke 2006); <code>emotional_mult</code> → amygdala modulation (Cahill &amp; McGaugh 1998); <code>reward_factor</code> → dopaminergic plasticity (Schultz 1998); <code>schema_fit</code> → Piaget's assimilation/accommodation. The model is biologically plausible and needs no LLM in Phase&nbsp;1. The Temporal Decay document develops decay in full.</p>
       </div>
 
       <div class="titre" id="sec-7">

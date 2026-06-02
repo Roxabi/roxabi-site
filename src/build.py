@@ -174,21 +174,47 @@ def derive_section_anchors(body: str) -> str:
     return body
 
 
-# ── Documentation collection (index cards + chapter prev/next, all derived) ────
-def doc_chapter_list() -> list:
-    """Documentation chapters (collection pages with a chapter number), ordered."""
-    return sorted((p for p in PAGES if p.get("collection") == "documentation" and "chapter" in p),
-                  key=lambda p: p["chapter"])
+# ── Documentation collection (tag-organized; index cards + per-doc nav, derived) ─
+def doc_list() -> list:
+    """Documentation entries (collection pages carrying tags), in manifest order."""
+    return [p for p in PAGES if p.get("collection") == "documentation" and p.get("tags")]
+
+
+def doc_all_tags() -> list:
+    """Distinct tags across all docs, first-seen (manifest) order."""
+    seen: set = set()
+    out: list = []
+    for p in doc_list():
+        for t in p["tags"]:
+            if t not in seen:
+                seen.add(t)
+                out.append(t)
+    return out
+
+
+def tag_pills(tags: list, lang: str, link: bool = True) -> str:
+    """Render tag chips. When `link`, each points to the index filtered by that tag
+    (`/documentation/#<slug>`); otherwise a static <span> (used inside card links)."""
+    idx = href("documentation/", lang)
+    out = []
+    for t in tags:
+        slug = slugify(t)
+        if link:
+            out.append(f'<a class="tag" href="{idx}#{slug}" data-tag="{slug}">{t}</a>')
+        else:
+            out.append(f'<span class="tag" data-tag="{slug}">{t}</span>')
+    return "".join(out)
 
 
 def doc_cards(lang: str) -> str:
     L = SITE["lang"][lang]
     cards = []
-    for p in doc_chapter_list():
+    for p in doc_list():
         pl = p[lang]
+        slugs = " ".join(slugify(t) for t in p["tags"])
         cards.append(
-            f'<a class="card doc-card" href="{href(p["path"], lang)}" data-reveal>'
-            f'<p class="doc-card-num">{L["doc_chapter_word"]} {p["chapter"]:02d}</p>'
+            f'<a class="card doc-card" href="{href(p["path"], lang)}" data-tags="{slugs}" data-reveal>'
+            f'<div class="doc-card-tags">{tag_pills(p["tags"], lang, link=False)}</div>'
             f'<h3>{pl["card_title"]}</h3>'
             f'<p>{pl["card_desc"]}</p>'
             f'<p class="portfolio-note">{L["doc_read"]} <span class="arrow">&rarr;</span></p>'
@@ -196,30 +222,27 @@ def doc_cards(lang: str) -> str:
     return "\n      ".join(cards)
 
 
-def doc_chapter_nav(lang: str, p: dict) -> str:
+def doc_filter(lang: str) -> str:
+    """Tag-filter bar for the index. Hidden until app.js reveals it (so JS-off users
+    just see every card). Suppressed entirely while a single tag covers all docs."""
     L = SITE["lang"][lang]
-    chapters = doc_chapter_list()
-    idx = next((i for i, c in enumerate(chapters) if c["id"] == p["id"]), None)
-    if idx is None:
+    tags = doc_all_tags()
+    if len(tags) < 2:
         return ""
-    prev_c = chapters[idx - 1] if idx > 0 else None
-    next_c = chapters[idx + 1] if idx < len(chapters) - 1 else None
-    out = [f'<nav class="doc-nav" aria-label="{L["doc_nav_aria"]}">']
-    if prev_c:
-        out.append(f'<a class="prev" href="{href(prev_c["path"], lang)}">'
-                   f'<span class="d">&larr; {L["doc_prev"]}</span>'
-                   f'<span class="t">{prev_c[lang]["card_title"]}</span></a>')
-    else:
-        out.append("<span></span>")
-    out.append(f'<a class="idx" href="{href("documentation/", lang)}">{L["doc_all"]}</a>')
-    if next_c:
-        out.append(f'<a class="next" href="{href(next_c["path"], lang)}">'
-                   f'<span class="d">{L["doc_next"]} &rarr;</span>'
-                   f'<span class="t">{next_c[lang]["card_title"]}</span></a>')
-    else:
-        out.append("<span></span>")
-    out.append("</nav>")
-    return "".join(out)
+    btns = [f'<button type="button" class="tag-filter is-active" data-filter="all">{L["doc_filter_all"]}</button>']
+    btns += [f'<button type="button" class="tag-filter" data-filter="{slugify(t)}">{t}</button>' for t in tags]
+    return (f'<div class="doc-filter" role="group" aria-label="{L["doc_filter_aria"]}" hidden>'
+            + "".join(btns) + "</div>")
+
+
+def doc_footer_nav(lang: str, p: dict) -> str:
+    """Per-document footer: the doc's own tag chips + a link back to the index.
+    Replaces the old linear chapter prev/next — tags are the organizing axis now."""
+    L = SITE["lang"][lang]
+    return (f'<nav class="doc-nav" aria-label="{L["doc_nav_aria"]}">'
+            f'<div class="doc-nav-tags">{tag_pills(p["tags"], lang)}</div>'
+            f'<a class="idx" href="{href("documentation/", lang)}">{L["doc_all"]} &rarr;</a>'
+            f'</nav>')
 
 
 # ── Page render ───────────────────────────────────────────────────────────────
@@ -267,13 +290,18 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
     body = body.replace("<main>", '<main id="main" tabindex="-1">', 1)
     # Derive readable section anchors from each <h2> (sec-N → title slug).
     body = derive_section_anchors(body)
-    # Documentation collection: derive index cards + per-chapter prev/next nav.
-    if "{{doc_chapters}}" in body:
-        body = body.replace("{{doc_chapters}}", doc_cards(lang))
+    # Documentation collection (tag-organized): derive index cards + filter bar,
+    # per-doc hero tag chips, and a per-doc footer nav (tags + back-to-index).
+    if "{{doc_cards}}" in body:
+        body = body.replace("{{doc_cards}}", doc_cards(lang))
+    if "{{doc_filter}}" in body:
+        body = body.replace("{{doc_filter}}", doc_filter(lang))
     if "{{doc_count}}" in body:
-        body = body.replace("{{doc_count}}", str(len(doc_chapter_list())))
-    if p.get("collection") == "documentation" and "chapter" in p:
-        body = body.replace("</main>", doc_chapter_nav(lang, p) + "\n</main>")
+        body = body.replace("{{doc_count}}", str(len(doc_list())))
+    if "{{doc_tags}}" in body:
+        body = body.replace("{{doc_tags}}", tag_pills(p.get("tags", []), lang))
+    if p.get("collection") == "documentation" and p.get("tags"):
+        body = body.replace("</main>", doc_footer_nav(lang, p) + "\n</main>")
     scripts = ('<script src="/assets/vendor/aurora-curtain.js"></script>\n'
                '<script src="/assets/js/app.js"></script>') if p["shader"] \
         else '<script src="/assets/js/app.js"></script>'

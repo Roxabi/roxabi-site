@@ -1,18 +1,18 @@
 <main>
 <section class="doc-hero">
   <div class="wrap">
-    <p class="section-label">Roxabi Cortex · Reference</p>
+    <p class="section-label">Roxabi · Documentation</p>
     <h1>Documentation</h1>
-    <p class="lead prose" style="margin:var(--s-md) auto 0">How Roxabi builds agent cognition and living memory — the architecture, the cognitive model, and the operating principles behind Roxabi Cortex. A public, plain-spoken reference.</p>
-    <p class="meta">{{doc_count}} chapters</p>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Public, plain-spoken guides and references across the Roxabi portfolio — architecture, cognition, and the operating principles behind the open-source primitives. Organized by tag.</p>
+    <p class="meta">{{doc_count}} documents</p>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <p class="section-label" style="text-align:center;letter-spacing:.2em;margin-bottom:var(--s-xl)">Chapters</p>
+    {{doc_filter}}
     <div class="grid grid-2 doc-cards">
-      {{doc_chapters}}
+      {{doc_cards}}
     </div>
   </div>
 </section>

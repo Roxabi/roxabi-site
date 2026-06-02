@@ -1,10 +1,10 @@
 <main>
 <section class="doc-hero">
   <div class="wrap">
-    <p class="section-label">DOC-02 · COGNITION AGENTIQUE</p>
+    <p class="section-label">COGNITION AGENTIQUE</p>
     <h1>Cadre Cognitif</h1>
     <p class="lead prose" style="margin:var(--s-md) auto 0">Comment trois couches philosophiques — les actes de langage de Searle, les schémas de Husserl et le cycle mémoriel de Tulving — dotent un agent raisonnant de réflexes typés et innés.</p>
-    <p class="meta">Chapitre 2 sur 6 · Roxabi Cortex</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
   </div>
 </section>
 
@@ -109,17 +109,17 @@
         <span class="label">05</span>
         <h2>Le schéma d'entité unifié</h2>
         <p>Les trois couches se composent en un seul schéma. Chaque champ nomme la couche dont il provient.</p>
-        <pre class="code"><code>id            : ULID
-type          : Belief | Value | Principle | Sentiment   # D1 Searle
-believer      : ActorRef                                 # D2 Husserl (noèse)
-content       : SetExpr                                  # D2 Husserl (noème)
-context       : ContextRef | null                        # D2 Lebenswelt
-stance        : active | dormant | abandoned             # D2
-fit_direction : word→world | world→word | both | none    # D1
-strength      : float [0,1]                              # D3 hippo-mémoire
-formed_from   : list[ObservationRef]                     # D3 Tulving (épisodique)
-decay_sigma   : float                                    # D3
-derived_reflex: ReflexRef | null</code></pre>
+        <div class="codeblock"><div class="codeblock-header">Schéma d'entité</div><pre><code>id            : ULID
+type          : Belief | Value | Principle | Sentiment   <span class="c"># D1 Searle</span>
+believer      : ActorRef                                 <span class="c"># D2 Husserl (noèse)</span>
+content       : SetExpr                                  <span class="c"># D2 Husserl (noème)</span>
+context       : ContextRef | null                        <span class="c"># D2 Lebenswelt</span>
+stance        : active | dormant | abandoned             <span class="c"># D2</span>
+fit_direction : word→world | world→word | both | none    <span class="c"># D1</span>
+strength      : float [0,1]                              <span class="c"># D3 hippo-mémoire</span>
+formed_from   : list[ObservationRef]                     <span class="c"># D3 Tulving (épisodique)</span>
+decay_sigma   : float                                    <span class="c"># D3</span>
+derived_reflex: ReflexRef | null</code></pre></div>
         <p>Trois instances canoniques montrent l'étendue : une Croyance (<code>obs(P) ⊊ P</code>, <code>word→world</code>, strength 0,85), une Valeur (<code>corr_valides(P) ⊆ Arch</code>, <code>world→word</code>, strength 0,90) et un Principe axiomatique (<code>∀ c ∈ Croyances : c ∈ Positives</code>, <code>both</code>, <code>decay_sigma:0</code>, strength 1,0). Le schéma est le pont opérationnel entre la philosophie et un graphe de connaissance interrogeable.</p>
         <figure class="doc-figure">
           <svg viewBox="0 0 720 430" role="img" aria-label="L'architecture en trois couches : typage Searle en haut, schéma Husserl au centre, cycle mémoriel Tulving à la base ; chaque couche ancre celle du dessus." style="width:100%;height:auto">

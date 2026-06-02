@@ -1,10 +1,10 @@
 <main>
 <section class="doc-hero">
   <div class="wrap">
-    <p class="section-label">DOC-04 · LIVING MEMORY</p>
+    <p class="section-label">LIVING MEMORY</p>
     <h1>Entity Taxonomy</h1>
     <p class="lead prose" style="margin:var(--s-md) auto 0">Why memory stays queryable instead of becoming a blob: the 2D grid that classifies every entity the Cortex holds.</p>
-    <p class="meta">Chapter 4 of 6 · Roxabi Cortex</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
   </div>
 </section>
 
@@ -97,7 +97,7 @@
         <span class="label">04</span>
         <h2>The Entity Node</h2>
         <p>An <strong>Entity</strong> is a durable graph node — a <code>namespace:slug</code> with a type, a subtype, strength fields, and a reference to its compiled truth. Strength follows the hippocampal-memory model.</p>
-        <pre class="code"><code>strength(t)          = base_strength
+        <div class="formula-box"><pre><code>strength(t)          = base_strength
                        × (0.5 ^ (Δt / effective_half_life))
                        × retrieval_boost
                        × emotional_multiplier
@@ -105,7 +105,7 @@
 reward_factor        = 1 + 0.5 × ((pos − neg) / (pos + neg + 1))
 effective_half_life  = half_life_days × reward_factor
 retrieval_boost      = 1 + 0.1 × log₂(retrieval_count + 1)
-emotional_multiplier : neutral 1.0 · positive 1.3 · negative 1.5 · critical 2.0</code></pre>
+emotional_multiplier : neutral 1.0 · positive 1.3 · negative 1.5 · critical 2.0</code></pre></div>
         <p>A <code>pinned = TRUE</code> entity has infinite strength, exempt from decay — permanent instructions, core facts. The taxonomy shapes the defaults: <code>world:*</code> takes a long half-life; <code>agent:*:rc:*</code> takes a short one because patterns change; <code>agent:*:instruction:*</code> is long or pinned.</p>
         <figure class="doc-figure">
           <svg viewBox="0 0 760 320" role="img" aria-label="Entity memory strength over time: a baseline exponential decay, the same curve lifted by retrieval boosts, and a flat pinned line at maximum strength." style="width:100%;height:auto">

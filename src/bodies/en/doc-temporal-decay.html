@@ -1,10 +1,10 @@
 <main>
 <section class="doc-hero">
   <div class="wrap">
-    <p class="section-label">DOC-05 · LIVING MEMORY</p>
+    <p class="section-label">LIVING MEMORY</p>
     <h1>Temporal Decay</h1>
     <p class="lead prose" style="margin:var(--s-md) auto 0">Why a living memory must forget: the exponential decay and reinforcement-on-access model that keeps the knowledge graph sharp over time.</p>
-    <p class="meta">Chapter 5 of 6 · Roxabi Cortex</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
   </div>
 </section>
 
@@ -123,9 +123,9 @@
         <h2>Two Decay Surfaces: Links and Entities</h2>
         <p>Decay does not apply uniformly to the graph. It operates independently on two distinct structures, each with its own formula and configurable parameters.</p>
         <p><strong>Relations / edges</strong> use <code>weight_temporal = exp(−Δt / σ)</code>, where <code>Δt</code> is days since last reinforcement and <code>σ</code> is a half-life configurable per relation class:</p>
-        <pre class="code"><code>σ = 90d   # foundational relations (e.g. is_core_concept_of)
+        <div class="formula-box"><pre><code>σ = 90d   # foundational relations (e.g. is_core_concept_of)
 σ = 30d   # normal relations
-σ =  7d   # weak / contextual relations</code></pre>
+σ =  7d   # weak / contextual relations</code></pre></div>
         <p><strong>Entity memories</strong> use the full <code>memory_strength</code> model described in the next section. This surface is more sophisticated because entities carry semantic weight that is injected directly into prompt context.</p>
         <p>The separation is intentional. A relation can fade while the entities it connects remain strong, and vice versa. Decay on edges prunes stale graph topology; decay on entities controls prompt salience. Both run independently, on different schedules, with different thresholds.</p>
 
@@ -182,9 +182,9 @@
         <span class="label">04</span>
         <h2>The memory_strength Formula</h2>
         <p>The simplified model (hippo-memory lineage, implementation variant):</p>
-        <pre class="code"><code>memory_strength = base_strength × (1 + reinforcement_factor) × exp(−Δt / half_life)</code></pre>
+        <div class="formula-box"><pre><code>memory_strength = base_strength × (1 + reinforcement_factor) × exp(−Δt / half_life)</code></pre></div>
         <p>The extended model from the architectural specification decomposes each factor explicitly:</p>
-        <pre class="code"><code>strength(t)      = base × decay × retrieval_boost × emotional_multiplier
+        <div class="formula-box"><pre><code>strength(t)      = base × decay × retrieval_boost × emotional_multiplier
 
 decay            = 0.5 ^ (Δt / effective_half_life)
 effective_half_life = half_life × reward_factor
@@ -192,7 +192,7 @@ reward_factor    = 1 + 0.5 × ((pos − neg) / (pos + neg + 1))
 
 retrieval_boost  = 1 + 0.1 × log₂(retrieval_count + 1)
 
-emotional_mult   = neutral:1.0 | positive:1.3 | negative:1.5 | critical:2.0</code></pre>
+emotional_mult   = neutral:1.0 | positive:1.3 | negative:1.5 | critical:2.0</code></pre></div>
         <p>Parameter semantics: <code>base_strength</code> is the initial strength at creation, in <code>[0.0, 1.0]</code>. <code>half_life</code> is configurable per entity class — 45d for project entities, 10d for minor concepts, 30d for behavioral patterns, 90d for world knowledge, 60d for operator instructions. All values live in <code>config/decay.yaml</code>.</p>
         <p>The <code>reward_factor</code> extends the effective half-life proportionally to positive feedback history. An entity that has consistently led to good outcomes gets a longer natural life — modeling dopamine-modulated synaptic consolidation. The <code>emotional_mult</code> applies at encoding time: negative and critical memories are retained longer, matching the well-established negativity bias in human memory (emotionally charged traces are more durable).</p>
       </div>
@@ -211,42 +211,17 @@ emotional_mult   = neutral:1.0 | positive:1.3 | negative:1.5 | critical:2.0</cod
         <h2>Decay Triggers and Scheduling</h2>
         <p>Four distinct trigger modes drive decay and reinforcement. They are not mutually exclusive — a single event can activate more than one:</p>
         <div style="overflow-x:auto;margin-top:var(--s-lg)">
-          <table style="width:100%;border-collapse:collapse;font-size:.9rem">
-            <thead>
-              <tr>
-                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Action</th>
-                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Type</th>
-                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Frequency</th>
-                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Target</th>
-              </tr>
-            </thead>
+          <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Action</th><th>Type</th><th>Frequency</th><th>Target</th></tr></thead>
             <tbody>
-              <tr>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Relation update</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Background</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Per event</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">weight_temporal</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Entity retrieval</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Background</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Per search</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">memory_strength</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">New Raw input</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Event-triggered</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Immediate</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">reinforcement + Retain Job</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 12px;color:var(--text-muted)">Nightly Consolidation</td>
-                <td style="padding:8px 12px;color:var(--text-muted)">CRON</td>
-                <td style="padding:8px 12px;color:var(--text-muted)">Every night</td>
-                <td style="padding:8px 12px;font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">Global decay + consolidation</td>
-              </tr>
+            <tr><td>Relation update</td><td>Background</td><td>Per event</td><td><code>weight_temporal</code></td></tr>
+            <tr><td>Entity retrieval</td><td>Background</td><td>Per search</td><td><code>memory_strength</code></td></tr>
+            <tr><td>New Raw input</td><td>Event-triggered</td><td>Immediate</td><td><code>reinforcement + Retain Job</code></td></tr>
+            <tr><td>Nightly Consolidation</td><td>CRON</td><td>Every night</td><td><code>Global decay + consolidation</code></td></tr>
             </tbody>
           </table>
+        </div>
         </div>
         <p style="margin-top:var(--s-lg)">Background decay runs inline on every read/write path — no separate daemon is required. The nightly CRON job performs the bulk recalculation and triggers the sleep-cycle consolidation pass, during which <code>Compiled Truth</code> documents are regenerated and stale entities are suppressed below threshold.</p>
       </div>

@@ -1,10 +1,10 @@
 <main>
 <section class="doc-hero">
   <div class="wrap">
-    <p class="section-label">DOC-04 · MÉMOIRE VIVANTE</p>
+    <p class="section-label">MÉMOIRE VIVANTE</p>
     <h1>Taxonomie des Entités</h1>
     <p class="lead prose" style="margin:var(--s-md) auto 0">Pourquoi la mémoire reste interrogeable plutôt que de devenir un blob : la grille 2D qui classe chaque entité que le Cortex retient.</p>
-    <p class="meta">Chapitre 4 sur 6 · Roxabi Cortex</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
   </div>
 </section>
 
@@ -90,7 +90,7 @@
         <span class="label">04</span>
         <h2>Le nœud entité</h2>
         <p>Une <strong>Entité</strong> est un nœud de graphe durable — un <code>namespace:slug</code> avec un type, un sous-type, des champs de force et une référence vers sa vérité compilée. La force suit le modèle de mémoire hippocampique.</p>
-        <pre class="code"><code>strength(t)          = base_strength
+        <div class="formula-box"><pre><code>strength(t)          = base_strength
                        × (0.5 ^ (Δt / effective_half_life))
                        × retrieval_boost
                        × emotional_multiplier
@@ -98,7 +98,7 @@
 reward_factor        = 1 + 0.5 × ((pos − neg) / (pos + neg + 1))
 effective_half_life  = half_life_days × reward_factor
 retrieval_boost      = 1 + 0.1 × log₂(retrieval_count + 1)
-emotional_multiplier : neutre 1.0 · positif 1.3 · négatif 1.5 · critique 2.0</code></pre>
+emotional_multiplier : neutre 1.0 · positif 1.3 · négatif 1.5 · critique 2.0</code></pre></div>
         <p>Une entité <code>pinned = TRUE</code> a une force infinie, exemptée de déclin — instructions permanentes, faits fondamentaux. La taxonomie modèle les défauts : <code>world:*</code> prend une demi-vie longue ; <code>agent:*:rc:*</code> une courte car les patterns changent ; <code>agent:*:instruction:*</code> longue ou épinglée.</p>
         <figure class="doc-figure">
           <svg viewBox="0 0 760 320" role="img" aria-label="Force mémorielle d'une entité dans le temps : un déclin exponentiel de base, la même courbe relevée par des boosts de récupération, et une ligne épinglée plate au maximum." style="width:100%;height:auto">

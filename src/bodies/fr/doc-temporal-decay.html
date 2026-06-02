@@ -1,10 +1,10 @@
 <main>
 <section class="doc-hero">
   <div class="wrap">
-    <p class="section-label">DOC-05 · MÉMOIRE VIVANTE</p>
+    <p class="section-label">MÉMOIRE VIVANTE</p>
     <h1>La Décroissance Temporelle</h1>
     <p class="lead prose" style="margin:var(--s-md) auto 0">Pourquoi une mémoire vivante doit oublier : le modèle de décroissance exponentielle et de renforcement par l'accès qui maintient la pertinence du graphe de connaissance.</p>
-    <p class="meta">Chapitre 5 sur 6 · Roxabi Cortex</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
   </div>
 </section>
 
@@ -88,9 +88,9 @@
         <h2>Deux surfaces de décroissance : liens et entités</h2>
         <p>La décroissance ne s'applique pas uniformément au graphe. Elle opère indépendamment sur deux structures distinctes, chacune avec sa propre formule et ses paramètres configurables.</p>
         <p><strong>Relations / arêtes</strong> : <code>weight_temporal = exp(−Δt / σ)</code>, où <code>Δt</code> est le nombre de jours depuis le dernier renforcement et <code>σ</code> est une demi-vie configurable par classe de relation :</p>
-        <pre class="code"><code>σ = 90j   # relations fondationnelles (ex. is_core_concept_of)
+        <div class="formula-box"><pre><code>σ = 90j   # relations fondationnelles (ex. is_core_concept_of)
 σ = 30j   # relations normales
-σ =  7j   # relations faibles / contextuelles</code></pre>
+σ =  7j   # relations faibles / contextuelles</code></pre></div>
         <p><strong>Entités / nœuds</strong> : le modèle complet <code>memory_strength</code> décrit dans la section suivante. Cette surface est plus sophistiquée parce que les entités portent un poids sémantique injecté directement dans le contexte de prompt.</p>
         <p>La séparation est intentionnelle. Une relation peut s'estomper tandis que les entités qu'elle connecte restent fortes, et inversement. La décroissance sur les arêtes élague la topologie périmée du graphe ; la décroissance sur les entités contrôle la saillance dans les prompts. Les deux s'exécutent indépendamment, selon des planifications et des seuils différents.</p>
 
@@ -141,9 +141,9 @@
         <span class="label">04</span>
         <h2>La formule memory_strength</h2>
         <p>Le modèle simplifié (lignée hippo-memory, variante d'implémentation) :</p>
-        <pre class="code"><code>memory_strength = base_strength × (1 + reinforcement_factor) × exp(−Δt / half_life)</code></pre>
+        <div class="formula-box"><pre><code>memory_strength = base_strength × (1 + reinforcement_factor) × exp(−Δt / half_life)</code></pre></div>
         <p>Le modèle étendu, tel que défini dans la spécification architecturale, décompose chaque facteur explicitement :</p>
-        <pre class="code"><code>strength(t)         = base × decay × retrieval_boost × emotional_multiplier
+        <div class="formula-box"><pre><code>strength(t)         = base × decay × retrieval_boost × emotional_multiplier
 
 decay               = 0,5 ^ (Δt / effective_half_life)
 effective_half_life = half_life × reward_factor
@@ -151,7 +151,7 @@ reward_factor       = 1 + 0,5 × ((pos − neg) / (pos + neg + 1))
 
 retrieval_boost     = 1 + 0,1 × log₂(retrieval_count + 1)
 
-emotional_mult      = neutre:1,0 | positif:1,3 | négatif:1,5 | critique:2,0</code></pre>
+emotional_mult      = neutre:1,0 | positif:1,3 | négatif:1,5 | critique:2,0</code></pre></div>
         <p>Sémantique des paramètres : <code>base_strength</code> est la force initiale à la création, dans <code>[0,0 ; 1,0]</code>. <code>half_life</code> est configurable par classe d'entité — 45j pour les projets, 10j pour les concepts mineurs, 30j pour les patterns comportementaux, 90j pour les connaissances monde, 60j pour les instructions de l'opérateur. Toutes les valeurs résident dans <code>config/decay.yaml</code>.</p>
         <p>Le <code>reward_factor</code> étend la demi-vie effective proportionnellement à l'historique de feedback positif — modélisant la consolidation synaptique modulée par la dopamine. Le <code>emotional_mult</code> s'applique à l'encodage : les souvenirs négatifs et critiques sont retenus plus longtemps, conformément au biais de négativité bien établi dans la mémoire humaine.</p>
       </div>
@@ -170,42 +170,17 @@ emotional_mult      = neutre:1,0 | positif:1,3 | négatif:1,5 | critique:2,0</co
         <h2>Déclencheurs de décroissance et planification</h2>
         <p>Quatre modes de déclenchement distincts pilotent la décroissance et le renforcement. Ils ne sont pas mutuellement exclusifs — un seul événement peut en activer plusieurs :</p>
         <div style="overflow-x:auto;margin-top:var(--s-lg)">
-          <table style="width:100%;border-collapse:collapse;font-size:.9rem">
-            <thead>
-              <tr>
-                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Action</th>
-                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Type</th>
-                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Fréquence</th>
-                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Cible</th>
-              </tr>
-            </thead>
+          <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Action</th><th>Type</th><th>Fréquence</th><th>Cible</th></tr></thead>
             <tbody>
-              <tr>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Mise à jour de relation</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Arrière-plan</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Par événement</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">weight_temporal</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Accès à une entité</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Arrière-plan</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Par recherche</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">memory_strength</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Nouvelle entrée brute</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Événementiel</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Immédiat</td>
-                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">renforcement + Retain Job</td>
-              </tr>
-              <tr>
-                <td style="padding:8px 12px;color:var(--text-muted)">Consolidation nocturne</td>
-                <td style="padding:8px 12px;color:var(--text-muted)">CRON</td>
-                <td style="padding:8px 12px;color:var(--text-muted)">Chaque nuit</td>
-                <td style="padding:8px 12px;font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">Décroissance globale + consolidation</td>
-              </tr>
+            <tr><td>Mise à jour de relation</td><td>Arrière-plan</td><td>Par événement</td><td><code>weight_temporal</code></td></tr>
+            <tr><td>Accès à une entité</td><td>Arrière-plan</td><td>Par recherche</td><td><code>memory_strength</code></td></tr>
+            <tr><td>Nouvelle entrée brute</td><td>Événementiel</td><td>Immédiat</td><td><code>renforcement + Retain Job</code></td></tr>
+            <tr><td>Consolidation nocturne</td><td>CRON</td><td>Chaque nuit</td><td><code>Décroissance globale + consolidation</code></td></tr>
             </tbody>
           </table>
+        </div>
         </div>
         <p style="margin-top:var(--s-lg)">La décroissance d'arrière-plan s'exécute en ligne sur chaque chemin lecture/écriture — aucun démon séparé n'est requis. Le CRON nocturne effectue le recalcul en masse et déclenche la passe de consolidation en cycle de sommeil, durant laquelle les documents <code>Compiled Truth</code> sont régénérés et les entités périmées sont supprimées sous le seuil.</p>
       </div>

@@ -1,10 +1,10 @@
 <main>
 <section class="doc-hero">
   <div class="wrap">
-    <p class="section-label">DOC-01 · MÉMOIRE VIVANTE</p>
+    <p class="section-label">MÉMOIRE VIVANTE</p>
     <h1>L'Exocortex</h1>
     <p class="lead prose" style="margin:var(--s-md) auto 0">Des milliers de sessions agents cloisonnées, zéro consolidation — l'exocortex est l'organe cognitif qui capte, structure et restitue l'ensemble.</p>
-    <p class="meta">Chapitre 1 sur 6 · Roxabi Cortex</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
   </div>
 </section>
 
@@ -87,7 +87,7 @@
           <li><strong>Analyseurs</strong> (<code>cortex-insight</code>) : transforment les évènements en constats typés — le pipeline comportemental sur les sessions Claude Code. <em>Remplaçables.</em> Un même dépôt peut être producteur et analyseur quand les rôles sont indissociables.</li>
           <li><strong>Consommateurs</strong> : lisent le graphe pour agir — l'assemblage <code>/dev</code> de Claude Code, le rappel de Lyra pour le contexte de chat, le digest comportemental hebdomadaire. <em>Autonomes.</em></li>
         </ul>
-        <p>À la frontière, les producteurs parlent au substrat via une enveloppe typée, et le substrat émet des objets <code>Observation</code> sur NATS (<code>roxabi.memory.observations.publish</code>, <code>roxabi.memory.query.*</code>). Ce contrat fait l'objet du chapitre suivant.</p>
+        <p>À la frontière, les producteurs parlent au substrat via une enveloppe typée, et le substrat émet des objets <code>Observation</code> sur NATS (<code>roxabi.memory.observations.publish</code>, <code>roxabi.memory.query.*</code>). Ce contrat fait l'objet du document Contrat d'Observation.</p>
       </div>
 
       <div class="titre" id="sec-5">
@@ -134,13 +134,13 @@
         <span class="label">06</span>
         <h2>Force mémorielle : décroissance, récupération, émotion</h2>
         <p>La force d'un nœud dans le graphe est continue et dynamique, jamais binaire. Elle se calcule à partir de quelques termes, chacun rattaché à un phénomène cognitif validé.</p>
-        <pre class="code"><code>strength(t)          = base × decay × retrieval_boost × emotional_mult
+        <div class="formula-box"><pre><code>strength(t)          = base × decay × retrieval_boost × emotional_mult
 decay                = 0.5 ^ (Δt / effective_half_life)
 effective_half_life  = half_life × reward_factor
 reward_factor        = 1 + 0.5 × ((pos − neg) / (pos + neg + 1))
 retrieval_boost      = 1 + 0.1 × log₂(retrieval_count + 1)
-emotional_mult       = neutre 1.0 · positif 1.3 · négatif 1.5 · critique 2.0</code></pre>
-        <p>Les demi-vies varient selon la classe d'entité : ~30&nbsp;jours pour les patterns comportementaux, 60 pour les instructions, 90 pour les entités du monde. Chaque terme a une filiation — <code>decay</code> → courbe de l'oubli d'Ebbinghaus (1885) ; <code>retrieval_boost</code> → effet de test (Roediger &amp; Karpicke 2006) ; <code>emotional_mult</code> → modulation amygdalienne (Cahill &amp; McGaugh 1998) ; <code>reward_factor</code> → plasticité dopaminergique (Schultz 1998) ; <code>schema_fit</code> → assimilation/accommodation de Piaget. Le modèle est biologiquement plausible et ne requiert aucun LLM en Phase&nbsp;1. Le chapitre&nbsp;5 développe la décroissance en détail.</p>
+emotional_mult       = neutre 1.0 · positif 1.3 · négatif 1.5 · critique 2.0</code></pre></div>
+        <p>Les demi-vies varient selon la classe d'entité : ~30&nbsp;jours pour les patterns comportementaux, 60 pour les instructions, 90 pour les entités du monde. Chaque terme a une filiation — <code>decay</code> → courbe de l'oubli d'Ebbinghaus (1885) ; <code>retrieval_boost</code> → effet de test (Roediger &amp; Karpicke 2006) ; <code>emotional_mult</code> → modulation amygdalienne (Cahill &amp; McGaugh 1998) ; <code>reward_factor</code> → plasticité dopaminergique (Schultz 1998) ; <code>schema_fit</code> → assimilation/accommodation de Piaget. Le modèle est biologiquement plausible et ne requiert aucun LLM en Phase&nbsp;1. Le document Décroissance Temporelle développe la décroissance en détail.</p>
       </div>
 
       <div class="titre" id="sec-7">

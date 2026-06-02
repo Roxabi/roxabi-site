@@ -39,6 +39,7 @@
   .meta .open{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);margin-left:auto}
   .card:hover .open{color:var(--accent)}
   /* toggling */
+  body.hide-v17  [data-cat=v17],
   body.hide-fav  [data-cat=fav],
   body.hide-new  [data-cat=new],
   body.hide-b1   [data-cat=b1],
@@ -54,11 +55,22 @@
   <p class="sub">Toggle groups below to show/hide. Favorites = your picks (04/06/11/13/15); batch 3 = merges 16–25 of those. Click any card to open it full-screen.</p>
 </div>
 <div class="filters" id="filters">
+  <button class="f on" data-cat="v17"><span class="box"></span>17 · variations (3)</button>
   <button class="f on" data-cat="fav"><span class="box"></span>★ Favorites (5)</button>
   <button class="f on" data-cat="new"><span class="box"></span>New · 16–25</button>
   <button class="f on" data-cat="b1"><span class="box"></span>Other kept (5)</button>
   <button class="f"    data-cat="disc"><span class="box"></span>Discarded (5)</button>
 </div>
+
+<section class="cat" data-cat="v17">
+  <h2>17 · variations — <span class="c">depth occlusion: particles pass behind the cubes</span></h2>
+  <div class="grid">
+    <a class="card" href="./17-isogrid-particles.html"><div class="thumb"><iframe src="./17-isogrid-particles.html" loading="lazy" scrolling="no" title="17"></iframe></div><div class="meta"><span class="n">17</span><span class="name">Iso grid + dataflow</span><span class="tag">orig</span><span class="open">open →</span></div></a>
+    <a class="card" href="./17a-isogrid-depth.html"><div class="thumb"><iframe src="./17a-isogrid-depth.html" loading="lazy" scrolling="no" title="17a"></iframe></div><div class="meta"><span class="n">17a</span><span class="name">Depth occlusion</span><span class="tag">bigger</span><span class="open">open →</span></div></a>
+    <a class="card" href="./17b-isogrid-absorbed.html"><div class="thumb"><iframe src="./17b-isogrid-absorbed.html" loading="lazy" scrolling="no" title="17b"></iframe></div><div class="meta"><span class="n">17b</span><span class="name">Absorbed into core</span><span class="tag">big core</span><span class="open">open →</span></div></a>
+    <a class="card" href="./17c-isogrid-minimal.html"><div class="thumb"><iframe src="./17c-isogrid-minimal.html" loading="lazy" scrolling="no" title="17c"></iframe></div><div class="meta"><span class="n">17c</span><span class="name">Minimal depth</span><span class="tag">calm</span><span class="open">open →</span></div></a>
+  </div>
+</section>
 
 <section class="cat" data-cat="fav">
   <h2>★ Favorites</h2>
@@ -116,7 +128,7 @@
   try { hidden = JSON.parse(localStorage.getItem(KEY) || '["disc"]'); } catch (e) { hidden = ['disc']; }
   var body = document.body, btns = document.querySelectorAll('.f');
   function apply() {
-    ['fav','new','b1','disc'].forEach(function (c) { body.classList.toggle('hide-' + c, hidden.indexOf(c) >= 0); });
+    ['v17','fav','new','b1','disc'].forEach(function (c) { body.classList.toggle('hide-' + c, hidden.indexOf(c) >= 0); });
     btns.forEach(function (b) { b.classList.toggle('on', hidden.indexOf(b.dataset.cat) < 0); });
   }
   apply();

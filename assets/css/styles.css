@@ -46,6 +46,12 @@ p { color: var(--text-muted); }
 .lead { font-size: 1.125rem; color: var(--text-muted); }
 strong { color: var(--text); font-weight: 600; }
 code, .mono { font-family: var(--font-mono); }
+/* Inline code — subtle chip in running documentation prose. Block code
+   (pre / .codeblock / .formula-box) opts out below and keeps its own surface. */
+.prose code { font-size: .86em; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: .08em .36em; color: var(--text); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.prose pre code { font-size: 1em; background: none; border: none; padding: 0; border-radius: 0; color: inherit; -webkit-box-decoration-break: slice; box-decoration-break: slice; }
+.codeblock pre code { color: var(--code-text); }
+.formula-box pre code { color: var(--accent); font-size: .9em; }
 
 /* ── Nav ──────────────────────────────────────────────── */
 .nav {
@@ -110,31 +116,50 @@ code, .mono { font-family: var(--font-mono); }
 
 /* ── Hero ─────────────────────────────────────────────── */
 .hero { position: relative; overflow: hidden; min-height: 100vh; min-height: 100dvh; padding-block: clamp(64px, 12vw, 140px); text-align: center; }
-#hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 1; z-index: 0; }
-/* Light mode: the dark fluid shader reads as grey smudges on the cream ground.
-   Hide it and use a warm amber radial coming in from the right (from the middle). */
-:root[data-theme="light"] #hero-bg { display: none; }
+/* Light: warm amber radial in from the right. */
 :root[data-theme="light"] .hero { background: radial-gradient(ellipse 100% 120% at 100% 50%, rgba(217,119,6,.12), transparent 70%); }
-/* Light theme: SVG nodes/edges (panel fill on cream bg) wash out — lift the contrast. */
-:root[data-theme="light"] .rox-node { fill: #fff; stroke: var(--border-hi); }
-:root[data-theme="light"] .rox-edge { stroke: var(--border-hi); }
-/* Dark base glow: shows when the shader is off (reduced-motion / no WebGL); the shader draws over it when on. */
+/* Dark: subtle amber pool behind the hub diagram. */
 :root[data-theme="dark"] .hero { background: radial-gradient(ellipse 78% 88% at 70% 42%, rgba(240,180,41,.09), transparent 72%); }
-.hero::after { /* vignette to keep text legible over shader */
+.hero::after { /* vignette: settle the diagram into the page with darker edges */
   content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: radial-gradient(ellipse 72% 62% at 50% 44%, transparent 22%, var(--bg) 78%);
 }
-.hero .wrap { position: relative; z-index: 2; }
-.hero h1 { margin-block: var(--s-lg) var(--s-md); }
+.hero .wrap { position: relative; z-index: 2; max-width: 1280px; }
+.hero h1 { margin-block: var(--s-lg) var(--s-md); font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.07; text-wrap: balance; }
 .hero .lead { font-size: 1.25rem; max-width: 620px; margin-inline: auto; }
 .hero .sub { color: var(--accent); font-weight: 600; }
 .hero-cta { display: flex; gap: var(--s-md); justify-content: center; margin-top: var(--s-xl); flex-wrap: wrap; }
-.hero .rox-dia { width: 100%; max-width: 560px; height: auto; display: block; margin: var(--s-xl) auto 0; }
+.hero .rox-dia { width: 100%; max-width: 880px; height: auto; display: block; margin: var(--s-xl) auto 0; }
+/* iso hub: depth-sorted dataflow scene built by app.js (initIso) */
+#iso .grid-line { stroke: var(--border); stroke-width: 1; }
+#iso .link { stroke: var(--border); stroke-opacity: .55; stroke-width: 1.2; fill: none; stroke-linecap: round; }
+#iso .mlabel { font-family: var(--font-mono); font-size: 12px; fill: var(--text-muted); }
+#iso .clabel { font-family: var(--font-mono); font-size: 11px; fill: var(--accent); letter-spacing: .04em; }
+
+/* Scroll cue — bottom-centre of the hero, gentle bob, jumps to the first section. */
+.hero-scroll {
+  /* Anchor to the first screen's bottom, NOT the hero's — the hero content can be
+     taller than the viewport, pushing its bottom edge below the fold. Place the cue
+     a fixed distance up from the fold: 100dvh − nav(60) − footer(~47) − cue/gap. */
+  position: absolute; left: 50%; bottom: auto; transform: translateX(-50%); z-index: 3;
+  top: calc(100vh - 185px); top: calc(100dvh - 185px);
+  display: inline-flex; flex-direction: column; align-items: center; gap: 7px;
+  font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--text-muted); transition: color var(--dur) var(--ease);
+}
+.hero-scroll:hover { color: var(--accent); }
+.hero-scroll-arrow { display: block; line-height: 0; }
+.hero-scroll-arrow svg { width: 20px; height: 20px; display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-scroll-arrow { animation: hero-bob 1.8s ease-in-out infinite; }
+}
+@keyframes hero-bob { 0%, 100% { transform: translateY(0); opacity: .7; } 50% { transform: translateY(5px); opacity: 1; } }
+@media (max-width: 859px) { .hero-scroll { display: none; } }
 
 /* Desktop: two-column hero — copy left, hub diagram right (the visual IS the message) */
 @media (min-width: 860px) {
   .hero { text-align: left; }
-  .hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: var(--s-2xl); }
+  .hero .wrap { display: grid; grid-template-columns: .8fr 1.2fr; align-items: center; gap: 0; }
   .hero-copy { min-width: 0; }
   .hero .lead { margin-inline: 0; max-width: 46ch; }
   .hero-copy .hero-cta { justify-content: flex-start; }
@@ -143,13 +168,6 @@ code, .mono { font-family: var(--font-mono); }
      hub (~64%) and curtain (~75%) read as one lit zone, copy side stays dark (opacity untouched). */
   .hero::after { background: radial-gradient(ellipse 60% 78% at 70% 46%, transparent 16%, var(--bg) 42%); }
 }
-
-/* Active hub channels flow inward: tools plugging into the factory.
-   Motion motivated (storytelling — data converging on the core). Reduced-motion users keep static lines. */
-@media (prefers-reduced-motion: no-preference) {
-  .rox-dia .rox-edge.on { stroke-dasharray: 3 7; animation: rox-flow 1.6s linear infinite; }
-}
-@keyframes rox-flow { to { stroke-dashoffset: 20; } }
 
 /* ── Code block (always dark terminal) ────────────────── */
 .code {
@@ -297,18 +315,22 @@ a.proj-card:hover .arrow { transform: translateX(3px); }
 }
 .portfolio-note { font-family: var(--font-mono); font-size: .8rem; color: var(--text-dim); margin-top: var(--s-lg); }
 
-/* ── Documentation (collection index + chapter pages) ───── */
+/* ── Documentation (collection index + tagged document pages) ───── */
 .doc-cards { align-items: stretch; }
 a.doc-card { display: flex; flex-direction: column; gap: var(--s-sm); }
 a.doc-card:hover { transform: translateY(-2px); border-color: var(--accent); }
-.doc-card .doc-card-num { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .15em; text-transform: uppercase; color: var(--text-dim); }
+/* Tag chips — shared across doc cards, doc hero, and doc footer nav */
+.tag { display: inline-block; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; line-height: 1.7; }
+a.tag:hover { color: var(--accent); border-color: var(--accent); }
+.doc-card-tags, .doc-hero-tags, .doc-nav-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.doc-hero-tags { justify-content: center; margin-top: var(--s-md); }
 .doc-card h3 { margin-bottom: 0; }
 .doc-card > p { font-size: .95rem; }
 .doc-card .portfolio-note { margin-top: auto; padding-top: var(--s-sm); color: var(--accent); }
 .doc-card .arrow { display: inline-block; transition: transform var(--dur) var(--ease); }
 a.doc-card:hover .arrow { transform: translateX(3px); }
 
-/* Chapter figures — schematic SVG diagrams in a framed panel (theme-aware) */
+/* Document figures — schematic SVG diagrams in a framed panel (theme-aware) */
 .doc-figure { margin: var(--s-xl) 0; padding: var(--s-lg); background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-lg); }
 .doc-figure svg { width: 100%; height: auto; }
 .doc-figure figcaption { margin-top: var(--s-md); font-family: var(--font-mono); font-size: .75rem; color: var(--text-dim); text-align: center; }
@@ -318,12 +340,105 @@ a.doc-card:hover .arrow { transform: translateX(3px); }
 .callout p { color: var(--text); margin: 0; }
 .callout p + p { margin-top: var(--s-sm); }
 
-/* Chapter prev / next nav (derived by build.py) */
-.doc-nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--s-md); margin-top: var(--s-2xl); padding-top: var(--s-lg); border-top: 1px solid var(--border); }
-.doc-nav a { display: flex; flex-direction: column; gap: 2px; color: var(--text-muted); transition: color var(--dur) var(--ease); }
-.doc-nav a:hover { color: var(--accent); }
-.doc-nav .next { text-align: right; }
-.doc-nav .idx { font-family: var(--font-mono); font-size: .8rem; color: var(--text-dim); }
-.doc-nav .d { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
-.doc-nav .t { font-weight: 600; font-size: .9rem; }
-@media (max-width: 600px) { .doc-nav .t { display: none; } }
+/* ── Doc components — extended library ─────────────────────
+   Tables, steps, KPI, timeline, compare, formula, caveat, codeblock.
+   Ported from the forge visual system to Roxabi tokens (amber-only, no red/green).
+   Live reference + authoring snippets: lab/docs-components.html */
+
+/* Codeblock — labelled code panel (filename/lang header) over the always-dark code surface */
+.codeblock { background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; margin: var(--s-lg) 0; box-shadow: var(--shadow-md); }
+.codeblock-header { background: color-mix(in srgb, var(--code-text) 7%, var(--code-bg)); border-bottom: 1px solid var(--border); padding: 8px 14px; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .06em; color: var(--code-muted); }
+.codeblock pre { margin: 0; padding: var(--s-lg); overflow-x: auto; color: var(--code-text); font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; }
+.codeblock .k { color: var(--code-keyword); }
+.codeblock .s { color: var(--code-string); }
+.codeblock .c { color: var(--code-muted); }
+
+/* Data table — scroll-wrapped, mono code cells */
+.tbl-wrap { overflow-x: auto; margin: var(--s-lg) 0; border: 1px solid var(--border); border-radius: var(--r-md); }
+table.data-table { width: 100%; border-collapse: collapse; }
+.data-table th { background: var(--surface); color: var(--text-dim); font-family: var(--font-mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border-hi); }
+.data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); font-size: .9rem; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--surface); }
+.data-table td code, .data-table th code { font-family: var(--font-mono); font-size: .8rem; background: var(--surface); border: 1px solid var(--border); padding: 1px 6px; border-radius: var(--r-sm); color: var(--text); }
+
+/* Steps — vertical numbered process with a connecting rail */
+.steps { display: flex; flex-direction: column; margin: var(--s-lg) 0; }
+.step { display: flex; gap: var(--s-md); position: relative; padding-bottom: var(--s-lg); }
+.step:last-child { padding-bottom: 0; }
+.step::after { content: ""; position: absolute; left: 14px; top: 32px; bottom: 0; width: 1px; background: var(--border); }
+.step:last-child::after { display: none; }
+.step-num { flex: none; width: 29px; height: 29px; display: grid; place-items: center; background: var(--surface); border: 2px solid var(--accent); border-radius: var(--r-full); font-family: var(--font-mono); font-size: .8rem; color: var(--accent); }
+.step-body { flex: 1; padding-top: 2px; }
+.step-title { font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.step-desc { font-size: .9rem; color: var(--text-muted); }
+
+/* KPI — metric / stat row */
+.kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--s-md); margin: var(--s-xl) 0; }
+.kpi-item { background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-md); padding: var(--s-md); text-align: center; transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease); }
+.kpi-item:hover { border-color: var(--accent); transform: translateY(-2px); }
+.kpi-value { display: block; font-size: 1.75rem; font-weight: 800; letter-spacing: -.02em; color: var(--accent); line-height: 1; margin-bottom: 6px; }
+.kpi-label { display: block; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .05em; color: var(--text-dim); }
+
+/* Timeline — dated vertical list with an accent rail */
+.timeline { position: relative; padding-left: var(--s-xl); margin: var(--s-lg) 0; }
+.timeline::before { content: ""; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), var(--border)); }
+.tl-item { position: relative; margin-bottom: var(--s-xl); }
+.tl-item:last-child { margin-bottom: 0; }
+.tl-item::before { content: ""; position: absolute; left: calc(-1 * var(--s-xl) + 1px); top: 5px; width: 10px; height: 10px; border-radius: var(--r-full); background: var(--accent); border: 2px solid var(--bg); }
+.tl-label { font-family: var(--font-mono); font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--accent); margin-bottom: 4px; }
+.tl-title { font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.tl-body { font-size: .9rem; color: var(--text-muted); }
+
+/* Compare — two-column is/not (amber = affirmed, neutral = rejected; brand has no red/green) */
+.compare-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-md); margin: var(--s-lg) 0; }
+.compare-col { background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-md); padding: var(--s-lg); }
+.compare-col.positive { border-top: 3px solid var(--accent); }
+.compare-col.negative { border-top: 3px solid var(--border-hi); }
+.compare-head { font-family: var(--font-mono); font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: var(--s-md); color: var(--text-dim); }
+.compare-col.positive .compare-head { color: var(--accent); }
+.compare-item { margin-bottom: var(--s-sm); font-size: .9rem; color: var(--text-muted); }
+.compare-item:last-child { margin-bottom: 0; }
+.compare-item strong { display: block; color: var(--text); }
+
+/* Formula box — math / notation panel (amber, left rule) */
+.formula-box { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--r-md); padding: var(--s-md) var(--s-lg); margin: var(--s-lg) 0; overflow-x: auto; }
+.formula-box pre { margin: 0; }
+.formula-box code { font-family: var(--font-mono); font-size: .9em; line-height: 1.8; color: var(--accent); }
+
+/* Caveat grid — Q&A / objection cards */
+.caveat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--s-md); margin: var(--s-lg) 0; }
+.caveat-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-md); padding: var(--s-lg); }
+.caveat-q { font-weight: 600; color: var(--text); margin-bottom: var(--s-sm); }
+.caveat-body { font-size: .9rem; color: var(--text-muted); }
+.caveat-direction { margin-top: var(--s-sm); padding-top: var(--s-sm); border-top: 1px solid var(--border); font-size: .85rem; color: var(--text-dim); }
+.caveat-direction strong { color: var(--accent); }
+
+/* Trinity — three labelled cards (amber top rule) */
+.trinity { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-md); margin: var(--s-lg) 0; }
+.trinity-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-md); padding: var(--s-lg); position: relative; }
+.trinity-card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--accent); border-radius: var(--r-md) var(--r-md) 0 0; opacity: .65; }
+.trinity-label { font-family: var(--font-mono); font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin-bottom: var(--s-sm); }
+.trinity-title { font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.trinity-body { font-size: .9rem; color: var(--text-muted); }
+
+/* Modcard — labelled section card */
+.modcard { background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-md); padding: var(--s-lg); margin-bottom: var(--s-md); }
+.modcard-label { font-family: var(--font-mono); font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-dim); margin-bottom: 6px; }
+.modcard-title { font-weight: 600; color: var(--accent); margin-bottom: var(--s-sm); }
+.modcard-body { font-size: .9rem; color: var(--text-muted); }
+.modcard-body p + p { margin-top: var(--s-sm); }
+
+@media (max-width: 640px) { .compare-wrap, .trinity { grid-template-columns: 1fr; } }
+
+/* Per-document footer nav: the doc's tag chips + back-to-index (derived by build.py) */
+.doc-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-md); margin-top: var(--s-2xl); padding-top: var(--s-lg); border-top: 1px solid var(--border); }
+.doc-nav .idx { font-family: var(--font-mono); font-size: .8rem; color: var(--text-dim); transition: color var(--dur) var(--ease); }
+.doc-nav .idx:hover { color: var(--accent); }
+
+/* Tag-filter bar on the docs index (revealed by app.js; JS-off shows every card) */
+.doc-filter { display: flex; flex-wrap: wrap; gap: var(--s-sm); justify-content: center; margin-bottom: var(--s-xl); }
+.tag-filter { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); background: transparent; border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; cursor: pointer; transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease); }
+.tag-filter:hover { color: var(--accent); border-color: var(--accent); }
+.tag-filter.is-active { color: var(--accent-on); background: var(--accent); border-color: var(--accent); }
+.doc-card[hidden] { display: none; }

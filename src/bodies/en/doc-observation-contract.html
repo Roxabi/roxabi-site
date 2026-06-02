@@ -1,10 +1,10 @@
 <main>
 <section class="doc-hero">
   <div class="wrap">
-    <p class="section-label">DOC-03 · LIVING MEMORY</p>
+    <p class="section-label">LIVING MEMORY</p>
     <h1>The Observation Contract</h1>
     <p class="lead prose" style="margin:var(--s-md) auto 0">How Cortex splits memory formation across two services — encoding in the lake, consolidation in the warehouse — via a typed Observation contract.</p>
-    <p class="meta">Chapter 3 of 6 · Roxabi Cortex</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
   </div>
 </section>
 <section>
@@ -166,17 +166,17 @@
         <span class="label">04</span>
         <h2>The Observation Contract</h2>
         <p><code>Observation</code> is the typed publish contract between <code>cortex-insight</code> and <code>cortex-memory</code> — the only artifact that crosses the service boundary. It is published to the NATS subject <code>roxabi.memory.observations.publish</code>.</p>
-        <pre class="code"><code>class Observation(BaseModel):
+        <div class="codeblock"><div class="codeblock-header">python · Observation</div><pre><code><span class="k">class</span> Observation(BaseModel):
     id: ULID
-    source: str           # "claude-code-jsonl" | "mail" | "telegram" | …
-    source_ref: str       # natural ID within the source
-    timestamp: int        # epoch ms
-    category: ObservationCategory  # Interaction | Finding | Decision | Artifact | …
-    actors: list[ActorRef]         # entity references (unresolved)
-    topic: list[str] | None        # extracted concepts
+    source: str           <span class="c"># "claude-code-jsonl" | "mail" | "telegram" | …</span>
+    source_ref: str       <span class="c"># natural ID within the source</span>
+    timestamp: int        <span class="c"># epoch ms</span>
+    category: ObservationCategory  <span class="c"># Interaction | Finding | Decision | Artifact | …</span>
+    actors: list[ActorRef]         <span class="c"># entity references (unresolved)</span>
+    topic: list[str] | None        <span class="c"># extracted concepts</span>
     sentiment: str | None
-    payload_typed: dict            # category-specific structured payload
-    correlation: dict              # trace_id, parent_obs_id, episode_id, …</code></pre>
+    payload_typed: dict            <span class="c"># category-specific structured payload</span>
+    correlation: dict              <span class="c"># trace_id, parent_obs_id, episode_id, …</span></code></pre></div>
         <p>Four design choices are load-bearing. First, <code>category</code> is the stable taxonomic anchor (<code>ObservationCategory</code>): Interaction, Finding, Decision, Artifact, Statement. The category set must be exhaustive and stable — it is the schema surface that <code>cortex-memory</code>'s Retain Job dispatches on. Second, <code>actors</code> carries references — email, name, slug — but resolution against the graph is deliberately deferred to memory. Insight does not know whether an actor already exists in the graph. Third, <code>payload_typed</code> is category-specific structured content, typed by insight and consumed by the Retain Job. It is not generic freeform text. Fourth, <code>correlation</code> (trace_id, parent_obs_id, episode_id) enables causality tracing across the full pipeline.</p>
         <p><code>Observation</code> is explicitly not an <code>EntityProposal</code>. Entity resolution is memory's responsibility. Insight produces a well-typed, source-aware episodic record; memory resolves it into the durable graph.</p>
 
