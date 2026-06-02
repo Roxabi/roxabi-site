@@ -521,3 +521,34 @@ priority    = "0.6"
   crumb      = "Réflexes"
   card_title = "Réflexes Dérivés"
   card_desc  = "Comment des croyances bien formulées au niveau 4 de Dilts génèrent automatiquement le bon comportement aux niveaux 2–3, avec neuf maximes d'ingénierie dérivées de premiers principes."
+
+[[page]]
+id          = "doc-factory-roadmap"
+path        = "documentation/factory-roadmap/"
+body        = "doc-factory-roadmap"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["Factory"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Roxabi Factory — Roadmap and Architecture — Roxabi"
+  desc       = "An agent engine extended with a jobs layer: the architecture choices — worker vs tool, a five-layer tool model, domains by nature — and the build roadmap."
+  og_title   = "Roxabi Factory — Roadmap and Architecture"
+  og_desc    = "Worker vs tool, a five-layer tool model, domains by nature, value before framework — the choices behind the Roxabi Factory and the order we build them in."
+  crumb      = "Factory Roadmap"
+  card_title = "The Roxabi Factory"
+  card_desc  = "An agent engine extended with a jobs layer — the architecture choices (worker vs tool, five tool layers, domains by nature) and the order we build them in."
+  [page.fr]
+  title      = "Roxabi Factory — Roadmap et architecture — Roxabi"
+  desc       = "Un moteur d'agents étendu d'une couche jobs : worker vs outil, un modèle d'outils à cinq couches, des domaines par nature, et la roadmap de construction."
+  og_title   = "Roxabi Factory — Roadmap et architecture"
+  og_desc    = "Worker vs outil, un modèle d'outils à cinq couches, des domaines par nature, la valeur avant le framework — les choix derrière la Roxabi Factory."
+  crumb      = "Roadmap Factory"
+  card_title = "La Roxabi Factory"
+  card_desc  = "Un moteur d'agents étendu d'une couche jobs — les choix d'architecture (worker vs outil, cinq couches d'outils, domaines par nature) et l'ordre de construction."
