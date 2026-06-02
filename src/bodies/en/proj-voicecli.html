@@ -1,0 +1,84 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">VOICE · LOCAL-FIRST</p>
+    <h1>voiceCLI</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">One CLI for speech synthesis and transcription, running entirely on local hardware. A single Markdown script format drives every engine — Qwen3-TTS, Chatterbox, Faster Whisper, Kyutai — and a built-in translator adapts it to each. No cloud keys, no rewrite when you switch models.</p>
+    <div class="doc-hero-tags"><span class="tag">Python</span><span class="tag">CUDA</span><span class="tag">AGPL-3.0</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — What it is</a>
+      <a href="#sec-2">2 — One script, every engine</a>
+      <a href="#sec-3">3 — The pipeline</a>
+      <a href="#sec-4">4 — Cross-host over NATS</a>
+      <a href="#sec-5">5 — Run it</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>What it is</h2>
+        <p>Local text-to-speech is scattered across incompatible APIs — each engine with its own parameter names, quirks, and input formats. Switching engines means rewriting your scripts. voiceCLI removes that: one command-line tool and one library, covering both synthesis (TTS) and transcription (STT) across several local engines.</p>
+        <p>Everything runs on your own GPU. No cloud API keys, no hosted inference, no per-character billing. It is built for developers and content creators who want expressive, multilingual speech on hardware they control.</p>
+        <div class="callout"><p>The durable contract is the <strong>script</strong>, not the engine. Write it once; swap the backend without touching your input.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>One script, every engine</h2>
+        <p>A voiceCLI script is a Markdown file: YAML frontmatter for defaults, directives in the body for per-segment control. The same file plays on Qwen3-TTS, Chatterbox Multilingual, or Chatterbox Turbo — a built-in <strong>translator</strong> reads an engine capability matrix and adapts the script to whatever the target engine supports, remapping or dropping what it does not.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Mode</th><th>Engines</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Synthesis (TTS)</strong></td><td>Qwen3-TTS &middot; Chatterbox Multilingual &middot; Chatterbox Turbo</td></tr>
+              <tr><td><strong>Transcription (STT)</strong></td><td>Faster Whisper &middot; Kyutai</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The library mirrors the CLI: <code>generate</code>, <code>clone</code>, and <code>transcribe</code> each have sync and async forms, returning typed results (<code>TTSResult</code>, <code>TranscriptionResult</code>). The async variants are the ones an agent like Lyra calls.</p>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>The pipeline</h2>
+        <p>Input flows through four stages before audio comes out. The translator is the load-bearing one — it is what lets a single universal script work everywhere without manual edits.</p>
+        <ul class="feature-list">
+          <li><strong>Parse</strong> — read the Markdown frontmatter and inline directives.</li>
+          <li><strong>Config</strong> — backfill missing values from <code>voicecli.toml</code> defaults.</li>
+          <li><strong>Translate</strong> — apply the engine capability matrix; adapt the script to the chosen backend.</li>
+          <li><strong>Synthesise</strong> — run the engine, write the WAV/MP3 to <code>voices_out/</code>.</li>
+        </ul>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Cross-host over NATS</h2>
+        <p>The GPU model and the caller need not be the same machine. With <code>--via-nats</code>, synthesis is routed to a remote TTS <strong>satellite</strong> over NATS — the model loads once on a GPU server, and a non-GPU laptop or workstation requests audio without loading anything locally. <code>dictate nats</code> is the mirror for transcription.</p>
+        <p>That is how voiceCLI plugs into <a href="https://github.com/Roxabi/roxabi-factory" rel="noopener">roxabi-factory</a>: it registers as a voice worker on the message bus, so any agent in the factory can speak or listen by publishing a request.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Run it</h2>
+        <p>Requirements: Python 3.11–3.12, a CUDA GPU, and the <a href="https://docs.astral.sh/uv/" rel="noopener">uv</a> package manager. Engine dependencies are opt-in, so you install only what you use.</p>
+        <div class="formula-box"><pre><code>uv sync --extra all     # TTS + STT + NATS satellite
+uv sync --extra tts     # synthesis only (Qwen3, Chatterbox)
+uv sync --extra stt     # transcription only (Faster Whisper)
+uv sync --extra nats    # satellite / mock E2E — no heavy ML deps</code></pre></div>
+        <p>Read it from the source — engines, translator, and the NATS satellite are all in the open.</p>
+        <ul class="feature-list">
+          <li><strong>The repo</strong> &middot; <a href="https://github.com/Roxabi/voiceCLI" target="_blank" rel="noopener">github.com/Roxabi/voiceCLI &rarr;</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

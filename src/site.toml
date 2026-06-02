@@ -188,6 +188,35 @@ priority    = "0.6"
   crumb    = "roxabi-plugins"
 
 [[page]]
+id            = "proj-voicecli"
+path          = "projects/voicecli/"
+body          = "proj-voicecli"
+og_type       = "article"
+footer        = "full"
+shader        = false
+active        = "projects"
+jsonld        = "breadcrumb+software"   # breadcrumb + SoftwareSourceCode (generalized)
+ancestors     = ["home", "projects"]
+changefreq    = "monthly"
+priority      = "0.6"
+software_name = "voiceCLI"
+repo          = "https://github.com/Roxabi/voiceCLI"
+  [page.en]
+  title         = "voiceCLI — Roxabi"
+  desc          = "voiceCLI is one local CLI for speech synthesis and transcription — Qwen3-TTS, Chatterbox, Faster Whisper and Kyutai engines behind one Markdown script, with a NATS satellite for cross-host voice. No cloud keys."
+  og_title      = "voiceCLI — Roxabi"
+  og_desc       = "One CLI for local TTS and STT: one Markdown script drives every engine, a built-in translator adapts it, and a NATS satellite serves voice across hosts."
+  crumb         = "voiceCLI"
+  software_desc = "Unified local CLI for speech synthesis and transcription — Qwen3-TTS, Chatterbox, Faster Whisper and Kyutai backends behind one Markdown script, with a NATS satellite for cross-host voice."
+  [page.fr]
+  title         = "voiceCLI — Roxabi"
+  desc          = "voiceCLI est une CLI locale unique pour la synthèse et la transcription vocales — moteurs Qwen3-TTS, Chatterbox, Faster Whisper et Kyutai derrière un seul script Markdown, avec un satellite NATS pour la voix multi-hôtes. Aucune clé cloud."
+  og_title      = "voiceCLI — Roxabi"
+  og_desc       = "Une CLI pour le TTS et le STT en local : un script Markdown pilote chaque moteur, un traducteur intégré l'adapte, et un satellite NATS sert la voix entre hôtes."
+  crumb         = "voiceCLI"
+  software_desc = "CLI locale unifiée pour la synthèse et la transcription vocale — moteurs Qwen3-TTS, Chatterbox, Faster Whisper et Kyutai derrière un seul script Markdown, avec un satellite NATS pour la voix multi-hôtes."
+
+[[page]]
 id          = "documentation"
 path        = "documentation/"
 body        = "documentation"

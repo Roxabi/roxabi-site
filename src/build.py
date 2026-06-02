@@ -106,10 +106,14 @@ def jsonld_breadcrumb(base, lang, p) -> str:
 
 
 def jsonld_software(base, org_name, github, lang, p) -> str:
+    # name / repo / language come from the page so any project can use this
+    # builder (license is AGPL across the portfolio). software_desc is per-lang.
     return ld({
         "@context": "https://schema.org", "@type": "SoftwareSourceCode",
-        "name": "Lyra", "description": p[lang]["software_desc"],
-        "codeRepository": github, "programmingLanguage": "Python",
+        "name": p.get("software_name", org_name),
+        "description": p[lang]["software_desc"],
+        "codeRepository": p.get("repo", github),
+        "programmingLanguage": p.get("language", "Python"),
         "license": "https://opensource.org/license/agpl-v3",
         "author": {"@type": "Organization", "name": org_name, "url": f"{base}/"},
     })

@@ -9,9 +9,13 @@ There are two levels, pick by intent:
   its own URL, breadcrumbs, and `SoftwareSourceCode` JSON-LD. Use only when a project
   earns a full page; link the portfolio card to it.
 
-> History: a per-project page existed at `/projects/lyra/` (jsonld `breadcrumb+software`).
-> It was parked 2026-06-01 (`static/_redirects` 301s `/projects/lyra/` → `/projects/`).
-> Path B below describes recreating that pattern — and the one build tweak it needs.
+Live Path-B examples to copy from:
+- **`proj-roxabi-plugins`** (`/projects/roxabi-plugins/`) — uses plain `jsonld = "breadcrumb"`. Pick this when the project is not best described as a single software package (a marketplace, a methodology).
+- **`proj-voicecli`** (`/projects/voicecli/`) — uses `jsonld = "breadcrumb+software"`, emitting `SoftwareSourceCode` structured data. Pick this for a forkable CLI/library/app.
+
+> History: a `/projects/lyra/` page existed before Lyra was parked 2026-06-01
+> (`static/_redirects` 301s `/projects/lyra/` → `/projects/`). Its `jsonld_software`
+> builder was Lyra-specific; it is now generalized (see B.0).
 
 ---
 
@@ -42,27 +46,23 @@ Then `python3 src/build.py` and check `/projects/` + `/fr/projects/`.
 
 ## B — Add a dedicated project page
 
-### B.0 — One-time build change (currently Lyra-specific)
+### B.0 — The `breadcrumb+software` builder (already generalized)
 
-The `breadcrumb+software` JSON-LD builder is hard-coded to Lyra. Before reusing it
-for a different project, generalize it in `src/build.py`:
+`jsonld_software` in `src/build.py` reads `name`, `codeRepository`, and
+`programmingLanguage` **from the page** (with defaults) — no per-project patch needed:
 
 ```python
-# src/build.py — jsonld_software(): make name + repo come from the page, not hard-coded.
-def jsonld_software(base, org_name, github, lang, p) -> str:
-    return ld({
-        "@context": "https://schema.org", "@type": "SoftwareSourceCode",
-        "name": p.get("software_name", "Lyra"),          # was: "Lyra"
-        "description": p[lang]["software_desc"],
-        "codeRepository": p.get("repo", github),          # was: github (org root)
-        "programmingLanguage": "Python",
-        "license": "https://opensource.org/license/agpl-v3",
-        "author": {"@type": "Organization", "name": org_name, "url": f"{base}/"},
-    })
+# src/build.py — jsonld_software()
+"name":                p.get("software_name", org_name),   # ← page field
+"description":         p[lang]["software_desc"],            # ← per-lang, required
+"codeRepository":      p.get("repo", github),               # ← page field; defaults to org root
+"programmingLanguage": p.get("language", "Python"),         # ← page field; defaults to Python
+"license":             "https://opensource.org/license/agpl-v3",  # fixed (AGPL portfolio-wide)
 ```
 
-Then the page block supplies `software_name`, `repo`, and a per-language `software_desc`.
-(If you skip this, the structured data will say "Lyra" — wrong for any other project.)
+So a `breadcrumb+software` page supplies `software_name`, `repo`, an optional
+`language` (defaults to `Python`), and a per-language `software_desc`. If you ever ship
+a non-AGPL project, the `license` is the one value still hard-coded — generalize it then.
 
 ### B.1 — Add the `[[page]]` block to `src/site.toml`
 
@@ -156,8 +156,9 @@ Path A:
 - [ ] `python3 src/build.py`; `/projects/` + `/fr/projects/` verified
 
 Path B:
-- [ ] `jsonld_software` generalized in `build.py` (B.0) if name ≠ Lyra
-- [ ] `[[page]]` block with `jsonld = "breadcrumb+software"`, `software_name`, `repo`, `software_desc` (EN+FR)
+- [ ] Chose `jsonld`: `"breadcrumb"` (general) or `"breadcrumb+software"` (forkable software, B.0)
+- [ ] For `breadcrumb+software`: `software_name`, `repo`, `software_desc` (EN+FR) in the block
+- [ ] `[[page]]` block with the chosen `jsonld`, `active = "projects"`
 - [ ] `ancestors = ["home", "projects"]`
 - [ ] `src/bodies/{en,fr}/proj-<name>.html` created (bare `<main>`)
 - [ ] Portfolio card links to `/projects/<name>/`
