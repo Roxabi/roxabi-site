@@ -5,7 +5,7 @@
   'use strict';
   var root = document.documentElement;
   var LS_THEME = 'roxabi-theme';
-  var GH = { owner: 'Roxabi', repo: 'roxabi-site' };
+  var GH = { owner: 'Roxabi', repo: 'roxabi-factory' };
 
   /* ── Theme ──────────────────────────────────────────── */
   function applyTheme(t) {
@@ -42,7 +42,16 @@
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
     }, { rootMargin: '0px 0px -10% 0px' });
-    els.forEach(function (el, i) { el.style.transitionDelay = (i % 4) * 60 + 'ms'; io.observe(el); });
+    // Stagger reveals within each section (reset per section, capped) so a long
+    // page doesn't accumulate an ever-growing delay.
+    var sec = null, n = 0;
+    els.forEach(function (el) {
+      var s = el.closest('section') || el.parentNode;
+      if (s !== sec) { sec = s; n = 0; }
+      el.style.transitionDelay = Math.min(n, 5) * 60 + 'ms';
+      n++;
+      io.observe(el);
+    });
   }
 
   /* ── TOC scroll-spy (highlight the visible section) ── */

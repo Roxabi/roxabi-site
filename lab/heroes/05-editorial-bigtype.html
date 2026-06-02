@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero 05 — Editorial · Roxabi lab</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="./_base.css">
+<style>
+/* ── hero-specific CSS only ──────────────────────────────── */
+
+/* Override base hero alignment — editorial sits at top of the viewport */
+.hero {
+  align-items: flex-start;
+  padding-block: var(--s-2xl) var(--s-2xl);
+}
+
+/* Grid: 1 narrow left gutter, main column, 1 right offset column */
+.ed-layout {
+  display: grid;
+  grid-template-columns: 56px 1fr 260px;
+  grid-template-rows: auto;
+  gap: 0;
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--s-lg);
+  align-items: start;
+}
+
+/* Left amber rule — spans full height of the grid */
+.ed-rule {
+  grid-column: 1;
+  grid-row: 1 / 6;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+.ed-rule::before {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 100%;
+  min-height: 520px;
+  background: linear-gradient(to bottom, var(--accent) 0%, color-mix(in srgb, var(--accent) 20%, transparent) 100%);
+}
+
+/* Meta row: uppercase mono eyebrow */
+.ed-meta {
+  grid-column: 2 / 4;
+  display: flex;
+  align-items: center;
+  gap: var(--s-xl);
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding-bottom: var(--s-lg);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--s-xl);
+
+  /* animation starting state */
+  opacity: 0;
+  transform: translateY(-8px);
+}
+.ed-meta span { white-space: nowrap; }
+.ed-meta .meta-sep {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  min-width: 16px;
+}
+
+/* Badge */
+.ed-badge {
+  grid-column: 2 / 4;
+  margin-bottom: var(--s-xl);
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* Index numeral — large decorative amber */
+.ed-index {
+  grid-column: 1;
+  grid-row: 3;
+  font-family: var(--font-mono);
+  font-size: .65rem;
+  letter-spacing: .12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  padding-top: var(--s-sm);
+  margin-inline: auto;
+  opacity: 0;
+}
+
+/* H1 block — BIG TYPE, fills column */
+.ed-h1-block {
+  grid-column: 2;
+  grid-row: 3;
+  padding-right: var(--s-xl);
+}
+
+.ed-h1 {
+  /* Wider than base h1 — editorial scale */
+  font-size: clamp(3.5rem, 8.5vw, 7.5rem);
+  font-weight: 900;
+  letter-spacing: -.045em;
+  line-height: .95;
+  margin: 0;
+  color: var(--text);
+
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* "One person." — solid weight */
+.ed-h1 .line-solid {
+  display: block;
+  font-weight: 900;
+}
+
+/* "Team-scale" — outlined with amber stroke */
+.ed-h1 .line-outline {
+  display: block;
+  font-weight: 900;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--accent);
+  /* Tighten even more for contrast with solid line */
+  letter-spacing: -.05em;
+}
+
+/* "output." — solid but slightly lighter */
+.ed-h1 .line-output {
+  display: block;
+  font-weight: 900;
+  color: var(--text-muted);
+}
+
+/* Arrow accent — amber, placed to the right of h1 block */
+.ed-arrow {
+  grid-column: 3;
+  grid-row: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: .25em; /* visual baseline alignment with h1 */
+  gap: var(--s-lg);
+  opacity: 0;
+  transform: translateX(12px);
+}
+
+.ed-arrow-glyph {
+  font-size: clamp(4rem, 8vw, 7rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -.04em;
+  color: var(--accent);
+  font-family: var(--font-sans);
+  /* subtle glow */
+  text-shadow: 0 0 60px color-mix(in srgb, var(--accent) 40%, transparent);
+  user-select: none;
+}
+
+/* Sub line — amber, bold, below h1 */
+.ed-sub {
+  grid-column: 2 / 4;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -.01em;
+  margin-top: var(--s-lg);
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* Divider rule between h1 zone and lower section */
+.ed-divider {
+  grid-column: 2 / 4;
+  height: 1px;
+  background: var(--border);
+  margin-block: var(--s-xl);
+  opacity: 0;
+}
+
+/* Lower row: lead left, CTA right */
+.ed-lower {
+  grid-column: 2 / 4;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--s-2xl);
+  align-items: center;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.ed-lead {
+  font-size: clamp(.9rem, 1.5vw, 1.05rem);
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 44ch;
+}
+
+.ed-ctas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--s-md);
+}
+
+.ed-cta-primary {
+  /* inherits .btn .btn-primary */
+  font-size: 1rem;
+  letter-spacing: -.01em;
+}
+
+.ed-cta-ghost {
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-xs);
+  transition: color var(--dur) var(--ease);
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+.ed-cta-ghost:hover { color: var(--text); }
+.ed-cta-ghost::after { content: '↗'; }
+
+/* Footer meta row */
+.ed-footer-meta {
+  grid-column: 2 / 4;
+  display: flex;
+  align-items: center;
+  gap: var(--s-xl);
+  margin-top: var(--s-xl);
+  padding-top: var(--s-lg);
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  opacity: 0;
+  transform: translateY(6px);
+}
+.ed-footer-meta .foot-dot {
+  width: 5px; height: 5px;
+  border-radius: var(--r-full);
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 820px) {
+  .ed-layout {
+    grid-template-columns: 32px 1fr;
+    grid-template-rows: auto;
+  }
+  /* All grid-column: 3 elements fold into column 2 */
+  .ed-badge    { grid-column: 2; }
+  .ed-meta     { grid-column: 2; flex-wrap: wrap; gap: var(--s-md); }
+  .ed-h1-block { grid-column: 2; padding-right: 0; }
+  .ed-arrow    { display: none; } /* drop decorative glyph on small */
+  .ed-sub      { grid-column: 2; }
+  .ed-divider  { grid-column: 2; }
+  .ed-lower    { grid-column: 2; grid-template-columns: 1fr; gap: var(--s-lg); }
+  .ed-ctas     { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+  .ed-footer-meta { grid-column: 2; flex-wrap: wrap; gap: var(--s-md); }
+  .ed-rule::before { min-height: 620px; }
+}
+
+@media (max-width: 480px) {
+  .ed-layout { padding-inline: var(--s-md); gap: 0; }
+  .ed-h1 { font-size: clamp(2.75rem, 12vw, 4.5rem); }
+  .ed-h1 .line-outline { -webkit-text-stroke-width: 1.5px; }
+}
+
+/* ── Animated states ─────────────────────────────────────── */
+.ed-animate-in {
+  animation: edSlideIn var(--dur-reveal, 500ms) var(--ease-reveal, cubic-bezier(.22,1,.36,1)) both;
+}
+@keyframes edSlideIn {
+  to { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+<a class="lab-back" href="./index.html">← gallery</a>
+<span class="lab-tag">05 · editorial big-type</span>
+<header class="lab-nav">
+  <a class="brand" href="#"><img src="/assets/logo/foundation-block.svg" width="26" height="26" alt=""><span>Roxabi</span></a>
+  <nav class="lab-nav-links"><a href="#">Projects</a><a href="#">Constitution</a></nav>
+  <a class="btn btn-ghost btn-sm" href="#">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <div class="ed-layout" id="edLayout">
+
+      <!-- Left vertical amber rule + rotated index label -->
+      <div class="ed-rule" aria-hidden="true"></div>
+      <div class="ed-index" aria-hidden="true">01</div>
+
+      <!-- Meta eyebrow row -->
+      <div class="ed-meta" id="edMeta" aria-hidden="true">
+        <span>Agent &amp; Worker Factory</span>
+        <span class="meta-sep"></span>
+        <span>AGPL-3.0</span>
+        <span class="meta-sep"></span>
+        <span>Est. 2026</span>
+      </div>
+
+      <!-- Badge -->
+      <div class="ed-badge" id="edBadge">
+        <span class="badge"><span class="dot" aria-hidden="true"></span>AGPL-3.0 · Open by architecture</span>
+      </div>
+
+      <!-- Big-type H1 -->
+      <div class="ed-h1-block">
+        <h1 class="ed-h1" id="edH1">
+          <span class="line-solid">One person.</span>
+          <span class="line-outline">Team-scale</span>
+          <span class="line-output">output.</span>
+        </h1>
+      </div>
+
+      <!-- Decorative amber arrow glyph (right column) -->
+      <div class="ed-arrow" id="edArrow" aria-hidden="true">
+        <span class="ed-arrow-glyph">→</span>
+      </div>
+
+      <!-- Subline -->
+      <p class="ed-sub" id="edSub">Pre-wired. Open. Yours.</p>
+
+      <!-- Hairline divider -->
+      <div class="ed-divider" id="edDivider" role="separator"></div>
+
+      <!-- Lower: lead + CTAs -->
+      <div class="ed-lower" id="edLower">
+        <p class="ed-lead">An agent &amp; worker factory. Open-source tools plug in over NATS, CLI, skills, or API.</p>
+        <div class="ed-ctas">
+          <a class="btn btn-primary ed-cta-primary" href="#">Explore the projects →</a>
+          <a class="ed-cta-ghost" href="#">GitHub</a>
+        </div>
+      </div>
+
+      <!-- Footer meta row -->
+      <div class="ed-footer-meta" id="edFooter" aria-hidden="true">
+        <span class="foot-dot"></span>
+        <span>Roxabi · Open infrastructure</span>
+        <span class="meta-sep" style="flex:1; height:1px; background:var(--border); min-width:12px;"></span>
+        <span>v1.x · NATS · CLI · API</span>
+      </div>
+
+    </div>
+  </section>
+</main>
+<script>
+/* One-time staggered reveal on load — reduced-motion safe */
+(function () {
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Pairs: [elementId, delayMs] — cascading reveal order */
+  var sequence = [
+    ['edMeta',   0],
+    ['edBadge',  80],
+    ['edH1',     180],
+    ['edArrow',  280],
+    ['edSub',    340],
+    ['edDivider',400],
+    ['edLower',  460],
+    ['edFooter', 560],
+  ];
+
+  /* The index label + rule inherit visibility via edLayout class */
+  var indexEl = document.querySelector('.ed-index');
+
+  if (prefersReduced) {
+    /* Skip animation — make everything immediately visible */
+    sequence.forEach(function (pair) {
+      var el = document.getElementById(pair[0]);
+      if (el) { el.style.opacity = '1'; el.style.transform = 'none'; }
+    });
+    if (indexEl) { indexEl.style.opacity = '1'; }
+    return;
+  }
+
+  /* Animate index label in sync with H1 */
+  setTimeout(function () {
+    if (indexEl) {
+      indexEl.style.setProperty('--dur-reveal', '600ms');
+      indexEl.style.setProperty('--ease-reveal', 'cubic-bezier(.22,1,.36,1)');
+      indexEl.classList.add('ed-animate-in');
+    }
+  }, 180);
+
+  sequence.forEach(function (pair) {
+    var id = pair[0];
+    var delay = pair[1];
+    setTimeout(function () {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var dur = id === 'edH1' ? '700ms' : id === 'edArrow' ? '600ms' : '480ms';
+      el.style.setProperty('--dur-reveal', dur);
+      el.style.setProperty('--ease-reveal', 'cubic-bezier(.22,1,.36,1)');
+      el.classList.add('ed-animate-in');
+    }, delay);
+  });
+}());
+</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">DOC-02 · AGENT COGNITION</p>
+    <h1>Cognitive Framework</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">How three philosophical layers — Searle's speech acts, Husserl's schemas, and Tulving's memory lifecycle — give a reasoning agent innate, typed reflexes.</p>
+    <p class="meta">Chapter 2 of 6 · Roxabi Cortex</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — Reasoning Without a Frame</a>
+      <a href="#sec-2">2 — D1 · Searle: Typing Entities</a>
+      <a href="#sec-3">3 — D2 · Husserl: The Schema</a>
+      <a href="#sec-4">4 — D3 · Tulving: The Lifecycle</a>
+      <a href="#sec-5">5 — The Unified Entity Schema</a>
+      <a href="#sec-6">6 — D1+D2+D3 vs. Dilts</a>
+      <a href="#sec-7">7 — Practical Payoff</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>The Problem: Reasoning Without a Frame</h2>
+        <p>Without an explicit cognitive frame, an agent has no gradient that tells it to shift levels. It keeps patching at the current logical level, never asking the only question that matters: <em>are we fixing the right layer?</em></p>
+        <p>A real failure makes this concrete. A quality-debt saga produced fifty commits in thirty-six hours, all at the tactical layer — every code review yielded findings, every fix yielded code, every round regenerated the same findings. Three signals converged: high commit volume at a single logical level, issues that visibly needed to <em>climb</em> one level to be diagnosed, and zero mechanism anywhere in the loop to signal that escalation was even available.</p>
+        <div class="callout"><p>The goal is a frame that makes the right reflex <strong>innate</strong> — a property of the entity being reasoned about — rather than a procedural rule someone has to remember to apply.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>D1 — Searle: Typing Cognitive Entities</h2>
+        <p>John Searle's speech-act taxonomy supplies the first layer. Four entity types, each with a distinct <strong>direction of fit</strong> — and therefore a distinct natural correction when it conflicts with reality.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>Belief</strong> (assertive) — fit is <code>word→world</code>. If a belief contradicts reality, the belief is wrong; the correct action is to revise it.</li>
+          <li><strong>Value</strong> (directive/commissive) — fit is <code>world→word</code>. If reality violates a value, reality is wrong; the correct action is to <em>act</em> to restore the world. This is the climb signal.</li>
+          <li><strong>Principle</strong> (declarative) — fit is constitutive (<code>both</code>). Conflicts require an explicit decision protocol.</li>
+          <li><strong>Sentiment</strong> (expressive) — no fit to correct.</li>
+        </ul>
+        <p>Misclassifying a Belief as a Value is the exact mechanism behind the quality-debt saga: &laquo;&nbsp;annotation density equals quality&nbsp;&raquo; was treated as a Value, so the agent acted to make the world match a false belief instead of revising the belief. Searle's typing is not a label — it is a map of natural reflexes per type.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 312" role="img" aria-label="Searle's direction of fit as a reflex map: for each entity type, the correct action when it conflicts with reality." style="width:100%;height:auto">
+            <defs>
+              <marker id="cf-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <text x="20" y="24" font-family="var(--font-mono)" font-size="11" letter-spacing="0.08em" fill="var(--text-dim)">ENTITY TYPE</text>
+            <text x="360" y="24" font-family="var(--font-mono)" font-size="11" letter-spacing="0.08em" fill="var(--text-dim)">CONFLICT WITH REALITY → REFLEX</text>
+            <!-- Belief -->
+            <rect x="20" y="40" width="290" height="50" rx="6" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="36" y="62" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Belief · assertive</text>
+            <text x="36" y="80" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">word→world</text>
+            <line x1="310" y1="65" x2="358" y2="65" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#cf-arr)"/>
+            <rect x="360" y="40" width="380" height="50" rx="6" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="376" y="70" font-family="var(--font-mono)" font-size="12" fill="var(--text)">Revise the belief — strength--, stance:dormant</text>
+            <!-- Value (highlighted) -->
+            <rect x="20" y="100" width="290" height="50" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="36" y="122" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Value · directive</text>
+            <text x="36" y="140" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">world→word</text>
+            <line x1="310" y1="125" x2="358" y2="125" stroke="var(--accent)" stroke-width="2" marker-end="url(#cf-arr)"/>
+            <rect x="360" y="100" width="380" height="50" rx="6" fill="var(--accent)"/>
+            <text x="376" y="123" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent-on)">ACT to restore the world</text>
+            <text x="376" y="140" font-family="var(--font-mono)" font-size="10" fill="var(--accent-on)">← the climb signal</text>
+            <!-- Principle -->
+            <rect x="20" y="160" width="290" height="50" rx="6" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="36" y="182" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Principle · declarative</text>
+            <text x="36" y="200" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">both</text>
+            <line x1="310" y1="185" x2="358" y2="185" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#cf-arr)"/>
+            <rect x="360" y="160" width="380" height="50" rx="6" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="376" y="190" font-family="var(--font-mono)" font-size="12" fill="var(--text)">Invoke the decision protocol</text>
+            <!-- Sentiment -->
+            <rect x="20" y="220" width="290" height="50" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="36" y="242" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text-muted)">Sentiment · expressive</text>
+            <text x="36" y="260" font-family="var(--font-mono)" font-size="11" fill="var(--text-dim)">none</text>
+            <line x1="310" y1="245" x2="358" y2="245" stroke="var(--text-dim)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <rect x="360" y="220" width="380" height="50" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="376" y="250" font-family="var(--font-mono)" font-size="12" fill="var(--text-dim)">No fit to correct</text>
+          </svg>
+          <figcaption>Direction of fit as a reflex map. The Value row is the one that signals &laquo;&nbsp;climb&nbsp;&raquo;: when reality violates a value, the correct move is to act on the world, not to revise the value.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>D2 — Husserl: The Schema of Each Entity</h2>
+        <p>The second layer gives every entity a structural schema, drawn from the noetic/noematic decomposition of Husserl's phenomenology: <code>(believer, content, context, stance, fit_direction)</code>.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><code>believer</code> — an <code>ActorRef</code>: who holds this entity (self, an agent, another actor).</li>
+          <li><code>content</code> — a <code>SetExpr</code>, strictly positive: what is held, formalised as a positive assertion, never a negation.</li>
+          <li><code>context</code> — a <code>ContextRef</code> or null: Husserl's <em>Lebenswelt</em>, the world-context in which the entity makes sense (<code>work:roxabi</code>, <code>meta:framework</code>).</li>
+          <li><code>stance</code> — <code>active | dormant | abandoned</code>: the phenomenological act-state.</li>
+          <li><code>fit_direction</code> — inherited from D1, bridging the typing to the schema.</li>
+        </ul>
+        <p>The schema is what makes every entity <strong>queryable</strong> across typed fields — the precondition for indexing, deduplication, and targeted retrieval once the graph holds thousands of nodes.</p>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>D3 — Tulving &amp; Hippocampal Memory: The Lifecycle</h2>
+        <p>The third layer is Endel Tulving's episodic→semantic consolidation model: the lifecycle of a cognitive entity from first observation to stable, semantic knowledge.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><code>formed_from</code> — a <code>list[ObservationRef]</code>: episodic provenance. Every entity traces back to the raw observations that formed it.</li>
+          <li><code>strength</code> — a float in <code>[0,1]</code>: hippocampal memory strength, raised by reinforcing observations, used to weight salience.</li>
+          <li><code>decay_sigma</code> — the forgetting rate. Axioms (Principles with <code>decay_sigma:0</code>, <code>strength:1.0</code>) never decay; episodic beliefs fade unless reinforced.</li>
+        </ul>
+        <p>The consolidation path runs from many episodic references to fewer, stronger semantic entities — how raw experience becomes stable conviction. At scale, a single <code>decay_sigma</code> field decides which memories survive, with no manual curation.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>The Unified Entity Schema</h2>
+        <p>The three layers compose into one schema. Each field names the layer it comes from.</p>
+        <pre class="code"><code>id            : ULID
+type          : Belief | Value | Principle | Sentiment   # D1 Searle
+believer      : ActorRef                                 # D2 Husserl (noèse)
+content       : SetExpr                                  # D2 Husserl (noème)
+context       : ContextRef | null                        # D2 Lebenswelt
+stance        : active | dormant | abandoned             # D2
+fit_direction : word→world | world→word | both | none    # D1
+strength      : float [0,1]                              # D3 hippo-memory
+formed_from   : list[ObservationRef]                     # D3 Tulving (episodic)
+decay_sigma   : float                                    # D3
+derived_reflex: ReflexRef | null</code></pre>
+        <p>Three canonical instances show the range: a Belief (<code>obs(P) ⊊ P</code>, <code>word→world</code>, strength 0.85), a Value (<code>valid_corr(P) ⊆ Arch</code>, <code>world→word</code>, strength 0.90), and an axiomatic Principle (<code>∀ c ∈ Beliefs: c ∈ Positives</code>, <code>both</code>, <code>decay_sigma:0</code>, strength 1.0). The schema is the operational bridge between philosophy and a queryable knowledge graph.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 720 430" role="img" aria-label="The three-layer architecture: Searle typing at the top, Husserl schema in the middle, Tulving memory lifecycle at the base; each layer grounds the one above it." style="width:100%;height:auto">
+            <defs>
+              <marker id="cf2-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <!-- D1 band -->
+            <rect x="120" y="24" width="560" height="96" rx="8" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="40" y="76" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent)">D1</text>
+            <text x="40" y="92" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">Searle</text>
+            <rect x="138" y="58" width="124" height="44" rx="5" fill="var(--surface)" stroke="var(--border-hi)"/><text x="200" y="84" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Belief</text>
+            <rect x="270" y="58" width="124" height="44" rx="5" fill="var(--surface)" stroke="var(--border-hi)"/><text x="332" y="84" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Value</text>
+            <rect x="402" y="58" width="124" height="44" rx="5" fill="var(--surface)" stroke="var(--border-hi)"/><text x="464" y="84" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Principle</text>
+            <rect x="534" y="58" width="128" height="44" rx="5" fill="var(--surface)" stroke="var(--border-hi)"/><text x="598" y="84" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Sentiment</text>
+            <text x="400" y="48" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">typing — direction of fit</text>
+            <!-- arrow -->
+            <line x1="400" y1="120" x2="400" y2="162" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#cf2-arr)"/>
+            <!-- D2 band -->
+            <rect x="120" y="170" width="560" height="80" rx="8" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="40" y="214" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent)">D2</text>
+            <text x="40" y="230" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">Husserl</text>
+            <rect x="150" y="190" width="500" height="40" rx="20" fill="var(--surface)" stroke="var(--border-hi)"/>
+            <text x="400" y="215" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">(believer, content, context, stance, fit_direction)</text>
+            <line x1="400" y1="250" x2="400" y2="292" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#cf2-arr)"/>
+            <!-- D3 band -->
+            <rect x="120" y="300" width="560" height="96" rx="8" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="40" y="352" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent)">D3</text>
+            <text x="40" y="368" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">Tulving</text>
+            <rect x="138" y="332" width="166" height="44" rx="5" fill="var(--surface)" stroke="var(--border-hi)"/><text x="221" y="358" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">strength [0,1]</text>
+            <rect x="312" y="332" width="150" height="44" rx="5" fill="var(--surface)" stroke="var(--border-hi)"/><text x="387" y="358" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">decay_sigma</text>
+            <rect x="470" y="332" width="192" height="44" rx="5" fill="var(--surface)" stroke="var(--border-hi)"/><text x="566" y="358" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text)">formed_from[Obs]</text>
+            <text x="400" y="324" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">lifecycle — episodic → semantic</text>
+          </svg>
+          <figcaption>D1 types the entity, D2 gives it structure, D3 governs its lifecycle. Dilts' six levels are not a fourth layer — they emerge from the properties of these three.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>D1+D2+D3 vs. Dilts' Logical Levels</h2>
+        <p>Robert Dilts' six Logical Levels (Environment, Behaviour, Capability, Beliefs/Values, Identity, Mission) offer a familiar vertical vocabulary where level N+1 governs level N. But as a spine they need bolt-ons: an entity schema (D2), a belief/value/principle/sentiment distinction with failure-mode semantics (D1), lifecycle and decay (D3), actor/target axes, and escalation mechanics. Counted out, Dilts-as-spine stacks seven sources; D1+D2+D3-as-spine needs three — two of which already exist in the codebase.</p>
+        <p>The decisive point is that Dilts' levels <em>emerge</em> from D1+D2+D3 properties: Environment = factual observations; Behaviour = reflexes derived from Values; Capability = active Values and skills; Beliefs/Values = D1 Beliefs and Values; Identity = Principles with <code>believer:self:*</code>; Mission = Principles with <code>decay_sigma:0</code> and <code>strength:1</code>. What Dilts keeps exclusively is the narrative intuition — &laquo;&nbsp;when X is stuck, climb a level&nbsp;&raquo; — and even that is captured formally by Bateson's Type I→II learning, without importing NLP's contested foundations. Tulving and Searle rest on decades of literature and align with current AI work (Constitutional AI, MemGPT, generative agents); Dilts has no echo in that research.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 720 430" role="img" aria-label="Algebraic comparison: Dilts as spine requires seven stacked sources; D1+D2+D3 as spine requires three, two already present, and Dilts' levels emerge from their properties." style="width:100%;height:auto">
+            <defs>
+              <marker id="cf3-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <!-- Left stack: Dilts as spine (muted) -->
+            <text x="160" y="30" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text-muted)">Dilts as spine</text>
+            <g font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">
+              <rect x="50" y="44" width="220" height="34" rx="5" fill="var(--panel)" stroke="var(--border)"/><text x="160" y="66" text-anchor="middle">Dilts · 6 levels</text>
+              <rect x="50" y="82" width="220" height="34" rx="5" fill="var(--panel)" stroke="var(--border)"/><text x="160" y="104" text-anchor="middle">+ D1 Searle</text>
+              <rect x="50" y="120" width="220" height="34" rx="5" fill="var(--panel)" stroke="var(--border)"/><text x="160" y="142" text-anchor="middle">+ D2 Husserl</text>
+              <rect x="50" y="158" width="220" height="34" rx="5" fill="var(--panel)" stroke="var(--border)"/><text x="160" y="180" text-anchor="middle">+ D3 Tulving</text>
+              <rect x="50" y="196" width="220" height="34" rx="5" fill="var(--panel)" stroke="var(--border)"/><text x="160" y="218" text-anchor="middle">+ Bateson</text>
+              <rect x="50" y="234" width="220" height="34" rx="5" fill="var(--panel)" stroke="var(--border)"/><text x="160" y="256" text-anchor="middle">+ Kegan</text>
+              <rect x="50" y="272" width="220" height="34" rx="5" fill="var(--panel)" stroke="var(--border)"/><text x="160" y="294" text-anchor="middle">+ ToM axis</text>
+            </g>
+            <text x="160" y="330" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text-muted)">7 sources</text>
+            <!-- Right stack: D1+D2+D3 as spine (accent) -->
+            <text x="510" y="30" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent)">D1+D2+D3 as spine</text>
+            <g font-family="var(--font-mono)" font-size="11">
+              <rect x="400" y="44" width="220" height="38" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/><text x="510" y="68" text-anchor="middle" fill="var(--text)">D1 Searle</text>
+              <rect x="400" y="86" width="220" height="38" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/><text x="510" y="110" text-anchor="middle" fill="var(--text)">D2 Husserl</text>
+              <rect x="400" y="128" width="220" height="38" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/><text x="510" y="152" text-anchor="middle" fill="var(--text)">D3 Tulving</text>
+              <rect x="400" y="174" width="220" height="32" rx="5" fill="none" stroke="var(--border-hi)" stroke-dasharray="4,3"/><text x="510" y="195" text-anchor="middle" fill="var(--text-dim)">+ Bateson (vocabulary)</text>
+              <rect x="400" y="210" width="220" height="32" rx="5" fill="none" stroke="var(--border-hi)" stroke-dasharray="4,3"/><text x="510" y="231" text-anchor="middle" fill="var(--text-dim)">+ Kegan (vocabulary)</text>
+            </g>
+            <text x="510" y="270" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent)">3 sources · 2/3 already present</text>
+            <rect x="360" y="300" width="300" height="56" rx="8" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="510" y="324" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text)">Dilts' 6 levels emerge</text>
+            <text x="510" y="340" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">from D1+D2+D3 properties</text>
+            <line x1="510" y1="282" x2="510" y2="298" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#cf3-arr)"/>
+          </svg>
+          <figcaption>Fewer primitives, more coverage: three sources (two already in place) generate what Dilts needs seven to assemble — and the six levels fall out as derived properties.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>Practical Payoff for Agent Design</h2>
+        <p>The framework earns its place in four concrete ways.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>Innate escalation.</strong> Because <code>fit_direction</code> lives on the entity, the correct reflex is a property, not a procedure. A Value violated by reality signals &laquo;&nbsp;act to change the world&nbsp;&raquo; with no external trigger.</li>
+          <li><strong>Failure diagnostics.</strong> Any stuck loop — repeated fixes at one level, metric gaming, an unfalsified assumption — is diagnosed by one question: what type was this entity, and was the reflex appropriate to that type?</li>
+          <li><strong>Scale.</strong> At a hundred entities, the nine-field schema and a tag string are indistinguishable. At five thousand, indexing, dedup, and decay-driven forgetting are structural needs the schema meets and the tag cannot.</li>
+          <li><strong>Convergence.</strong> Structured memory plus intentionality is the direction current AI memory research is taking; the model sits inside that conversation rather than beside it.</li>
+        </ul>
+        <p>Bateson and Kegan enter only as vocabulary: Type I/II/III names the level-climbing gesture; subject→object names the moment an implicit belief becomes an explicit, manipulable skill. Reference terms — not additional architectural layers.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

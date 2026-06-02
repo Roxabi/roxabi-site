@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero 25 — Hub + block core · Roxabi lab</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="./_base.css">
+<style>
+/* ── Hero layout ─────────────────────────────────────────── */
+.hero {
+  padding-block: 0;
+}
+
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  min-height: calc(100svh - 60px);
+  gap: 0;
+}
+
+/* ── Copy column ─────────────────────────────────────────── */
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-lg);
+  padding-block: var(--s-2xl);
+  padding-right: var(--s-xl);
+  position: relative;
+  z-index: 2;
+}
+
+.hero-copy .badge {
+  align-self: flex-start;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-sans);
+  letter-spacing: -.01em;
+}
+
+.hero-lead {
+  font-size: 1.075rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  max-width: 42ch;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: var(--s-md);
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: var(--s-xs);
+}
+
+/* ── Canvas column ───────────────────────────────────────── */
+.hero-canvas-col {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100svh - 60px);
+}
+
+#hub {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Foundation-block overlay — centred over canvas */
+.hub-block-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: 2;
+  pointer-events: none;
+  /* size relative to canvas column width, clamped */
+  width: clamp(96px, 18%, 148px);
+  height: clamp(96px, 18%, 148px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hub-block-overlay svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter:
+    drop-shadow(0 0 28px rgba(240,180,41,.36))
+    drop-shadow(0 0 7px  rgba(240,180,41,.22));
+  animation: blockFloat 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes blockFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%       { transform: translateY(-6px) rotate(.35deg); }
+  66%       { transform: translateY(-2px) rotate(-.25deg); }
+}
+
+/* ── Mobile ──────────────────────────────────────────────── */
+@media (max-width: 820px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    position: relative;
+  }
+
+  /* canvas + block overlay become dim full-bleed backdrop */
+  .hero-canvas-col {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    opacity: 0.28;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* keep block visible but match canvas opacity */
+  .hub-block-overlay {
+    width: clamp(72px, 22vw, 112px);
+    height: clamp(72px, 22vw, 112px);
+  }
+
+  #hub {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-copy {
+    padding-right: 0;
+    padding-block: var(--s-2xl);
+    z-index: 2;
+    min-height: calc(100svh - 60px);
+    justify-content: center;
+  }
+
+  .hero-lead {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-copy h1 {
+    font-size: clamp(2rem, 10vw, 2.75rem);
+  }
+
+  .hero-ctas {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>
+</head>
+<body>
+<a class="lab-back" href="./index.html">← gallery</a>
+<span class="lab-tag">25 · hub + block core</span>
+<header class="lab-nav">
+  <a class="brand" href="#"><img src="/assets/logo/foundation-block.svg" width="26" height="26" alt=""><span>Roxabi</span></a>
+  <nav class="lab-nav-links"><a href="#">Projects</a><a href="#">Constitution</a></nav>
+  <a class="btn btn-ghost btn-sm" href="#">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <div class="hero-inner wrap">
+
+      <!-- Copy column -->
+      <div class="hero-copy">
+        <span class="badge"><span class="dot"></span>AGPL-3.0 · Open by architecture</span>
+        <h1>One person.<br>Team-scale output.</h1>
+        <p class="hero-sub">Pre-wired. Open. Yours.</p>
+        <p class="hero-lead">An agent &amp; worker factory. Open-source tools plug in over NATS, CLI, skills, or API.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#">Explore the projects →</a>
+          <a class="btn btn-ghost" href="#">GitHub</a>
+        </div>
+      </div>
+
+      <!-- Canvas column: particle hub + block overlay -->
+      <div class="hero-canvas-col">
+        <canvas id="hub" aria-hidden="true"></canvas>
+
+        <!-- Foundation-block centred over canvas hub -->
+        <div class="hub-block-overlay" aria-hidden="true">
+          <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="hCore" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"  stop-color="#fff7d6"/>
+                <stop offset="30%" stop-color="#fde68a"/>
+                <stop offset="70%" stop-color="#f0b429"/>
+                <stop offset="100%" stop-color="#f0b429" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="hLeft" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%"  stop-color="#0b1016"/>
+                <stop offset="100%" stop-color="#11181f"/>
+              </linearGradient>
+              <linearGradient id="hRight" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%"  stop-color="#151c24"/>
+                <stop offset="100%" stop-color="#1b2330"/>
+              </linearGradient>
+              <linearGradient id="hTop" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%"  stop-color="#1e2a38"/>
+                <stop offset="100%" stop-color="#19222e"/>
+              </linearGradient>
+              <filter id="hBloom" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur stdDeviation="5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="hAmbient" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="18" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="hEdge" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="hBevel" x="-10%" y="-10%" width="120%" height="120%">
+                <feGaussianBlur stdDeviation="1.2" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+
+            <!-- Ambient glow ghost -->
+            <polygon points="160,36 234,81 234,171 160,216 86,171 86,81"
+              fill="none" stroke="#f0b429" stroke-width="24" opacity=".06"
+              filter="url(#hAmbient)"/>
+
+            <!-- Three cube faces -->
+            <polygon points="86,81  160,126 160,216 86,171"  fill="url(#hLeft)"/>
+            <polygon points="234,81 234,171 160,216 160,126" fill="url(#hRight)"/>
+            <polygon points="160,36 234,81  160,126 86,81"   fill="url(#hTop)"/>
+
+            <!-- Top face bevel rim -->
+            <polygon points="160,36 234,81 160,126 86,81"
+              fill="none" stroke="#263040" stroke-width="1" opacity=".9"/>
+
+            <!-- Edge highlights -->
+            <line x1="86"  y1="81"  x2="160" y2="36"  stroke="#2e3e52" stroke-width="1.5" opacity=".8"/>
+            <line x1="160" y1="36"  x2="234" y2="81"  stroke="#243040" stroke-width="1.5" opacity=".6"/>
+
+            <!-- Amber outline silhouette -->
+            <polygon points="160,36 234,81 234,171 160,216 86,171 86,81"
+              fill="none" stroke="#f0b429" stroke-width="2.5" stroke-linejoin="round"
+              filter="url(#hEdge)" opacity=".9"/>
+
+            <!-- Internal pillar lines -->
+            <line x1="86"  y1="81"  x2="160" y2="126" stroke="#f0b429" stroke-width="1.6" opacity=".6" filter="url(#hEdge)"/>
+            <line x1="234" y1="81"  x2="160" y2="126" stroke="#f0b429" stroke-width="1.6" opacity=".5" filter="url(#hEdge)"/>
+            <line x1="160" y1="126" x2="160" y2="216" stroke="#f0b429" stroke-width="1.6" opacity=".5" filter="url(#hEdge)"/>
+
+            <!-- Open top aperture: halo ellipse -->
+            <ellipse cx="160" cy="81" rx="38" ry="21"
+              fill="url(#hCore)" filter="url(#hAmbient)" opacity=".7"/>
+
+            <!-- Open top aperture: glowing diamond -->
+            <polygon points="160,54 202,81 160,108 118,81"
+              fill="url(#hCore)" stroke="#fbbf24" stroke-width="1.5"
+              filter="url(#hBloom)" opacity=".95"/>
+
+            <!-- Corner depth dots -->
+            <circle cx="160" cy="36"  r="3.5" fill="#f0b429" opacity=".5" filter="url(#hBevel)"/>
+            <circle cx="86"  cy="81"  r="3"   fill="#f0b429" opacity=".35" filter="url(#hBevel)"/>
+            <circle cx="234" cy="81"  r="3"   fill="#f0b429" opacity=".35" filter="url(#hBevel)"/>
+            <circle cx="160" cy="126" r="3"   fill="#f0b429" opacity=".3"  filter="url(#hBevel)"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+<script>
+/* canvas hub — reduced-motion + visibility guarded */
+(function () {
+  'use strict';
+
+  const canvas = document.getElementById('hub');
+  const ctx = canvas.getContext('2d');
+
+  /* ── Design tokens (must match tokens.css) ──────────────── */
+  const T = {
+    accent:     '#f0b429',
+    accentDim:  'rgba(240,180,41,0.55)',
+    accentGlow: 'rgba(240,180,41,0.22)',
+    border:     '#21262d',
+    borderHi:   '#30363d',
+    textMuted:  '#9ca3af',
+    textDim:    '#6b7280',
+    bg:         '#0d1117',
+    surface:    '#161b22',
+    fontMono:   "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
+  };
+
+  /* ── Reduced-motion guard ────────────────────────────────── */
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* ── DPR-aware sizing (cap at 2) ─────────────────────────── */
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let W = 0, H = 0;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    canvas.width  = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (prefersReduced.matches) { drawStatic(); }
+  }
+
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+  resize();
+
+  /* ── Hub geometry ────────────────────────────────────────── */
+  const NODES = [
+    { id: 'llmCLI',   angle: 0 },
+    { id: 'voiceCLI', angle: Math.PI * 2 / 6 },
+    { id: 'imageCLI', angle: Math.PI * 4 / 6 },
+    { id: 'cortex',   angle: Math.PI },
+    { id: 'intel',    angle: Math.PI * 8 / 6 },
+    { id: 'idna',     angle: Math.PI * 10 / 6 },
+  ];
+
+  /* ── Particles ───────────────────────────────────────────── */
+  const MAX_PARTICLES = 36; /* cap: 6 per edge */
+  const particles = [];
+
+  function makeParticle(nodeIdx) {
+    return {
+      node: nodeIdx,
+      t: Math.random(),          /* 0 = at node, 1 = at core */
+      speed: 0.0028 + Math.random() * 0.0022,
+      size: 2.0 + Math.random() * 1.5,
+      opacity: 0.5 + Math.random() * 0.5,
+    };
+  }
+
+  /* seed particles evenly across nodes */
+  for (let i = 0; i < MAX_PARTICLES; i++) {
+    const p = makeParticle(i % NODES.length);
+    p.t = i / MAX_PARTICLES;
+    particles.push(p);
+  }
+
+  /* ── Slow ring rotation state ────────────────────────────── */
+  let ringAngle = 0;
+  const RING_SPEED = 0.00012; /* rad/ms — full rotation ≈ 87 s */
+
+  /* ── Pulse state ─────────────────────────────────────────── */
+  let pulsePhase = 0;
+  const PULSE_SPEED = 0.0015; /* rad/ms */
+
+  /* ── rAF loop ────────────────────────────────────────────── */
+  let rafId = null;
+  let lastTime = null;
+
+  function tick(now) {
+    if (document.hidden) { lastTime = null; rafId = requestAnimationFrame(tick); return; }
+    if (lastTime === null) lastTime = now;
+    const dt = Math.min(now - lastTime, 50); /* clamp spike frames */
+    lastTime = now;
+
+    ringAngle  += RING_SPEED  * dt;
+    pulsePhase += PULSE_SPEED * dt;
+
+    /* advance particles */
+    for (const p of particles) {
+      p.t += p.speed;
+      if (p.t >= 1) {
+        p.t       = 0;
+        p.speed   = 0.0028 + Math.random() * 0.0022;
+        p.opacity = 0.5 + Math.random() * 0.5;
+      }
+    }
+
+    drawFrame(ringAngle, pulsePhase, particles);
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function startLoop() {
+    if (rafId !== null) return;
+    lastTime = null;
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function stopLoop() {
+    if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+  }
+
+  /* ── Geometry helpers ────────────────────────────────────── */
+  function ringRadius() { return Math.min(W, H) * 0.33; }
+  function nodeRadius() { return Math.min(W, H) * 0.028; }
+  function cx() { return W / 2; }
+  function cy() { return H / 2; }
+
+  function nodePos(idx, rAngle) {
+    const a = NODES[idx].angle + rAngle;
+    const r = ringRadius();
+    return { x: cx() + Math.cos(a) * r, y: cy() + Math.sin(a) * r };
+  }
+
+  /* ── Draw ────────────────────────────────────────────────── */
+  function drawFrame(rAngle, pulse, pts) {
+    ctx.clearRect(0, 0, W, H);
+    /* radial amber spotlight behind block — drawn first */
+    drawSpotlight();
+    drawEdges(rAngle);
+    drawParticles(pts, rAngle);
+    drawNodes(rAngle, pulse);
+    /* no plain centre dot — the HTML overlay IS the core */
+    drawLabels(rAngle);
+  }
+
+  /* Soft radial glow at canvas centre replacing the plain amber dot */
+  function drawSpotlight() {
+    const x = cx(), y = cy();
+    const r = Math.min(W, H) * 0.28;
+    const glow = ctx.createRadialGradient(x, y, 0, x, y, r);
+    glow.addColorStop(0,   'rgba(240,180,41,0.18)');
+    glow.addColorStop(0.30,'rgba(240,180,41,0.09)');
+    glow.addColorStop(0.60,'rgba(240,180,41,0.03)');
+    glow.addColorStop(1,   'rgba(240,180,41,0)');
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = glow;
+    ctx.fill();
+  }
+
+  function drawEdges(rAngle) {
+    for (let i = 0; i < NODES.length; i++) {
+      const np = nodePos(i, rAngle);
+      ctx.beginPath();
+      ctx.moveTo(np.x, np.y);
+      ctx.lineTo(cx(), cy());
+      ctx.strokeStyle = T.border;
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.6;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function drawParticles(pts, rAngle) {
+    for (const p of pts) {
+      const np = nodePos(p.node, rAngle);
+      /* lerp from node → core */
+      const px = np.x + (cx() - np.x) * p.t;
+      const py = np.y + (cy() - np.y) * p.t;
+
+      /* fade in near node, fade out as they reach the block */
+      const fadeIn  = Math.min(p.t * 6, 1);
+      /* stop particles slightly before dead-centre (t≈0.82) so
+         they appear to converge onto the block face, not pass through */
+      const fadeOut = p.t < 0.82 ? Math.min((0.82 - p.t) / 0.14, 1) : 0;
+      const alpha   = p.opacity * fadeIn * fadeOut;
+
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      ctx.arc(px, py, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = T.accent;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawNodes(rAngle, pulse) {
+    const nr = nodeRadius();
+
+    for (let i = 0; i < NODES.length; i++) {
+      const np = nodePos(i, rAngle);
+      const nodePhase = pulse + (i * Math.PI * 2 / NODES.length);
+      const pm = Math.sin(nodePhase) * 0.12 + 1;
+      const r  = nr * pm;
+
+      /* outer glow */
+      const grad = ctx.createRadialGradient(np.x, np.y, r * 0.4, np.x, np.y, r * 2.2);
+      grad.addColorStop(0, 'rgba(240,180,41,0.12)');
+      grad.addColorStop(1, 'rgba(240,180,41,0)');
+      ctx.beginPath();
+      ctx.arc(np.x, np.y, r * 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      /* node body */
+      ctx.beginPath();
+      ctx.arc(np.x, np.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = T.surface;
+      ctx.fill();
+      ctx.strokeStyle = T.borderHi;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      /* inner amber dot */
+      ctx.beginPath();
+      ctx.arc(np.x, np.y, r * 0.38, 0, Math.PI * 2);
+      ctx.fillStyle = T.accentDim;
+      ctx.fill();
+    }
+  }
+
+  function drawLabels(rAngle) {
+    const nr  = nodeRadius();
+    const labelOffset = nr * 2.6 + ringRadius() * 0.06;
+
+    ctx.font         = `600 11px ${T.fontMono}`;
+    ctx.fillStyle    = T.textMuted;
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i < NODES.length; i++) {
+      const a  = NODES[i].angle + rAngle;
+      const r  = ringRadius() + labelOffset;
+      const lx = cx() + Math.cos(a) * r;
+      const ly = cy() + Math.sin(a) * r;
+
+      const cos = Math.cos(a);
+      if (cos > 0.25)       ctx.textAlign = 'left';
+      else if (cos < -0.25) ctx.textAlign = 'right';
+      else                  ctx.textAlign = 'center';
+
+      ctx.fillText(NODES[i].id, lx, ly);
+    }
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  /* ── Static frame (reduced-motion) ──────────────────────── */
+  function drawStatic() {
+    ctx.clearRect(0, 0, W, H);
+    drawSpotlight();
+    drawEdges(0);
+    drawNodes(0, Math.PI / 4);
+    drawLabels(0);
+    /* one particle per edge at t=0.5 */
+    for (let i = 0; i < NODES.length; i++) {
+      const np = nodePos(i, 0);
+      const px = np.x + (cx() - np.x) * 0.5;
+      const py = np.y + (cy() - np.y) * 0.5;
+      ctx.globalAlpha = 0.6;
+      ctx.beginPath();
+      ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = T.accent;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  /* ── Visibility API pause ────────────────────────────────── */
+  document.addEventListener('visibilitychange', () => {
+    if (prefersReduced.matches) return;
+    if (document.hidden) stopLoop();
+    else startLoop();
+  });
+
+  /* ── Block float animation guard ────────────────────────── */
+  const blockSvg = document.querySelector('.hub-block-overlay svg');
+  function applyBlockMotion(e) {
+    if (!blockSvg) return;
+    blockSvg.style.animation = e.matches ? 'none' : '';
+  }
+  applyBlockMotion(prefersReduced);
+  prefersReduced.addEventListener('change', applyBlockMotion);
+
+  /* ── Boot ────────────────────────────────────────────────── */
+  if (prefersReduced.matches) {
+    drawStatic();
+  } else {
+    startLoop();
+  }
+
+  prefersReduced.addEventListener('change', (e) => {
+    if (e.matches) { stopLoop(); drawStatic(); }
+    else           { startLoop(); }
+  });
+
+}());
+</script>
+</body>
+</html>

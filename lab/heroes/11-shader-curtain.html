@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero 11 — Shader curtain · Roxabi lab</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="./_base.css">
+<style>
+  /* Lean into the real vendored WebGL shader (assets/vendor/aurora-curtain.js). */
+  .hero { background: radial-gradient(ellipse 78% 88% at 70% 42%, rgba(240,180,41,.10), transparent 72%); }
+  #hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: 1; }
+  /* Vignette: pool the bright curtain to the right, keep the copy side dark for AA. */
+  .hero::after {
+    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(ellipse 62% 80% at 72% 46%, transparent 14%, var(--bg) 46%);
+  }
+  .hero .wrap { position: relative; z-index: 2; }
+  .hero-copy { max-width: 620px; }
+  .hero h1 { margin-block: var(--s-lg) 0; }
+  .sub { color: var(--accent); font-weight: 600; }
+  .hero .lead { font-size: 1.2rem; color: var(--text-muted); max-width: 48ch; margin-top: var(--s-lg); }
+  .cta { display: flex; gap: var(--s-md); margin-top: var(--s-xl); flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<a class="lab-back" href="./index.html">← gallery</a>
+<span class="lab-tag">11 · shader curtain</span>
+<header class="lab-nav">
+  <a class="brand" href="#"><img src="/assets/logo/foundation-block.svg" width="26" height="26" alt=""><span>Roxabi</span></a>
+  <nav class="lab-nav-links"><a href="#">Projects</a><a href="#">Constitution</a></nav>
+  <a class="btn btn-ghost btn-sm" href="#">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <canvas id="hero-bg" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="badge"><span class="dot"></span>AGPL-3.0 · Open by architecture</span>
+        <h1>One person. Team-scale output.</h1>
+        <p class="lead"><span class="sub">Pre-wired. Open. Yours.</span><br>An agent &amp; worker factory. Open-source tools plug in over NATS, CLI, skills, or API.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#">Explore the projects →</a>
+          <a class="btn btn-ghost" href="#">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="/assets/vendor/aurora-curtain.js"></script>
+</body>
+</html>

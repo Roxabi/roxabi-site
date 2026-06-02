@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero 22 — Shader + iso grid · Roxabi lab</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="./_base.css">
+<style>
+  /* ── Two-column hero grid ── */
+  .hero-grid {
+    display: grid;
+    gap: var(--s-2xl);
+    align-items: center;
+    width: 100%;
+  }
+  @media (min-width: 820px) {
+    .hero-grid { grid-template-columns: .92fr 1.08fr; }
+  }
+
+  /* ── Full-bleed shader canvas behind everything ── */
+  #hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 1;
+  }
+
+  /* ── Vignette: concentrate amber glow behind the iso scene (right),
+        keep the copy left dark enough for AA contrast ── */
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    /* dark sweep from left → clear behind iso, faint at extreme right */
+    background:
+      radial-gradient(ellipse 55% 90% at 18% 50%, var(--bg) 30%, transparent 72%),
+      radial-gradient(ellipse 70% 80% at 72% 46%, transparent 14%, color-mix(in srgb, var(--bg) 60%, transparent) 55%);
+  }
+
+  /* Copy and visual sit above both canvas + vignette */
+  .hero .wrap { position: relative; z-index: 2; }
+
+  /* ── Copy side ── */
+  .sub   { color: var(--accent); font-weight: 600; }
+  .hero h1 { margin-block: var(--s-lg) 0; }
+  .hero .lead {
+    font-size: 1.18rem;
+    color: var(--text-muted);
+    max-width: 44ch;
+    margin-top: var(--s-lg);
+  }
+  .cta { display: flex; gap: var(--s-md); margin-top: var(--s-xl); flex-wrap: wrap; }
+
+  /* ── ISO scene ── */
+  #iso {
+    width: 100%;
+    height: auto;
+    max-width: 540px;
+    margin-inline: auto;
+    display: block;
+    /* subtle drop-shadow so blueprint reads over lit shader bg */
+    filter: drop-shadow(0 0 2px rgba(0,0,0,.6));
+  }
+  #iso .grid-line       { stroke: var(--border); stroke-width: 1; }
+  #iso .grid-line.accent { stroke: var(--accent); stroke-opacity: .14; }
+  /* Tone connector glow down a touch vs. 13 so shader doesn't wash it out */
+  #iso .link {
+    stroke: var(--accent);
+    stroke-opacity: .42;
+    stroke-width: 1.5;
+    stroke-dasharray: 4 8;
+    fill: none;
+    stroke-linecap: round;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    #iso .link { animation: pull 1.2s linear infinite; }
+  }
+  @keyframes pull { to { stroke-dashoffset: -24; } }
+  #iso .mlabel {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    fill: var(--text-muted);
+  }
+  #iso .clabel {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--accent);
+    letter-spacing: .04em;
+  }
+
+  /* ── Static fallback: show plain SVG placeholder when JS/WebGL fail ── */
+  .hero-visual-fallback {
+    display: none;
+    width: 100%;
+    max-width: 540px;
+    margin-inline: auto;
+    aspect-ratio: 540/420;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+  }
+</style>
+</head>
+<body>
+<a class="lab-back" href="./index.html">← gallery</a>
+<span class="lab-tag">22 · shader + iso grid</span>
+<header class="lab-nav">
+  <a class="brand" href="#"><img src="/assets/logo/foundation-block.svg" width="26" height="26" alt=""><span>Roxabi</span></a>
+  <nav class="lab-nav-links"><a href="#">Projects</a><a href="#">Constitution</a></nav>
+  <a class="btn btn-ghost btn-sm" href="#">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <!-- Layer 0: living amber atmosphere (WebGL shader) -->
+    <canvas id="hero-bg" aria-hidden="true"></canvas>
+
+    <div class="wrap hero-grid">
+      <!-- Layer 2 left: copy -->
+      <div class="hero-copy">
+        <span class="badge"><span class="dot"></span>AGPL-3.0 · Open by architecture</span>
+        <h1>One person. Team-scale output.</h1>
+        <p class="lead"><span class="sub">Pre-wired. Open. Yours.</span><br>An agent &amp; worker factory. Open-source tools plug in over NATS, CLI, skills, or API.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#">Explore the projects →</a>
+          <a class="btn btn-ghost" href="#">GitHub</a>
+        </div>
+      </div>
+
+      <!-- Layer 2 right: technical blueprint iso scene -->
+      <div class="hero-visual">
+        <svg id="iso" viewBox="0 0 540 420" role="img"
+          aria-label="Isometric blueprint: the roxabi-factory core surrounded by module blocks llmCLI, voiceCLI, imageCLI, cortex, intel, idna on a grid">
+        </svg>
+        <!-- noscript/static fallback -->
+        <noscript>
+          <div class="hero-visual-fallback" role="img" aria-label="Roxabi factory architecture diagram (requires JS)"></div>
+        </noscript>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ISO scene builder -->
+<script>
+(function () {
+  'use strict';
+  var svg = document.getElementById('iso');
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var CX = 270, CY = 196;
+  var GCX = 270, GCY = 250, TW = 30, TH = 15;
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── defs: glow gradients (brightness dialled down vs. 13 for shader bg legibility) ──
+  var defs =
+    '<defs>' +
+    '<radialGradient id="fbCore" cx="50%" cy="50%" r="50%">' +
+    '<stop offset="0%" stop-color="#fde68a"/>' +
+    '<stop offset="35%" stop-color="#fbbf24"/>' +
+    '<stop offset="100%" stop-color="#f0b429" stop-opacity="0.18"/>' +
+    '</radialGradient>' +
+    '<filter id="fbBloom" x="-80%" y="-80%" width="260%" height="260%">' +
+    '<feGaussianBlur stdDeviation="1.8" result="b"/>' +
+    '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+    '</filter>' +
+    '<radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">' +
+    '<stop offset="0%" stop-color="#f0b429" stop-opacity="0.22"/>' +
+    '<stop offset="70%" stop-color="#f0b429" stop-opacity="0"/>' +
+    '</radialGradient>' +
+    '</defs>';
+
+  function iso(gx, gy) { return [GCX + (gx - gy) * TW, GCY + (gx + gy) * TH]; }
+
+  // ── isometric grid ──
+  var grid = '<g aria-hidden="true">';
+  for (var g = -5; g <= 5; g++) {
+    var a1 = iso(g, -5), a2 = iso(g, 5), b1 = iso(-5, g), b2 = iso(5, g);
+    var cls = (g === 0) ? 'grid-line accent' : 'grid-line';
+    grid += '<line class="' + cls + '" x1="' + a1[0] + '" y1="' + a1[1] + '" x2="' + a2[0] + '" y2="' + a2[1] + '"/>';
+    grid += '<line class="' + cls + '" x1="' + b1[0] + '" y1="' + b1[1] + '" x2="' + b2[0] + '" y2="' + b2[1] + '"/>';
+  }
+  grid += '</g>';
+
+  // ── module ring ──
+  var R = 150;
+  var names = ['llmCLI', 'voiceCLI', 'imageCLI', 'cortex', 'intel', 'idna'];
+  var mods = names.map(function (n, k) {
+    var a = (-90 + k * 60) * Math.PI / 180;
+    return { x: CX + R * Math.cos(a), y: CY + R * 0.5 * Math.sin(a), s: 1.0, label: n };
+  });
+  var core = { x: CX, y: CY, s: 1.7, core: true, label: 'factory' };
+
+  // ── connectors ──
+  var links = '<g aria-hidden="true">';
+  mods.forEach(function (m) {
+    links += '<path class="link" d="M' + CX + ',' + CY + ' L' + m.x.toFixed(1) + ',' + m.y.toFixed(1) + '"/>';
+  });
+  links += '</g>';
+
+  // ── cube builder ──
+  function cube(o) {
+    var t = 'translate(' + o.x.toFixed(1) + ',' + o.y.toFixed(1) + ') scale(' + o.s + ') translate(-32,-32)';
+    var id = o.core ? ' id="isoCore"' : '';
+    var s = '<g' + id + ' transform="' + t + '">';
+    if (o.core) s += '<ellipse cx="32" cy="34" rx="30" ry="20" fill="url(#coreGlow)"/>';
+    s += '<polygon points="12,22 32,32 32,52 12,42" fill="#11161d"/>';
+    s += '<polygon points="52,22 52,42 32,52 32,32" fill="#171e27"/>';
+    s += '<polygon points="32,12 52,22 32,32 12,22" fill="#1c2431"/>';
+    if (o.core) {
+      s += '<ellipse cx="32" cy="22" rx="9" ry="5" fill="url(#fbCore)" filter="url(#fbBloom)" opacity="0.85"/>';
+      s += '<polygon points="32,16 44,22 32,28 20,22" fill="url(#fbCore)" stroke="#fbbf24" stroke-width="0.8" filter="url(#fbBloom)"/>';
+    } else {
+      s += '<circle cx="32" cy="22" r="2" fill="#f0b429" opacity="0.7"/>';
+    }
+    var ew = o.core ? 1.5 : 1.1, eop = o.core ? 0.9 : 0.45;
+    s += '<path d="M32,12 52,22 52,42 32,52 12,42 12,22Z" fill="none" stroke="#f0b429" stroke-width="' + ew + '" stroke-opacity="' + eop + '" stroke-linejoin="round"/>';
+    s += '</g>';
+    return s;
+  }
+
+  var all = mods.concat([core]).slice().sort(function (a, b) { return a.y - b.y; });
+  var cubes = '<g aria-hidden="true">' + all.map(cube).join('') + '</g>';
+
+  // ── labels ──
+  var labels = '<g aria-hidden="true">';
+  mods.forEach(function (m) {
+    labels += '<text class="mlabel" x="' + m.x.toFixed(1) + '" y="' + (m.y + 34).toFixed(1) + '" text-anchor="middle">' + m.label + '</text>';
+  });
+  labels += '<text class="clabel" x="' + CX + '" y="' + (CY + 44) + '" text-anchor="middle">roxabi-factory</text>';
+  labels += '</g>';
+
+  svg.innerHTML = defs + grid + links + cubes + labels;
+
+  // ── core float (rAF, guarded against hidden tab + reduced-motion) ──
+  var coreEl = document.getElementById('isoCore');
+  var baseT = coreEl.getAttribute('transform');
+  var running = !reduce, raf = 0;
+
+  function frame(t) {
+    if (!running) return;
+    var dy = Math.sin(t / 900) * 4;
+    coreEl.setAttribute('transform', baseT + ' translate(0,' + dy.toFixed(2) + ')');
+    raf = requestAnimationFrame(frame);
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    running = !document.hidden && !reduce;
+    if (running) raf = requestAnimationFrame(frame);
+  });
+
+  if (!reduce) raf = requestAnimationFrame(frame);
+})();
+</script>
+
+<!-- Real vendored WebGL shader (aurora-curtain) — pauses itself on hidden tab internally -->
+<script src="/assets/vendor/aurora-curtain.js"></script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">DOC-05 · MÉMOIRE VIVANTE</p>
+    <h1>La Décroissance Temporelle</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Pourquoi une mémoire vivante doit oublier : le modèle de décroissance exponentielle et de renforcement par l'accès qui maintient la pertinence du graphe de connaissance.</p>
+    <p class="meta">Chapitre 5 sur 6 · Roxabi Cortex</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sommaire">
+      <span class="t">Sommaire</span>
+      <a href="#sec-1">1 — L'oubli comme fonctionnalité</a>
+      <a href="#sec-2">2 — La courbe d'Ebbinghaus</a>
+      <a href="#sec-3">3 — Deux surfaces de décroissance</a>
+      <a href="#sec-4">4 — La formule memory_strength</a>
+      <a href="#sec-5">5 — Renforcement par l'accès</a>
+      <a href="#sec-6">6 — Déclencheurs et planification</a>
+      <a href="#sec-7">7 — Seuils et conséquences</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Pourquoi l'oubli est une fonctionnalité</h2>
+        <p>Un graphe de connaissance qui s'accumule sans élagage dérive vers le bruit. Des relations périmées remontent dans les résultats de recherche, le contexte de prompt gonfle de faits obsolètes, et la latence de rappel augmente à mesure que le graphe croît de façon indiscriminée. L'oubli n'est pas un mode de défaillance — c'est une exigence de conception.</p>
+        <p>Le précédent biologique est précis : le cerveau humain oublie sélectivement, non aléatoirement. La mémoire de travail reste exploitable parce que l'hippocampe déprioritise les traces qui ne sont pas renforcées. Cortex hérite directement de ce principe.</p>
+        <p>L'objectif de conception est une <strong>décroissance progressive et non destructive</strong>. Rien n'est jamais supprimé. La saillance est réduite jusqu'à ce qu'elle soit explicitement ravivée. La couche Brute est immuable par invariant : même une entité dont la force a chuté à quasi-zéro peut être ressuscitée en rejouant le journal d'événements bruts. La décroissance opère uniquement sur les couches Sémantique et Compilée.</p>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>La courbe d'oubli d'Ebbinghaus</h2>
+        <p>Hermann Ebbinghaus (1885) a établi la première loi quantifiée de l'oubli humain : la rétention décroît exponentiellement avec le temps écoulé depuis l'encodage. La courbe est donnée par <code>R = exp(−Δt / σ)</code>, où <code>Δt</code> est le temps écoulé et <code>σ</code> le paramètre de stabilité (équivalent : <code>R = 0,5^(Δt / demi-vie)</code> — les deux formes expriment la même enveloppe exponentielle).</p>
+        <p>Cortex traite la courbe d'Ebbinghaus comme sa ligne de base — la forme de la décroissance avant tout renforcement. La conséquence pratique est déterministe : une entité laissée sans renforcement franchira le seuil d'invisibilité à un moment prévisible. Le système n'a pas besoin d'heuristiques pour décider quand la supprimer ; les mathématiques s'en chargent.</p>
+
+        <figure class="doc-figure" style="margin-top:var(--s-xl)">
+          <svg viewBox="0 0 600 280" role="img" aria-label="Courbe de décroissance et renforcement : memory_strength d'une entité dans le temps avec pics de rappel" style="width:100%;height:auto">
+            <defs>
+              <marker id="ah-fr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+              </marker>
+            </defs>
+            <rect width="600" height="280" fill="var(--panel)" rx="8"/>
+            <line x1="60" y1="20" x2="60" y2="240" stroke="var(--border)" stroke-width="1"/>
+            <line x1="60" y1="240" x2="580" y2="240" stroke="var(--border)" stroke-width="1"/>
+            <line x1="190" y1="20" x2="190" y2="240" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,4"/>
+            <line x1="320" y1="20" x2="320" y2="240" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,4"/>
+            <line x1="450" y1="20" x2="450" y2="240" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,4"/>
+            <line x1="60" y1="130" x2="580" y2="130" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,4"/>
+            <text x="50" y="244" text-anchor="end" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">0,0</text>
+            <text x="50" y="178" text-anchor="end" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">0,2</text>
+            <line x1="60" y1="196" x2="580" y2="196" stroke="var(--accent)" stroke-width="1" stroke-dasharray="5,4" opacity="0.7"/>
+            <line x1="60" y1="163" x2="580" y2="163" stroke="var(--accent)" stroke-width="1" stroke-dasharray="5,4" opacity="0.7"/>
+            <text x="50" y="167" text-anchor="end" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">0,35</text>
+            <text x="50" y="134" text-anchor="end" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">0,5</text>
+            <text x="50" y="24" text-anchor="end" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">1,0</text>
+            <text x="60" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">0j</text>
+            <text x="190" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">30j</text>
+            <text x="320" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">60j</text>
+            <text x="450" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">90j</text>
+            <text x="580" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">120j</text>
+            <text x="320" y="274" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-dim)">Temps (jours)</text>
+            <text x="583" y="167" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">seuil auto-inject</text>
+            <text x="583" y="200" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">seuil visibilité lien</text>
+            <rect x="60" y="163" width="520" height="77" fill="var(--accent)" opacity="0.06"/>
+            <rect x="60" y="20" width="520" height="143" fill="var(--accent)" opacity="0.04"/>
+            <path d="M60,20 C80,30 120,55 147,79" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
+            <line x1="147" y1="79" x2="147" y2="53" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah-fr)"/>
+            <text x="151" y="50" font-family="var(--font-mono)" font-size="10" fill="var(--accent)">rappel +boost</text>
+            <path d="M147,53 C190,70 250,100 299,131" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
+            <line x1="299" y1="131" x2="299" y2="68" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah-fr)"/>
+            <text x="303" y="65" font-family="var(--font-mono)" font-size="10" fill="var(--accent)">rappel +boost</text>
+            <path d="M299,68 C360,95 470,145 580,178" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
+            <rect x="62" y="22" width="148" height="22" rx="3" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <line x1="70" y1="33" x2="90" y2="33" stroke="var(--accent)" stroke-width="2.5"/>
+            <text x="96" y="37" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">memory_strength(t)</text>
+          </svg>
+          <figcaption>Courbe de décroissance et renforcement : évolution de <code>memory_strength</code> d'une entité dans le temps. La décroissance exponentielle est interrompue par des accès qui remontent la force et réinitialisent l'horloge. Les deux bandes horizontales marquent les seuils d'auto-injection et de visibilité des liens.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Deux surfaces de décroissance : liens et entités</h2>
+        <p>La décroissance ne s'applique pas uniformément au graphe. Elle opère indépendamment sur deux structures distinctes, chacune avec sa propre formule et ses paramètres configurables.</p>
+        <p><strong>Relations / arêtes</strong> : <code>weight_temporal = exp(−Δt / σ)</code>, où <code>Δt</code> est le nombre de jours depuis le dernier renforcement et <code>σ</code> est une demi-vie configurable par classe de relation :</p>
+        <pre class="code"><code>σ = 90j   # relations fondationnelles (ex. is_core_concept_of)
+σ = 30j   # relations normales
+σ =  7j   # relations faibles / contextuelles</code></pre>
+        <p><strong>Entités / nœuds</strong> : le modèle complet <code>memory_strength</code> décrit dans la section suivante. Cette surface est plus sophistiquée parce que les entités portent un poids sémantique injecté directement dans le contexte de prompt.</p>
+        <p>La séparation est intentionnelle. Une relation peut s'estomper tandis que les entités qu'elle connecte restent fortes, et inversement. La décroissance sur les arêtes élague la topologie périmée du graphe ; la décroissance sur les entités contrôle la saillance dans les prompts. Les deux s'exécutent indépendamment, selon des planifications et des seuils différents.</p>
+
+        <figure class="doc-figure" style="margin-top:var(--s-xl)">
+          <svg viewBox="0 0 560 220" role="img" aria-label="Deux surfaces de décroissance : relations et entités avec leurs déclencheurs" style="width:100%;height:auto">
+            <defs>
+              <marker id="ah2-fr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+              </marker>
+            </defs>
+            <rect width="560" height="220" fill="var(--panel)" rx="8"/>
+            <rect x="185" y="14" width="160" height="32" rx="5" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="265" y="28" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">CRON nocturne</text>
+            <text x="265" y="41" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">recalcul global</text>
+            <rect x="185" y="54" width="160" height="32" rx="5" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="265" y="68" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Arrière-plan</text>
+            <text x="265" y="81" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">par lecture / écriture</text>
+            <rect x="20" y="100" width="210" height="80" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="125" y="118" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)" font-weight="600">Relations / Arêtes</text>
+            <text x="125" y="134" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">weight_temporal = exp(−Δt/σ)</text>
+            <text x="30" y="151" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">σ=7j  contextuelle</text>
+            <text x="30" y="164" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">σ=30j normale</text>
+            <text x="30" y="177" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">σ=90j fondationnelle</text>
+            <rect x="330" y="100" width="210" height="80" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="435" y="118" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)" font-weight="600">Entités / Nœuds</text>
+            <text x="435" y="134" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">memory_strength = base×decay×boost</text>
+            <rect x="338" y="142" width="58" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="367" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">retrieval_boost</text>
+            <rect x="402" y="142" width="58" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="431" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">reward_factor</text>
+            <rect x="466" y="142" width="66" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="499" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">emotional_mult</text>
+            <line x1="220" y1="30" x2="140" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-fr)"/>
+            <line x1="310" y1="30" x2="400" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-fr)"/>
+            <line x1="220" y1="70" x2="140" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-fr)"/>
+            <line x1="310" y1="70" x2="400" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-fr)"/>
+            <rect x="20" y="186" width="210" height="22" rx="4" fill="var(--accent)" opacity="0.08"/>
+            <text x="125" y="201" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">&lt; 0,2 → invisible en recherche</text>
+            <rect x="330" y="186" width="210" height="22" rx="4" fill="var(--accent)" opacity="0.08"/>
+            <text x="435" y="201" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">&lt; 0,35 → pas d'auto-injection</text>
+          </svg>
+          <figcaption>Deux surfaces de décroissance. Relations et entités décroissent indépendamment, déclenchées par le CRON nocturne et le traitement d'arrière-plan par événement. Chaque surface a sa propre formule, ses demi-vies configurables et son seuil comportemental distinct.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>La formule memory_strength</h2>
+        <p>Le modèle simplifié (lignée hippo-memory, variante d'implémentation) :</p>
+        <pre class="code"><code>memory_strength = base_strength × (1 + reinforcement_factor) × exp(−Δt / half_life)</code></pre>
+        <p>Le modèle étendu, tel que défini dans la spécification architecturale, décompose chaque facteur explicitement :</p>
+        <pre class="code"><code>strength(t)         = base × decay × retrieval_boost × emotional_multiplier
+
+decay               = 0,5 ^ (Δt / effective_half_life)
+effective_half_life = half_life × reward_factor
+reward_factor       = 1 + 0,5 × ((pos − neg) / (pos + neg + 1))
+
+retrieval_boost     = 1 + 0,1 × log₂(retrieval_count + 1)
+
+emotional_mult      = neutre:1,0 | positif:1,3 | négatif:1,5 | critique:2,0</code></pre>
+        <p>Sémantique des paramètres : <code>base_strength</code> est la force initiale à la création, dans <code>[0,0 ; 1,0]</code>. <code>half_life</code> est configurable par classe d'entité — 45j pour les projets, 10j pour les concepts mineurs, 30j pour les patterns comportementaux, 90j pour les connaissances monde, 60j pour les instructions de l'opérateur. Toutes les valeurs résident dans <code>config/decay.yaml</code>.</p>
+        <p>Le <code>reward_factor</code> étend la demi-vie effective proportionnellement à l'historique de feedback positif — modélisant la consolidation synaptique modulée par la dopamine. Le <code>emotional_mult</code> s'applique à l'encodage : les souvenirs négatifs et critiques sont retenus plus longtemps, conformément au biais de négativité bien établi dans la mémoire humaine.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Renforcement par l'accès — répétition espacée</h2>
+        <p>Chaque accès — qu'il s'agisse d'un résultat de recherche, d'une injection dans un prompt ou d'une nouvelle mention brute de l'entité — renforce sa mémoire. Dans le modèle simplifié, cela ajoute <code>+0,3</code> au <code>reinforcement_factor</code>. Dans le modèle étendu, cela incrémente <code>retrieval_count</code>, qui alimente le terme <code>retrieval_boost</code> via une échelle logarithmique (rendements décroissants sur les accès répétés).</p>
+        <p>La base cognitive est l'<strong>effet de test</strong> (Roediger &amp; Karpicke, 2006) : l'acte de rappeler un souvenir le renforce davantage que la simple ré-exposition passive. Cela correspond au rejeu hippocampique — le rappel ré-encode la trace à une stabilité plus élevée. Cortex traite chaque résultat de recherche comme un événement de rappel et applique le boost en conséquence.</p>
+        <p>Le <code>reward_factor</code> étend la demi-vie effective lorsqu'une entité a accumulé des retours positifs (<code>pos &gt; neg</code>), opérationnalisant le principe selon lequel les représentations prédictives de récompense sont préférentiellement consolidées (Schultz, 1998). Les entités utiles restent utiles plus longtemps.</p>
+        <p>Chaque nuit, un document <code>Compiled Truth</code> est régénéré pour chaque entité active. C'est l'équivalent système de la reconsolidation mémorielle : chaque cycle de rappel réécrit l'artefact synthétisé avec la pondération de force actuelle, de sorte que la sortie reflète l'état présent du graphe plutôt que son état lors de la dernière ingestion.</p>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>Déclencheurs de décroissance et planification</h2>
+        <p>Quatre modes de déclenchement distincts pilotent la décroissance et le renforcement. Ils ne sont pas mutuellement exclusifs — un seul événement peut en activer plusieurs :</p>
+        <div style="overflow-x:auto;margin-top:var(--s-lg)">
+          <table style="width:100%;border-collapse:collapse;font-size:.9rem">
+            <thead>
+              <tr>
+                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Action</th>
+                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Type</th>
+                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Fréquence</th>
+                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Cible</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Mise à jour de relation</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Arrière-plan</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Par événement</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">weight_temporal</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Accès à une entité</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Arrière-plan</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Par recherche</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">memory_strength</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Nouvelle entrée brute</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Événementiel</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Immédiat</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">renforcement + Retain Job</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;color:var(--text-muted)">Consolidation nocturne</td>
+                <td style="padding:8px 12px;color:var(--text-muted)">CRON</td>
+                <td style="padding:8px 12px;color:var(--text-muted)">Chaque nuit</td>
+                <td style="padding:8px 12px;font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">Décroissance globale + consolidation</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:var(--s-lg)">La décroissance d'arrière-plan s'exécute en ligne sur chaque chemin lecture/écriture — aucun démon séparé n'est requis. Le CRON nocturne effectue le recalcul en masse et déclenche la passe de consolidation en cycle de sommeil, durant laquelle les documents <code>Compiled Truth</code> sont régénérés et les entités périmées sont supprimées sous le seuil.</p>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>Seuils et conséquences comportementales</h2>
+        <p>Deux seuils gouvernent les transitions d'état comportemental. Aucun ne déclenche de suppression.</p>
+        <p><code>weight_temporal &lt; 0,2</code> sur une relation : l'arête devient effectivement invisible dans la recherche multi-stratégie. Elle reste interrogeable via une recherche temporelle explicite, mais elle ne remontera pas dans le parcours de graphe standard ni dans l'assemblage du contexte de prompt.</p>
+        <p><code>memory_strength &lt; 0,35</code> sur une entité : le document <code>Compiled Truth</code> de cette entité n'est plus auto-injecté dans les prompts. Le fichier Markdown persiste sur disque et conserve son entrée d'index de recherche, mais il perd sa priorité dans la passe de classement.</p>
+        <p>La couche Brute est immuable. La résurrection est toujours possible via <code>/rebuild compiled &lt;slug&gt;</code> ou en rencontrant à nouveau l'entité dans une nouvelle entrée brute. La décroissance est un gradient, non une falaise — aucun changement d'état n'est irréversible du point de vue de l'opérateur.</p>
+
+        <figure class="doc-figure" style="margin-top:var(--s-xl)">
+          <svg viewBox="0 0 500 230" role="img" aria-label="Machine à états du cycle de vie mémoriel : quatre états et transitions" style="width:100%;height:auto">
+            <defs>
+              <marker id="ah3-fr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+              </marker>
+              <marker id="ah3g-fr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+              </marker>
+            </defs>
+            <rect width="500" height="230" fill="var(--panel)" rx="8"/>
+            <!-- ACTIF node -->
+            <rect x="180" y="20" width="140" height="44" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="250" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" font-weight="700">ACTIF</text>
+            <text x="250" y="54" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">force ≥ 0,35 · injecté dans prompt</text>
+            <!-- DÉCROISSANT node -->
+            <rect x="20" y="110" width="150" height="44" rx="6" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="95" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text-muted)" font-weight="700">DÉCROISSANT</text>
+            <text x="95" y="144" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">0,2–0,35 · searchable only</text>
+            <!-- SUPPRIMÉ node -->
+            <rect x="170" y="185" width="160" height="38" rx="6" fill="var(--surface)" stroke="var(--text-dim)" stroke-width="1.5"/>
+            <text x="250" y="202" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="var(--text-muted)" font-weight="700">SUPPRIMÉ</text>
+            <text x="250" y="216" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">&lt; 0,2 · invisible dans le graphe</text>
+            <!-- RANIMÉ node -->
+            <rect x="350" y="110" width="130" height="44" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="415" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" font-weight="700">RANIMÉ</text>
+            <text x="415" y="144" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">ré-injecté</text>
+            <!-- Arrow: ACTIF → DÉCROISSANT -->
+            <line x1="200" y1="64" x2="130" y2="110" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah3-fr)"/>
+            <text x="140" y="92" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">decay nocturne</text>
+            <!-- Arrow: DÉCROISSANT → SUPPRIMÉ -->
+            <line x1="140" y1="154" x2="210" y2="185" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah3-fr)"/>
+            <text x="152" y="180" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">decay continue</text>
+            <!-- Arrow: SUPPRIMÉ → RANIMÉ (green) -->
+            <line x1="330" y1="204" x2="415" y2="154" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah3g-fr)"/>
+            <text x="400" y="188" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">entrée brute</text>
+            <text x="400" y="200" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">ou /rebuild</text>
+            <!-- Arrow: RANIMÉ → ACTIF (green) -->
+            <line x1="415" y1="110" x2="320" y2="64" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah3g-fr)"/>
+            <text x="386" y="86" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">force restaurée</text>
+            <!-- Self-loop: ACTIF → ACTIF -->
+            <path d="M250,20 C260,-10 310,-10 320,20" stroke="var(--accent)" stroke-width="1.5" fill="none" marker-end="url(#ah3-fr)"/>
+            <text x="286" y="4" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">accès +boost</text>
+          </svg>
+          <figcaption>Machine à états du cycle de vie mémoriel. Une entité passe d'<strong>Actif</strong> à <strong>Décroissant</strong> puis <strong>Supprimé</strong> au fil des décroissances nocturnes. Les accès appliquent un boost à tout moment. La résurrection via une nouvelle entrée brute ou <code>/rebuild compiled</code> ramène l'entité à <strong>Ranimé</strong>, puis à <strong>Actif</strong> dès que la force franchit le seuil.</figcaption>
+        </figure>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

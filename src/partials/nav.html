@@ -1,10 +1,15 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="brand" href="{{home_href}}" aria-label="{{brand_aria}}"><img src="/assets/logo/foundation-block.svg" alt="" width="26" height="26"><span>Roxabi</span></a>
+    <input type="checkbox" id="nav-menu-toggle" class="nav-toggle-cb">
+    <label for="nav-menu-toggle" class="icon-btn nav-toggle" aria-label="{{nav_menu}}">
+      <svg class="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <svg class="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </label>
     <nav class="nav-links" aria-label="{{nav_primary_label}}">
       <a href="{{projects_href}}"{{projects_current}}>{{nav_projects}}</a>
       <a href="{{constitution_href}}"{{constitution_current}}>{{nav_constitution}}</a>
-      <a href="{{github}}" rel="noopener">{{nav_docs}}</a>
+      <a href="{{documentation_href}}"{{docs_current}}>{{nav_docs}}</a>
     </nav>
     <div class="nav-actions">
       <a class="icon-btn lang-toggle" href="{{lang_alt_href}}" hreflang="{{lang_hreflang}}" aria-label="{{lang_aria}}" title="{{lang_title}}"><span>{{lang_label}}</span></a>

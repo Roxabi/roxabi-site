@@ -110,6 +110,19 @@ def jsonld_software(base, org_name, github, lang, p) -> str:
     })
 
 
+def jsonld_techarticle(base, org_name, lang, p) -> str:
+    pl = p[lang]
+    return ld({
+        "@context": "https://schema.org", "@type": "TechArticle",
+        "headline": pl["og_title"], "description": pl["og_desc"],
+        "inLanguage": lang, "url": base + href(p["path"], lang),
+        "author": {"@type": "Organization", "name": org_name, "url": f"{base}/"},
+        "publisher": {"@id": f"{base}/#org"},
+        "isPartOf": {"@type": "CreativeWorkSeries", "name": "Roxabi Documentation",
+                     "url": base + href("documentation/", lang)},
+    })
+
+
 def build_jsonld(base, org_name, github, lang, p) -> str:
     kind = p["jsonld"]
     if kind == "home":
@@ -119,7 +132,58 @@ def build_jsonld(base, org_name, github, lang, p) -> str:
     if kind == "breadcrumb+software":
         return (jsonld_breadcrumb(base, lang, p) + "\n"
                 + jsonld_software(base, org_name, github, lang, p))
+    if kind == "techarticle":
+        return (jsonld_breadcrumb(base, lang, p) + "\n"
+                + jsonld_techarticle(base, org_name, lang, p))
     raise SystemExit(f"unknown jsonld kind: {kind}")
+
+
+# ── Documentation collection (index cards + chapter prev/next, all derived) ────
+def doc_chapter_list() -> list:
+    """Documentation chapters (collection pages with a chapter number), ordered."""
+    return sorted((p for p in PAGES if p.get("collection") == "documentation" and "chapter" in p),
+                  key=lambda p: p["chapter"])
+
+
+def doc_cards(lang: str) -> str:
+    L = SITE["lang"][lang]
+    cards = []
+    for p in doc_chapter_list():
+        pl = p[lang]
+        cards.append(
+            f'<a class="card doc-card" href="{href(p["path"], lang)}" data-reveal>'
+            f'<p class="doc-card-num">{L["doc_chapter_word"]} {p["chapter"]:02d}</p>'
+            f'<h3>{pl["card_title"]}</h3>'
+            f'<p>{pl["card_desc"]}</p>'
+            f'<p class="portfolio-note">{L["doc_read"]} <span class="arrow">&rarr;</span></p>'
+            f'</a>')
+    return "\n      ".join(cards)
+
+
+def doc_chapter_nav(lang: str, p: dict) -> str:
+    L = SITE["lang"][lang]
+    chapters = doc_chapter_list()
+    idx = next((i for i, c in enumerate(chapters) if c["id"] == p["id"]), None)
+    if idx is None:
+        return ""
+    prev_c = chapters[idx - 1] if idx > 0 else None
+    next_c = chapters[idx + 1] if idx < len(chapters) - 1 else None
+    out = [f'<nav class="doc-nav" aria-label="{L["doc_nav_aria"]}">']
+    if prev_c:
+        out.append(f'<a class="prev" href="{href(prev_c["path"], lang)}">'
+                   f'<span class="d">&larr; {L["doc_prev"]}</span>'
+                   f'<span class="t">{prev_c[lang]["card_title"]}</span></a>')
+    else:
+        out.append("<span></span>")
+    out.append(f'<a class="idx" href="{href("documentation/", lang)}">{L["doc_all"]}</a>')
+    if next_c:
+        out.append(f'<a class="next" href="{href(next_c["path"], lang)}">'
+                   f'<span class="d">{L["doc_next"]} &rarr;</span>'
+                   f'<span class="t">{next_c[lang]["card_title"]}</span></a>')
+    else:
+        out.append("<span></span>")
+    out.append("</nav>")
+    return "".join(out)
 
 
 # ── Page render ───────────────────────────────────────────────────────────────
@@ -138,10 +202,12 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
         "home_href": href("", lang),
         "projects_href": href("projects/", lang),
         "constitution_href": href("constitution/", lang),
+        "documentation_href": href("documentation/", lang),
         "legal_href": href("legal/", lang),
         "lang_alt_href": href(path, other),
         "projects_current": ' aria-current="page"' if p["active"] == "projects" else "",
         "constitution_current": ' aria-current="page"' if p["active"] == "constitution" else "",
+        "docs_current": ' aria-current="page"' if p["active"] == "docs" else "",
         # head / SEO (derived)
         "title": pl["title"],
         "desc": pl["desc"],
@@ -161,6 +227,15 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
     nav = render(nav_t, ctx)
     footer = render(foot_full_t if p["footer"] == "full" else foot_min_t, ctx)
     body = load(SRC / "bodies" / lang / f"{p['body']}.html").rstrip("\n")
+    # Give the skip-link a focus target (bodies author a bare <main>).
+    body = body.replace("<main>", '<main id="main" tabindex="-1">', 1)
+    # Documentation collection: derive index cards + per-chapter prev/next nav.
+    if "{{doc_chapters}}" in body:
+        body = body.replace("{{doc_chapters}}", doc_cards(lang))
+    if "{{doc_count}}" in body:
+        body = body.replace("{{doc_count}}", str(len(doc_chapter_list())))
+    if p.get("collection") == "documentation" and "chapter" in p:
+        body = body.replace("</main>", doc_chapter_nav(lang, p) + "\n</main>")
     scripts = ('<script src="/assets/vendor/aurora-curtain.js"></script>\n'
                '<script src="/assets/js/app.js"></script>') if p["shader"] \
         else '<script src="/assets/js/app.js"></script>'

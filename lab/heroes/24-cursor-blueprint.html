@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero 24 — Cursor-reactive blueprint · Roxabi lab</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="./_base.css">
+<style>
+  .hero-grid { display: grid; gap: var(--s-2xl); align-items: center; }
+  @media (min-width: 820px) { .hero-grid { grid-template-columns: .92fr 1.08fr; } }
+  .sub { color: var(--accent); font-weight: 600; }
+  .hero h1 { margin-block: var(--s-lg) 0; }
+  .hero .lead { font-size: 1.18rem; color: var(--text-muted); max-width: 44ch; margin-top: var(--s-lg); }
+  .cta { display: flex; gap: var(--s-md); margin-top: var(--s-xl); flex-wrap: wrap; }
+
+  /* ── parallax wrapper ── */
+  .scene-wrap {
+    width: 100%;
+    max-width: 560px;
+    margin-inline: auto;
+    /* static tilt for reduced-motion / coarse pointer */
+    transform: perspective(900px) rotateX(4deg) rotateY(-8deg);
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 80ms linear;
+  }
+  /* pointer-parallax overrides — JS sets these */
+  .scene-wrap[data-parallax] {
+    transform: perspective(900px) rotateX(var(--rx,4deg)) rotateY(var(--ry,-8deg));
+  }
+
+  /* layered depth containers */
+  .layer-grid      { transform-style: preserve-3d; transform: translateZ(0px); }
+  .layer-links     { transform-style: preserve-3d; transform: translateZ(14px); }
+  .layer-modules   { transform-style: preserve-3d; transform: translateZ(32px); }
+  .layer-core      { transform-style: preserve-3d; transform: translateZ(58px); }
+  .layer-labels    { transform-style: preserve-3d; transform: translateZ(70px); }
+
+  #iso-24 {
+    width: 100%; height: auto; max-width: 560px; display: block;
+    overflow: visible;
+  }
+  /* grid lines */
+  #iso-24 .grid-line       { stroke: var(--border); stroke-width: 1; }
+  #iso-24 .grid-line.accent{ stroke: var(--accent); stroke-opacity: .18; }
+  /* dashed connectors */
+  #iso-24 .link {
+    stroke: var(--accent); stroke-opacity: .5; stroke-width: 1.6;
+    stroke-dasharray: 4 8; fill: none; stroke-linecap: round;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    #iso-24 .link { animation: pull24 1.2s linear infinite; }
+  }
+  @keyframes pull24 { to { stroke-dashoffset: -24; } }
+  /* labels */
+  #iso-24 .mlabel { font-family: var(--font-mono); font-size: 12px; fill: var(--text-muted); }
+  #iso-24 .clabel { font-family: var(--font-mono); font-size: 11px; fill: var(--accent); letter-spacing: .04em; }
+
+  /* each svg layer is absolutely stacked inside a positioned container */
+  .iso-layers {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    margin-inline: auto;
+  }
+  .iso-layers svg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    overflow: visible;
+  }
+  /* the first (grid) svg sets the height via its viewBox; rest overlap */
+  .iso-layers svg:first-child { position: relative; }
+</style>
+</head>
+<body>
+<a class="lab-back" href="./index.html">← gallery</a>
+<span class="lab-tag">24 · cursor-reactive blueprint</span>
+<header class="lab-nav">
+  <a class="brand" href="#"><img src="/assets/logo/foundation-block.svg" width="26" height="26" alt=""><span>Roxabi</span></a>
+  <nav class="lab-nav-links"><a href="#">Projects</a><a href="#">Constitution</a></nav>
+  <a class="btn btn-ghost btn-sm" href="#">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="badge"><span class="dot"></span>AGPL-3.0 · Open by architecture</span>
+        <h1>One person. Team-scale output.</h1>
+        <p class="lead"><span class="sub">Pre-wired. Open. Yours.</span><br>An agent &amp; worker factory. Open-source tools plug in over NATS, CLI, skills, or API.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#">Explore the projects →</a>
+          <a class="btn btn-ghost" href="#">GitHub</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <!-- scene-wrap: parallax applied here via CSS custom props -->
+        <div class="scene-wrap" id="sceneWrap">
+          <!-- layered SVG stack: each layer at a different translateZ -->
+          <div class="iso-layers" id="isoLayers">
+            <!-- SVG filled by JS -->
+            <svg id="svg-grid"    viewBox="0 0 540 420" aria-hidden="true"></svg>
+            <svg id="svg-links"   viewBox="0 0 540 420" aria-hidden="true"></svg>
+            <svg id="svg-modules" viewBox="0 0 540 420" aria-hidden="true"></svg>
+            <svg id="svg-core"    viewBox="0 0 540 420" role="img" aria-label="Isometric blueprint: roxabi-factory core surrounded by llmCLI, voiceCLI, imageCLI, cortex, intel, idna modules"></svg>
+            <svg id="svg-labels"  viewBox="0 0 540 420" aria-hidden="true"></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  'use strict';
+
+  /* ── media queries ── */
+  var mqReduce = matchMedia('(prefers-reduced-motion: reduce)');
+  var mqCoarse = matchMedia('(hover: none)');
+  var reduce   = mqReduce.matches;
+  var coarse   = mqCoarse.matches;
+  var interactive = !reduce && !coarse;
+
+  /* ── scene geometry (same as hero 13) ── */
+  var CX = 270, CY = 196;
+  var GCX = 270, GCY = 250, TW = 30, TH = 15;
+
+  function iso(gx, gy) { return [GCX + (gx - gy) * TW, GCY + (gx + gy) * TH]; }
+
+  /* ── SVG elements ── */
+  var svgGrid    = document.getElementById('svg-grid');
+  var svgLinks   = document.getElementById('svg-links');
+  var svgModules = document.getElementById('svg-modules');
+  var svgCore    = document.getElementById('svg-core');
+  var svgLabels  = document.getElementById('svg-labels');
+  var sceneWrap  = document.getElementById('sceneWrap');
+  var isoLayers  = document.getElementById('isoLayers');
+
+  /* ── shared defs (placed in svg-core which has the aria label) ── */
+  var defs =
+    '<defs>' +
+    '<radialGradient id="fbCore24" cx="50%" cy="50%" r="50%">' +
+    '<stop offset="0%" stop-color="#fde68a"/><stop offset="35%" stop-color="#fbbf24"/>' +
+    '<stop offset="100%" stop-color="#f0b429" stop-opacity="0.25"/></radialGradient>' +
+    '<filter id="fbBloom24" x="-80%" y="-80%" width="260%" height="260%">' +
+    '<feGaussianBlur stdDeviation="2.2" result="b"/>' +
+    '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+    '</filter>' +
+    '<radialGradient id="coreGlow24" cx="50%" cy="50%" r="50%">' +
+    '<stop offset="0%" stop-color="#f0b429" stop-opacity="0.35"/>' +
+    '<stop offset="70%" stop-color="#f0b429" stop-opacity="0"/>' +
+    '</radialGradient>' +
+    '</defs>';
+  svgCore.insertAdjacentHTML('beforeend', defs);
+
+  /* ── grid plane → svg-grid ── */
+  var gridHTML = '';
+  for (var g = -5; g <= 5; g++) {
+    var a1 = iso(g, -5), a2 = iso(g, 5), b1 = iso(-5, g), b2 = iso(5, g);
+    var cls = (g === 0) ? 'grid-line accent' : 'grid-line';
+    gridHTML += '<line class="' + cls + '" x1="' + a1[0] + '" y1="' + a1[1] + '" x2="' + a2[0] + '" y2="' + a2[1] + '"/>';
+    gridHTML += '<line class="' + cls + '" x1="' + b1[0] + '" y1="' + b1[1] + '" x2="' + b2[0] + '" y2="' + b2[1] + '"/>';
+  }
+  svgGrid.innerHTML = gridHTML;
+
+  /* ── modules ── */
+  var R = 150;
+  var names = ['llmCLI', 'voiceCLI', 'imageCLI', 'cortex', 'intel', 'idna'];
+  var mods = names.map(function (n, k) {
+    var a = (-90 + k * 60) * Math.PI / 180;
+    return { x: CX + R * Math.cos(a), y: CY + R * 0.5 * Math.sin(a), s: 1.0, label: n };
+  });
+  var core = { x: CX, y: CY, s: 1.7, core: true, label: 'factory' };
+
+  /* ── connectors → svg-links ── */
+  var linksHTML = '';
+  mods.forEach(function (m) {
+    linksHTML += '<path class="link" d="M' + CX + ',' + CY + ' L' + m.x.toFixed(1) + ',' + m.y.toFixed(1) + '"/>';
+  });
+  svgLinks.innerHTML = linksHTML;
+
+  /* ── cube builder ── */
+  function cube(o, forCore) {
+    var t = 'translate(' + o.x.toFixed(1) + ',' + o.y.toFixed(1) + ') scale(' + o.s + ') translate(-32,-32)';
+    var id = (o.core && forCore) ? ' id="isoCore24"' : '';
+    var s = '<g' + id + ' transform="' + t + '">';
+    if (o.core) s += '<ellipse cx="32" cy="34" rx="30" ry="20" fill="url(#coreGlow24)"/>';
+    s += '<polygon points="12,22 32,32 32,52 12,42" fill="#11161d"/>';
+    s += '<polygon points="52,22 52,42 32,52 32,32" fill="#171e27"/>';
+    s += '<polygon points="32,12 52,22 32,32 12,22" fill="#1c2431"/>';
+    if (o.core) {
+      s += '<ellipse cx="32" cy="22" rx="9" ry="5" fill="url(#fbCore24)" filter="url(#fbBloom24)" opacity="0.9"/>';
+      s += '<polygon points="32,16 44,22 32,28 20,22" fill="url(#fbCore24)" stroke="#fbbf24" stroke-width="0.8" filter="url(#fbBloom24)"/>';
+    } else {
+      s += '<circle cx="32" cy="22" r="2" fill="#f0b429" opacity="0.8"/>';
+    }
+    var ew = o.core ? 1.5 : 1.1, eop = o.core ? 1 : 0.5;
+    s += '<path d="M32,12 52,22 52,42 32,52 12,42 12,22Z" fill="none" stroke="#f0b429" stroke-width="' + ew + '" stroke-opacity="' + eop + '" stroke-linejoin="round"/>';
+    s += '</g>';
+    return s;
+  }
+
+  /* modules sorted back-to-front → svg-modules */
+  var modsSorted = mods.slice().sort(function (a, b) { return a.y - b.y; });
+  svgModules.innerHTML = modsSorted.map(function(m){ return cube(m, false); }).join('');
+
+  /* core → svg-core */
+  svgCore.insertAdjacentHTML('beforeend', cube(core, true));
+
+  /* labels → svg-labels */
+  var labelsHTML = '';
+  mods.forEach(function (m) {
+    labelsHTML += '<text class="mlabel" x="' + m.x.toFixed(1) + '" y="' + (m.y + 34).toFixed(1) + '" text-anchor="middle">' + m.label + '</text>';
+  });
+  labelsHTML += '<text class="clabel" x="' + CX + '" y="' + (CY + 44) + '" text-anchor="middle">roxabi-factory</text>';
+  svgLabels.innerHTML = labelsHTML;
+
+  /* ── translateZ layering via CSS transforms on each svg ── */
+  /* We achieve depth by wrapping each svg in a div with preserve-3d + translateZ.
+     The scene-wrap has perspective + the tilt transform. */
+  function wrapLayer(svgEl, tz) {
+    var d = document.createElement('div');
+    d.style.cssText = 'transform-style:preserve-3d;transform:translateZ(' + tz + 'px);position:absolute;top:0;left:0;width:100%;height:100%;';
+    svgEl.parentNode.insertBefore(d, svgEl);
+    d.appendChild(svgEl);
+    svgEl.style.cssText = 'width:100%;height:100%;overflow:visible;position:absolute;top:0;left:0;';
+  }
+
+  /* Restructure layers: isoLayers becomes the perspective container */
+  isoLayers.style.cssText = 'position:relative;width:100%;max-width:560px;margin-inline:auto;transform-style:preserve-3d;';
+  /* The first svg (grid) defines the height via viewBox — make it relative so it sizes the container */
+  svgGrid.style.cssText = 'display:block;width:100%;height:auto;overflow:visible;position:relative;';
+
+  /* Wrap the other layers */
+  wrapLayer(svgLinks,   14);
+  wrapLayer(svgModules, 32);
+  wrapLayer(svgCore,    58);
+  wrapLayer(svgLabels,  70);
+
+  /* scene-wrap: preserve-3d so children get the perspective */
+  sceneWrap.style.transformStyle = 'preserve-3d';
+
+  /* ── core float animation ── */
+  var coreEl = document.getElementById('isoCore24');
+  var baseT  = coreEl ? coreEl.getAttribute('transform') : '';
+  var floatRunning = false, floatRaf = 0;
+
+  function floatFrame(t) {
+    if (!floatRunning) return;
+    var dy = Math.sin(t / 900) * 4;
+    if (coreEl) coreEl.setAttribute('transform', baseT + ' translate(0,' + dy.toFixed(2) + ')');
+    floatRaf = requestAnimationFrame(floatFrame);
+  }
+
+  /* ── parallax state ── */
+  var targetRx = 4, targetRy = -8;   // static tilt defaults
+  var currentRx = 4, currentRy = -8;
+  var parallaxRaf = 0, parallaxRunning = false;
+
+  function lerpAngle(cur, tgt, alpha) { return cur + (tgt - cur) * alpha; }
+
+  function parallaxFrame() {
+    if (!parallaxRunning) return;
+    currentRx = lerpAngle(currentRx, targetRx, 0.07);
+    currentRy = lerpAngle(currentRy, targetRy, 0.07);
+    sceneWrap.style.transform =
+      'perspective(900px) rotateX(' + currentRx.toFixed(3) + 'deg) rotateY(' + currentRy.toFixed(3) + 'deg)';
+    parallaxRaf = requestAnimationFrame(parallaxFrame);
+  }
+
+  function onMouseMove(e) {
+    var rect = sceneWrap.getBoundingClientRect();
+    /* pointer position relative to scene centre, normalised -1..1 */
+    var nx = ((e.clientX - (rect.left + rect.width  / 2)) / (rect.width  / 2));
+    var ny = ((e.clientY - (rect.top  + rect.height / 2)) / (rect.height / 2));
+    /* clamp */
+    nx = Math.max(-1, Math.min(1, nx));
+    ny = Math.max(-1, Math.min(1, ny));
+    /* map: pointer right → scene tilts right (rotateY+), pointer up → rotateX- */
+    targetRy =  nx * 14;   /* ±14 deg horizontal */
+    targetRx = -ny *  8;   /* ±8  deg vertical   */
+  }
+
+  function startParallax() {
+    if (parallaxRunning) return;
+    parallaxRunning = true;
+    sceneWrap.setAttribute('data-parallax', '');
+    document.addEventListener('mousemove', onMouseMove);
+    parallaxRaf = requestAnimationFrame(parallaxFrame);
+  }
+
+  function stopParallax() {
+    parallaxRunning = false;
+    cancelAnimationFrame(parallaxRaf);
+    document.removeEventListener('mousemove', onMouseMove);
+    /* reset to static tilt */
+    sceneWrap.style.transform = 'perspective(900px) rotateX(4deg) rotateY(-8deg)';
+    targetRx = 4; targetRy = -8; currentRx = 4; currentRy = -8;
+  }
+
+  /* ── visibility guard ── */
+  document.addEventListener('visibilitychange', function () {
+    var hidden = document.hidden;
+    /* float */
+    floatRunning = !hidden && !reduce;
+    if (floatRunning) floatRaf = requestAnimationFrame(floatFrame);
+    else cancelAnimationFrame(floatRaf);
+    /* parallax */
+    if (hidden) stopParallax();
+    else if (interactive) startParallax();
+  });
+
+  /* ── reduced-motion / coarse live updates ── */
+  function applyMotionState() {
+    reduce    = mqReduce.matches;
+    coarse    = mqCoarse.matches;
+    interactive = !reduce && !coarse;
+
+    if (!reduce) {
+      floatRunning = !document.hidden;
+      if (floatRunning && floatRaf === 0) floatRaf = requestAnimationFrame(floatFrame);
+    } else {
+      floatRunning = false;
+      cancelAnimationFrame(floatRaf);
+      floatRaf = 0;
+      if (coreEl) coreEl.setAttribute('transform', baseT); /* reset float */
+    }
+
+    if (interactive && !document.hidden) startParallax();
+    else stopParallax();
+  }
+
+  mqReduce.addEventListener('change', applyMotionState);
+  mqCoarse.addEventListener('change', applyMotionState);
+
+  /* ── initial boot ── */
+  if (!reduce) {
+    floatRunning = true;
+    floatRaf = requestAnimationFrame(floatFrame);
+  }
+  if (interactive) startParallax();
+
+})();
+</script>
+</body>
+</html>

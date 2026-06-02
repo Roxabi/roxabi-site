@@ -1,0 +1,279 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">DOC-03 · MÉMOIRE VIVANTE</p>
+    <h1>Le Contrat d'Observation</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Comment Cortex répartit la formation des souvenirs sur deux services — encodage dans le lac, consolidation dans l'entrepôt — via un contrat <code>Observation</code> typé.</p>
+    <p class="meta">Chapitre 3 sur 6 · Roxabi Cortex</p>
+  </div>
+</section>
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sommaire">
+      <span class="t">Sommaire</span>
+      <a href="#sec-1">1 — Pourquoi un seul service échoue</a>
+      <a href="#sec-2">2 — Le découpage lac / entrepôt</a>
+      <a href="#sec-3">3 — L'analogie biologique</a>
+      <a href="#sec-4">4 — Le contrat Observation</a>
+      <a href="#sec-5">5 — Le Retain Job</a>
+      <a href="#sec-6">6 — Alternatives écartées</a>
+      <a href="#sec-7">7 — Les contrats comme SSoT du protocole</a>
+    </nav>
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Pourquoi la formation des souvenirs ne peut pas vivre dans un seul service</h2>
+        <p>La formation des souvenirs repose sur deux compétences distinctes qu'on ne peut pas co-localiser sans couplage. La première est la <strong>découverte</strong> : parser les données brutes, les typer, extraire leur signification depuis une source. Cela exige une connaissance du domaine source — ce qu'est un e-mail, un appel d'outil, un message Telegram. La seconde est l'<strong>intégration</strong> : déduplication, détection de conflits, calcul du schema fit, décroissance, écriture dans le graphe d'entités. Cela exige une connaissance de l'état courant du graphe.</p>
+        <p>Si découverte et intégration vivent toutes deux dans <code>cortex-insight</code>, insight doit suivre l'état du graphe — et chaque pipeline se couple au schéma de l'entrepôt. La mémoire perd sa capacité à arbitrer la déduplication. Si elles vivent toutes deux dans <code>cortex-memory</code>, memory doit contenir les parsers de chaque domaine source — le schéma générique de l'entrepôt est contaminé par des structures spécifiques ; memory devient massif. Aucune attribution pure ne produit une coupe propre. La solution est de répartir sur deux services avec un contrat typé explicite à la frontière.</p>
+        <div class="callout"><p>Le problème de couplage n'est pas organisationnel. Il est épistémique : la connaissance nécessaire à l'encodage est source-spécifique ; la connaissance nécessaire à l'intégration est graphe-spécifique. Aucun service ne peut détenir les deux sans contamination.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Le découpage lac / entrepôt</h2>
+        <p>C'est le schéma classique de l'ingénierie des données — lac pour le stockage brut, append-heavy, schema-on-read ; entrepôt pour la vérité structurée, schema-on-write, orientée consommateurs — appliqué à l'échelle embarquée.</p>
+        <p><strong>cortex-insight (lac)</strong> est append-heavy et schema-on-read. Il stocke les événements bruts, exécute des pipelines ETL spécifiques à chaque source et publie des enregistrements <code>Observation</code> typés. Les réécritures sont peu coûteuses : le lac est une zone de transit, pas un actif long terme.</p>
+        <p><strong>cortex-memory (entrepôt)</strong> est schema-on-write et générique. Il reçoit les <code>Observation</code>, les consolide dans le graphe d'entités, et gère la décroissance, la déduplication, la résolution des conflits, la vérité compilée, l'assemblage et l'actuation. Les changements de schéma sont versionnés et protégés, car c'est l'actif long terme.</p>
+        <p>Deux règles de frontière en découlent directement. Insight ne stocke jamais le graphe. Memory ne parse jamais de données source brutes. Ces règles sont imposées structurellement : les imports croisés entre les deux services ne sont pas déclarés dans <code>pyproject.toml</code> et échouent à l'import.</p>
+        <p>Les conséquences pratiques se composent. Ajouter une nouvelle source revient à écrire un nouveau parser et un nouveau pipeline dans <code>cortex-insight</code> uniquement — <code>cortex-memory</code> reste inchangé. Le service insight peut être entièrement réécrit sans toucher à la connaissance accumulée. L'asymétrie des dépendances est aussi explicite : insight est lourd (parsers, regex, appels LLM, consumers NATS, traitement tabulaire) ; memory est minimal (store de graphe, NATS).</p>
+
+        <figure class="doc-figure">
+          <svg viewBox="0 0 780 220" role="img" aria-label="Flux lac / entrepôt : producteurs → cortex-insight → contrat Observation → cortex-memory → consommateurs" style="width:100%;height:auto">
+            <defs>
+              <marker id="arrfr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/>
+              </marker>
+              <marker id="arrfr-muted" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="var(--text-muted)"/>
+              </marker>
+            </defs>
+            <!-- Producteurs -->
+            <rect x="10" y="10" width="140" height="200" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="80" y="30" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)" letter-spacing="0.08em">PRODUCTEURS</text>
+            <rect x="22" y="42" width="116" height="30" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="80" y="61" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Claude Code JSONL</text>
+            <rect x="22" y="84" width="116" height="30" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="80" y="103" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Mail / Telegram</text>
+            <rect x="22" y="126" width="116" height="30" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="80" y="145" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Événements NATS</text>
+            <!-- Flèche producteurs → insight -->
+            <line x1="150" y1="110" x2="188" y2="110" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#arrfr-muted)"/>
+            <!-- cortex-insight -->
+            <rect x="190" y="10" width="175" height="200" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="277" y="32" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)" letter-spacing="0.06em">cortex-insight</text>
+            <text x="277" y="48" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">(lac)</text>
+            <rect x="202" y="60" width="151" height="36" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="277" y="78" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">événements bruts</text>
+            <text x="277" y="92" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">schema-on-read</text>
+            <rect x="202" y="108" width="151" height="36" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="277" y="126" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">parsers source-spécifiques</text>
+            <text x="277" y="140" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">/ ETL</text>
+            <!-- Flèche amber + label Observation -->
+            <line x1="365" y1="110" x2="415" y2="110" stroke="var(--accent)" stroke-width="3" marker-end="url(#arrfr)"/>
+            <text x="390" y="100" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="600" fill="var(--accent)">Observation</text>
+            <text x="390" y="130" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">roxabi.memory</text>
+            <text x="390" y="143" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">.observations.publish</text>
+            <!-- Ligne pointillée frontière -->
+            <line x1="390" y1="10" x2="390" y2="210" stroke="var(--accent)" stroke-width="1" stroke-dasharray="5,4" opacity="0.5"/>
+            <text x="391" y="22" font-family="var(--font-mono)" font-size="9" fill="var(--accent)" opacity="0.7">frontière</text>
+            <!-- cortex-memory -->
+            <rect x="415" y="10" width="195" height="200" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="512" y="32" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)" letter-spacing="0.06em">cortex-memory</text>
+            <text x="512" y="48" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">(entrepôt)</text>
+            <rect x="427" y="60" width="171" height="26" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="512" y="77" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text)">Retain Job</text>
+            <rect x="427" y="96" width="171" height="26" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="512" y="113" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">graphe d'entités + relations</text>
+            <rect x="427" y="132" width="171" height="26" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="512" y="149" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">décroissance · dedup · vérité compilée</text>
+            <!-- Flèche memory → consommateurs -->
+            <line x1="610" y1="110" x2="648" y2="110" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#arrfr-muted)"/>
+            <!-- Consommateurs -->
+            <rect x="650" y="80" width="120" height="60" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="710" y="106" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">Consommateurs</text>
+            <text x="710" y="120" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">(assemble / actuate)</text>
+          </svg>
+          <figcaption>Flux lac / entrepôt : producteurs → cortex-insight (lac) → contrat Observation → cortex-memory (entrepôt) → consommateurs. La ligne amber en pointillés marque la frontière : insight ne stocke jamais le graphe ; memory ne parse jamais les données brutes.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>L'analogie biologique : hippocampe → cortex</h2>
+        <p>Le design à deux phases reflète la neurologie établie de la consolidation mnésique. L'hippocampe encode vite et avec perte — il capture l'épisode sans le résoudre contre la connaissance long terme. Le cortex sémantique consolide lentement, intégrant et dédupliquant à travers le graphe sémantique au fil du temps. Le cortex préfrontal assure la récupération conditionnée par l'objectif depuis le store consolidé.</p>
+        <p>Le système se projette précisément sur ce modèle. Les producteurs externes correspondent à la perception. <code>cortex-insight</code> est la couche hippocampique : rapide, source-spécifique, épisodique. <code>cortex-memory</code> est le cortex sémantique : lent, générique, conscient du graphe. La fonction <code>memory.assemble</code> et la pile d'objectifs correspondent à la récupération préfrontale.</p>
+        <p><code>Observation</code> est l'unité de mémoire épisodique : typée, encodée, non encore résolue contre le graphe. Elle se situe exactement à la frontière hippocampique. Ceci est cohérent avec la formule de force mémorielle hippocampique adoptée pour le modèle de décroissance <code>memory_strength</code> : écriture rapide, intégration lente, récupération durable.</p>
+
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 200" role="img" aria-label="Analogie biologique : perception → hippocampe → cortex sémantique → cortex préfrontal projetée sur le système" style="width:100%;height:auto">
+            <defs>
+              <marker id="arr2fr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="var(--text-muted)"/>
+              </marker>
+              <marker id="arr2afr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/>
+              </marker>
+            </defs>
+            <!-- Labels rangées -->
+            <text x="8" y="46" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">BIOLOGIQUE</text>
+            <text x="8" y="156" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">SYSTÈME</text>
+            <!-- Rangée biologique -->
+            <rect x="70" y="20" width="140" height="48" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1.2"/>
+            <text x="140" y="42" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Perception</text>
+            <text x="140" y="58" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">(sens)</text>
+            <line x1="210" y1="44" x2="228" y2="44" stroke="var(--text-muted)" stroke-width="1.2" marker-end="url(#arr2fr)"/>
+            <rect x="230" y="20" width="155" height="48" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1.2"/>
+            <text x="307" y="40" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Hippocampe</text>
+            <text x="307" y="56" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">encode épisodique (rapide)</text>
+            <line x1="385" y1="44" x2="403" y2="44" stroke="var(--text-muted)" stroke-width="1.2" marker-end="url(#arr2fr)"/>
+            <rect x="405" y="20" width="155" height="48" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1.2"/>
+            <text x="482" y="40" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Cortex sémantique</text>
+            <text x="482" y="56" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">intégration durable</text>
+            <line x1="560" y1="44" x2="578" y2="44" stroke="var(--text-muted)" stroke-width="1.2" marker-end="url(#arr2fr)"/>
+            <rect x="580" y="20" width="165" height="48" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1.2"/>
+            <text x="662" y="40" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Cortex préfrontal</text>
+            <text x="662" y="56" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">récupération par objectif</text>
+            <!-- Connecteurs verticaux pointillés -->
+            <line x1="140" y1="68" x2="140" y2="118" stroke="var(--border-hi)" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="307" y1="68" x2="307" y2="118" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <text x="307" y="100" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">encode</text>
+            <line x1="482" y1="68" x2="482" y2="118" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <text x="482" y="100" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">consolide</text>
+            <line x1="662" y1="68" x2="662" y2="118" stroke="var(--border-hi)" stroke-width="1" stroke-dasharray="4,3"/>
+            <!-- Rangée système -->
+            <rect x="70" y="120" width="140" height="48" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1.2"/>
+            <text x="140" y="148" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Producteurs externes</text>
+            <line x1="210" y1="144" x2="228" y2="144" stroke="var(--text-muted)" stroke-width="1.2" marker-end="url(#arr2fr)"/>
+            <rect x="230" y="120" width="155" height="48" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="307" y="148" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">cortex-insight</text>
+            <!-- Pilule Observation -->
+            <line x1="385" y1="144" x2="403" y2="144" stroke="var(--accent)" stroke-width="2" marker-end="url(#arr2afr)"/>
+            <rect x="386" y="133" width="16" height="12" rx="6" fill="var(--accent)"/>
+            <text x="394" y="143" text-anchor="middle" font-family="var(--font-mono)" font-size="7" fill="var(--bg)">obs</text>
+            <rect x="405" y="120" width="155" height="48" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="482" y="148" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">cortex-memory</text>
+            <line x1="560" y1="144" x2="578" y2="144" stroke="var(--text-muted)" stroke-width="1.2" marker-end="url(#arr2fr)"/>
+            <rect x="580" y="120" width="165" height="48" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1.2"/>
+            <text x="662" y="140" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text)">memory.assemble</text>
+            <text x="662" y="157" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">+ pile d'objectifs</text>
+          </svg>
+          <figcaption>Analogie biologique projetée sur le système. Les connecteurs amber marquent la frontière encode (hippocampe → cortex-insight) et la frontière consolide (cortex sémantique → cortex-memory). La pilule <code>Observation</code> se situe au passage entre les deux services.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Le contrat Observation</h2>
+        <p><code>Observation</code> est le contrat de publication typé entre <code>cortex-insight</code> et <code>cortex-memory</code> — le seul artefact qui traverse la frontière de service. Il est publié sur le sujet NATS <code>roxabi.memory.observations.publish</code>.</p>
+        <pre class="code"><code>class Observation(BaseModel):
+    id: ULID
+    source: str           # "claude-code-jsonl" | "mail" | "telegram" | …
+    source_ref: str       # identifiant naturel dans la source
+    timestamp: int        # epoch ms
+    category: ObservationCategory  # Interaction | Finding | Decision | Artifact | …
+    actors: list[ActorRef]         # références d'entités (non résolues)
+    topic: list[str] | None        # concepts extraits
+    sentiment: str | None
+    payload_typed: dict            # payload structuré spécifique à la catégorie
+    correlation: dict              # trace_id, parent_obs_id, episode_id, …</code></pre>
+        <p>Quatre choix de conception sont structurants. D'abord, <code>category</code> est l'ancre taxonomique stable (<code>ObservationCategory</code>) : Interaction, Finding, Decision, Artifact, Statement. Le jeu de catégories doit être exhaustif et stable — c'est la surface de schéma sur laquelle le Retain Job de <code>cortex-memory</code> dispatche. Ensuite, <code>actors</code> porte des références — e-mail, nom, slug — mais la résolution contre le graphe est délibérément différée à memory. Insight ne sait pas si un acteur existe déjà dans le graphe. Puis, <code>payload_typed</code> est un contenu structuré spécifique à la catégorie, typé par insight et consommé par le Retain Job — pas du texte libre générique. Enfin, <code>correlation</code> (trace_id, parent_obs_id, episode_id) permet de tracer la causalité à travers l'ensemble du pipeline.</p>
+        <p><code>Observation</code> n'est explicitement pas un <code>EntityProposal</code>. La résolution d'entités est la responsabilité de memory. Insight produit un enregistrement épisodique bien typé et source-spécifique ; memory le résout dans le graphe durable.</p>
+
+        <figure class="doc-figure">
+          <svg viewBox="0 0 480 400" role="img" aria-label="Anatomie du schéma Observation : champs et rôles à la frontière encode / consolide" style="width:100%;height:auto">
+            <defs>
+              <marker id="arr3fr" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L7,3 z" fill="var(--text-muted)"/>
+              </marker>
+            </defs>
+            <!-- Boîte principale -->
+            <rect x="60" y="10" width="280" height="370" rx="8" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+            <!-- Bandeau id -->
+            <rect x="60" y="10" width="280" height="42" rx="8" fill="var(--accent)"/>
+            <rect x="60" y="40" width="280" height="12" fill="var(--accent)"/>
+            <text x="200" y="36" text-anchor="middle" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--bg)">id: ULID</text>
+            <text x="355" y="36" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">identité</text>
+            <!-- Bandeau provenance -->
+            <rect x="60" y="52" width="280" height="52" fill="var(--surface)" stroke="var(--border)" stroke-width="0.5"/>
+            <text x="200" y="72" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">source + source_ref</text>
+            <text x="200" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">+ timestamp</text>
+            <text x="355" y="82" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">provenance</text>
+            <!-- Bandeau category -->
+            <rect x="60" y="104" width="280" height="44" fill="var(--surface)" stroke="var(--border)" stroke-width="0.5"/>
+            <text x="200" y="126" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">category: ObservationCategory</text>
+            <text x="200" y="142" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">Interaction | Finding | Decision | Artifact | Statement</text>
+            <text x="355" y="130" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">ancre</text>
+            <text x="355" y="143" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">taxonomique</text>
+            <!-- Bandeau actors -->
+            <rect x="60" y="148" width="280" height="44" fill="var(--surface)" stroke="var(--border)" stroke-width="0.5"/>
+            <text x="200" y="168" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">actors: list[ActorRef]</text>
+            <text x="200" y="184" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">références d'entités (non résolues)</text>
+            <!-- Flèche pointillée vers boîte fantôme -->
+            <line x1="340" y1="170" x2="410" y2="170" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr3fr)"/>
+            <rect x="412" y="155" width="60" height="30" rx="4" fill="var(--panel)" stroke="var(--border)" stroke-width="1" opacity="0.6"/>
+            <text x="442" y="168" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--text-muted)">graphe</text>
+            <text x="442" y="179" text-anchor="middle" font-family="var(--font-mono)" font-size="7" fill="var(--text-muted)">Retain Job</text>
+            <!-- Bandeau topic/sentiment -->
+            <rect x="60" y="192" width="280" height="44" fill="var(--surface)" stroke="var(--border)" stroke-width="0.5"/>
+            <text x="200" y="212" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">topic: list[str] | None</text>
+            <text x="200" y="228" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">sentiment: str | None</text>
+            <text x="355" y="218" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">indices</text>
+            <text x="355" y="231" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">sémantiques</text>
+            <!-- Bandeau payload_typed -->
+            <rect x="60" y="236" width="280" height="44" fill="var(--surface)" stroke="var(--border)" stroke-width="0.5"/>
+            <text x="200" y="257" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">payload_typed: dict</text>
+            <text x="200" y="273" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">payload spécifique à la catégorie</text>
+            <text x="355" y="260" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">typé par</text>
+            <text x="355" y="273" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">insight</text>
+            <!-- Bandeau correlation -->
+            <rect x="60" y="280" width="280" height="100" rx="0" fill="var(--surface)" stroke="var(--border)" stroke-width="0.5"/>
+            <rect x="60" y="340" width="280" height="40" rx="8" fill="var(--surface)"/>
+            <rect x="60" y="300" width="280" height="40" fill="var(--surface)"/>
+            <text x="200" y="302" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">correlation: dict</text>
+            <text x="200" y="318" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">trace_id · parent_obs_id</text>
+            <text x="200" y="332" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">· episode_id</text>
+            <text x="355" y="312" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">traçage</text>
+            <text x="355" y="325" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">causal</text>
+            <!-- Accolade gauche : encodé par cortex-insight -->
+            <line x1="52" y1="52" x2="48" y2="52" stroke="var(--accent)" stroke-width="1.5"/>
+            <line x1="48" y1="52" x2="48" y2="370" stroke="var(--accent)" stroke-width="1.5"/>
+            <line x1="48" y1="370" x2="52" y2="370" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="44" y="195" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)" transform="rotate(-90,44,195)">encodé par cortex-insight</text>
+          </svg>
+          <figcaption>Anatomie du schéma <code>Observation</code>. Le cadre amber délimite la struct complète. L'accolade gauche couvre tous les champs encodés par <code>cortex-insight</code>. La flèche pointillée depuis <code>actors</code> indique la résolution différée : l'identité des entités est établie par le Retain Job dans <code>cortex-memory</code>, jamais par insight.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Le Retain Job : consolidation dans la mémoire</h2>
+        <p>Le <strong>Retain Job</strong> réside entièrement dans <code>cortex-memory</code>. C'est le moteur de consolidation : pour chaque <code>Observation</code> reçue depuis le sujet NATS, il exécute une séquence déterministe.</p>
+        <p>Il commence par résoudre <code>actors</code> contre le graphe — chaque <code>ActorRef</code> s'associe soit à une entité existante, soit en crée une nouvelle. Ensuite, il déduplique contre le contenu existant du graphe. Il calcule le <code>schema_fit</code> de l'observation entrante par rapport à l'état courant du graphe. Il détecte les conflits. Il écrit les entités et les relations. Il met à jour <code>memory_strength</code> et applique le modèle de décroissance. Enfin, si l'impact de l'observation dépasse un seuil, il déclenche la régénération de <code>compiled_truth</code>.</p>
+        <p>Le Retain Job était initialement co-localisé avec les détecteurs d'insight. Il a été déplacé dans <code>cortex-memory</code> parce que la consolidation est structurellement un attribut de l'entrepôt : elle exige l'état du graphe, arbitre l'identité et contrôle l'actif long terme. Le placer dans le lac aurait contraint insight à suivre l'état du graphe — exactement le couplage que la séparation visait à prévenir.</p>
+        <div class="callout"><p>Le Retain Job est l'arbitre de l'identité, de la déduplication et de la vérité. Insight est le producteur d'observations brutes bien typées. Cette asymétrie n'est pas une commodité opérationnelle — c'est un invariant structurel.</p></div>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>Alternatives écartées</h2>
+        <p><strong>Toute la génération dans insight, <code>EntityProposal</code> comme sortie finale.</strong> Insight doit alors connaître l'état du graphe ; chaque pipeline se couple au schéma de l'entrepôt ; memory ne peut plus arbitrer la déduplication. Écarté.</p>
+        <p><strong>Toute la génération dans memory, insight comme lac passif.</strong> Memory accumule les parsers par domaine source ; le schéma générique de l'entrepôt est contaminé par des structures spécifiques ; memory devient massif. Écarté.</p>
+        <p><strong>Pipeline cross-service unique via NATS streaming.</strong> Complexité prématurée. Les deux phases sont logiquement distinctes ; les nommer explicitement avec un contrat typé est plus durable que de les aplatir en un seul pipeline. Écarté.</p>
+        <p><strong>Aucun découpage lac / entrepôt, statu quo mono-repo.</strong> Le schéma d'événements bruts est centré JSONL et inutilisable pour les e-mails ou Telegram. Le Retain Job couplerait le graphe à un seul domaine source. L'actif long terme du graphe vivrait dans le repo de l'analyseur — propriété inversée. Écarté.</p>
+        <p><strong>Découpage en trois (sources / extraction / store).</strong> Trop décomposé pour l'échelle actuelle. Le couplage entre extraction et données brutes justifie de les co-localiser dans insight. Écarté.</p>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>Les contrats comme source unique de vérité du protocole</h2>
+        <p>Les sujets NATS et les schémas de messages Pydantic — dont <code>Observation</code> — vivent dans le package partagé <code>roxabi-contracts</code>, et non à l'intérieur de l'un ou l'autre service. <code>cortex-insight</code> et <code>cortex-memory</code> déclarent tous deux <code>roxabi-contracts</code> comme dépendance versionnée explicite dans leur <code>pyproject.toml</code>.</p>
+        <p>La règle est inconditionnelle : ne jamais définir de sujets NATS ni de schémas de messages à l'intérieur d'un package de service. Les imports croisés entre insight et memory ne sont pas déclarés — tout import de ce type échoue à l'exécution. Le seul canal de communication cross-service valide est NATS, via les contrats.</p>
+        <p>Les tests d'intégration sont le seul site valide pour les assertions cross-service. Ils montent les deux services et un broker NATS local. Les tests unitaires au sein de chaque service testent ce service en isolation, contre le seul package de contrats. Cette frontière est imposée au niveau du graphe de dépendances, et non par convention.</p>
+        <div class="callout"><p><code>roxabi-contracts</code> est le SSoT du protocole. Le versionner indépendamment signifie qu'un changement de schéma est explicite, révisable, et visible simultanément par les deux consommateurs — pas un renommage interne silencieux dans l'un des services.</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

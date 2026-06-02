@@ -1,5 +1,6 @@
 /* Roxabi design tokens — from ~/.roxabi/forge/roxabi-site/brand/DESIGN.md (Brand Book v1.5 §6) */
 :root {
+  color-scheme: dark;            /* native UI (scrollbars, form controls) match the theme */
   /* Dark palette — marketing default */
   --bg: #0d1117;
   --panel: #13191f;
@@ -41,6 +42,7 @@
 /* Light palette — authorized for docs/reading; marketing default stays dark (Brand Book §6).
    Exposed via the navbar theme toggle per product decision 2026-06-01. */
 :root[data-theme="light"] {
+  color-scheme: light;
   --bg: #f8f7f4;
   --panel: #f0ede8;
   --surface: #f0ede8;

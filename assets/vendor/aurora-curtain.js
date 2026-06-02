@@ -179,6 +179,21 @@
       }
     }
 
+    // Reduced motion: draw a single frozen frame and stop — no rAF loop, no GPU
+    // churn, no mouse interaction. (Either entry point may reach here on dark.)
+    if (prefersReduced) {
+      resize();
+      gl.uniform1f(uTime, 0.0);
+      gl.uniform1f(uWaveSpeed, waveSpeedVal);
+      gl.uniform1f(uLineCount, lineCountVal);
+      gl.uniform1f(uAmplitude, amplitudeVal);
+      gl.uniform1f(uRotation, rotationVal);
+      gl.uniform1f(uDragAngle, 0.0);
+      gl.uniform2f(uMouse, -1.0, -1.0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      return;
+    }
+
     function render(now) {
       if (!running) { requestAnimationFrame(render); return; }
       if (needsResize) resize();

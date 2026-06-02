@@ -1,0 +1,314 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">DOC-05 · LIVING MEMORY</p>
+    <h1>Temporal Decay</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Why a living memory must forget: the exponential decay and reinforcement-on-access model that keeps the knowledge graph sharp over time.</p>
+    <p class="meta">Chapter 5 of 6 · Roxabi Cortex</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — Why Forgetting Is a Feature</a>
+      <a href="#sec-2">2 — The Ebbinghaus Forgetting Curve</a>
+      <a href="#sec-3">3 — Two Decay Surfaces</a>
+      <a href="#sec-4">4 — The memory_strength Formula</a>
+      <a href="#sec-5">5 — Reinforcement on Access</a>
+      <a href="#sec-6">6 — Decay Triggers and Scheduling</a>
+      <a href="#sec-7">7 — Thresholds and Behavioral Consequences</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Why Forgetting Is a Feature</h2>
+        <p>A knowledge graph that accumulates without pruning drifts toward noise. Stale relations resurface in search results, prompt context bloats with outdated facts, and recall latency grows as the graph expands indiscriminately. Forgetting is not a failure mode — it is a design requirement.</p>
+        <p>The biological precedent is precise: the human brain forgets selectively, not randomly. Working memory stays usable because the hippocampus deprioritizes traces that go unreinforced. Cortex inherits that principle directly.</p>
+        <p>The design goal is <strong>progressive, non-destructive decay</strong>. Nothing is ever deleted. Salience is reduced until explicitly revived. The Raw Layer is immutable by invariant: even an entity decayed to near-zero strength can be resurrected by replaying the raw event log. Decay operates on the Semantic and Compiled layers only.</p>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>The Ebbinghaus Forgetting Curve</h2>
+        <p>Hermann Ebbinghaus (1885) established the first quantified law of human forgetting: retention decays exponentially with elapsed time since encoding. The curve is given by <code>R = exp(−Δt / σ)</code>, where <code>Δt</code> is elapsed time and <code>σ</code> is the stability parameter (equivalently, <code>R = 0.5^(Δt / half_life)</code> — both forms express the same exponential envelope).</p>
+        <p>Cortex treats the Ebbinghaus curve as its baseline — the shape of decay before any reinforcement is applied. The practical implication is deterministic: an entity left untouched will cross the invisibility threshold at a predictable time. The system does not need heuristics to decide when to suppress it; the math does.</p>
+
+        <figure class="doc-figure" style="margin-top:var(--s-xl)">
+          <svg viewBox="0 0 600 280" role="img" aria-label="Decay and reinforcement curve: memory_strength over time with retrieval spikes" style="width:100%;height:auto">
+            <defs>
+              <marker id="ah-en" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+              </marker>
+            </defs>
+            <!-- Grid background -->
+            <rect width="600" height="280" fill="var(--panel)" rx="8"/>
+            <!-- Grid lines -->
+            <line x1="60" y1="20" x2="60" y2="240" stroke="var(--border)" stroke-width="1"/>
+            <line x1="60" y1="240" x2="580" y2="240" stroke="var(--border)" stroke-width="1"/>
+            <!-- Vertical grid ticks at 30d intervals: x=60+(30/120)*520 per 30d -->
+            <line x1="190" y1="20" x2="190" y2="240" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,4"/>
+            <line x1="320" y1="20" x2="320" y2="240" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,4"/>
+            <line x1="450" y1="20" x2="450" y2="240" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,4"/>
+            <!-- Horizontal grid ticks at 0.5 -->
+            <line x1="60" y1="130" x2="580" y2="130" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,4"/>
+            <!-- Y-axis labels: strength values. Y range: 240 (=0.0) to 20 (=1.0), so y = 240 - strength*220 -->
+            <text x="50" y="244" text-anchor="end" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">0.0</text>
+            <text x="50" y="178" text-anchor="end" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">0.2</text>
+            <!-- 0.2 threshold line y=240-0.2*220=196 -->
+            <line x1="60" y1="196" x2="580" y2="196" stroke="var(--accent)" stroke-width="1" stroke-dasharray="5,4" opacity="0.7"/>
+            <!-- 0.35 threshold line y=240-0.35*220=163 -->
+            <line x1="60" y1="163" x2="580" y2="163" stroke="var(--accent)" stroke-width="1" stroke-dasharray="5,4" opacity="0.7"/>
+            <text x="50" y="167" text-anchor="end" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">0.35</text>
+            <text x="50" y="134" text-anchor="end" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">0.5</text>
+            <text x="50" y="24" text-anchor="end" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">1.0</text>
+            <!-- X-axis labels (days 0,30,60,90,120). x = 60 + (day/120)*520 -->
+            <text x="60" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">0d</text>
+            <text x="190" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">30d</text>
+            <text x="320" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">60d</text>
+            <text x="450" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">90d</text>
+            <text x="580" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">120d</text>
+            <!-- Axis labels -->
+            <text x="320" y="274" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-dim)">Time (days)</text>
+            <!-- Threshold labels -->
+            <text x="583" y="167" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">auto-inject threshold</text>
+            <text x="583" y="200" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">link visibility threshold</text>
+            <!-- Red shaded zone below 0.35 threshold (y=163 to y=240), between curve and axis -->
+            <!-- Approximate: shade from x=60 to x=580, y=163 to y=240 -->
+            <rect x="60" y="163" width="520" height="77" fill="var(--accent)" opacity="0.06"/>
+            <!-- Amber shaded zone above 0.35 -->
+            <rect x="60" y="20" width="520" height="143" fill="var(--accent)" opacity="0.04"/>
+            <!--
+              Decay curve segments with reinforcement spikes.
+              half_life=45d. Segment 1: day 0→20, starts at 1.0, decays to 0.5^(20/45)=0.737
+              x(d) = 60 + (d/120)*520
+              y(s) = 240 - s*220
+              Segment 1: x0=60,y0=20 → x_20=147,y_20=240-0.737*220=78.9≈79
+              After spike at day 20: strength→0.85, y=240-0.85*220=53
+              Segment 2: x_20=147 to x_55=298.8≈299
+                s(t) = 0.85 * 0.5^((t-20)/45)
+                at t=55: s = 0.85 * 0.5^(35/45) = 0.85 * 0.583 = 0.496, y=240-0.496*220=130.9≈131
+              After spike at day 55: strength→0.78, y=240-0.78*220=68
+              Segment 3: x_55=299 to x_120=580
+                s(t) = 0.78 * 0.5^((t-55)/45)
+                at t=120: s = 0.78 * 0.5^(65/45) = 0.78 * 0.360 = 0.281, y=240-0.281*220=178.2≈178
+            -->
+            <!-- Segment 1: smooth exponential from (60,20) to (147,79) -->
+            <path d="M60,20 C80,30 120,55 147,79" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
+            <!-- Retrieval spike 1 at day 20 (x=147): from y=79 up to y=53 (strength 0.85) -->
+            <line x1="147" y1="79" x2="147" y2="53" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah-en)"/>
+            <!-- Spike label -->
+            <text x="151" y="50" font-family="var(--font-mono)" font-size="10" fill="var(--accent)">retrieval +boost</text>
+            <!-- Segment 2: from (147,53) to (299,131) -->
+            <path d="M147,53 C190,70 250,100 299,131" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
+            <!-- Retrieval spike 2 at day 55 (x=299): from y=131 up to y=68 (strength 0.78) -->
+            <line x1="299" y1="131" x2="299" y2="68" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah-en)"/>
+            <text x="303" y="65" font-family="var(--font-mono)" font-size="10" fill="var(--accent)">retrieval +boost</text>
+            <!-- Segment 3: from (299,68) to (580,178) -->
+            <path d="M299,68 C360,95 470,145 580,178" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
+            <!-- Legend box -->
+            <rect x="62" y="22" width="148" height="22" rx="3" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <line x1="70" y1="33" x2="90" y2="33" stroke="var(--accent)" stroke-width="2.5"/>
+            <text x="96" y="37" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">memory_strength(t)</text>
+          </svg>
+          <figcaption>Decay and reinforcement curve: a single entity's <code>memory_strength</code> over time. Exponential decay is interrupted by retrieval events that spike strength upward and reset the decay clock. The two horizontal bands mark the auto-inject and link-visibility thresholds.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Two Decay Surfaces: Links and Entities</h2>
+        <p>Decay does not apply uniformly to the graph. It operates independently on two distinct structures, each with its own formula and configurable parameters.</p>
+        <p><strong>Relations / edges</strong> use <code>weight_temporal = exp(−Δt / σ)</code>, where <code>Δt</code> is days since last reinforcement and <code>σ</code> is a half-life configurable per relation class:</p>
+        <pre class="code"><code>σ = 90d   # foundational relations (e.g. is_core_concept_of)
+σ = 30d   # normal relations
+σ =  7d   # weak / contextual relations</code></pre>
+        <p><strong>Entity memories</strong> use the full <code>memory_strength</code> model described in the next section. This surface is more sophisticated because entities carry semantic weight that is injected directly into prompt context.</p>
+        <p>The separation is intentional. A relation can fade while the entities it connects remain strong, and vice versa. Decay on edges prunes stale graph topology; decay on entities controls prompt salience. Both run independently, on different schedules, with different thresholds.</p>
+
+        <figure class="doc-figure" style="margin-top:var(--s-xl)">
+          <svg viewBox="0 0 560 220" role="img" aria-label="Dual decay surfaces: relations and entities with their triggers" style="width:100%;height:auto">
+            <defs>
+              <marker id="ah2-en" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+              </marker>
+            </defs>
+            <rect width="560" height="220" fill="var(--panel)" rx="8"/>
+            <!-- Trigger boxes at top center -->
+            <rect x="185" y="14" width="160" height="32" rx="5" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="265" y="28" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Nightly CRON</text>
+            <text x="265" y="41" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">global recalc</text>
+            <rect x="185" y="54" width="160" height="32" rx="5" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="265" y="68" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Background</text>
+            <text x="265" y="81" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">per read / write</text>
+            <!-- Left box: Relations / Edges -->
+            <rect x="20" y="100" width="210" height="80" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="125" y="118" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)" font-weight="600">Relations / Edges</text>
+            <text x="125" y="134" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">weight_temporal = exp(−Δt/σ)</text>
+            <text x="30" y="151" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">σ=7d  contextual</text>
+            <text x="30" y="164" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">σ=30d normal</text>
+            <text x="30" y="177" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">σ=90d foundational</text>
+            <!-- Right box: Entities / Nodes -->
+            <rect x="330" y="100" width="210" height="80" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="435" y="118" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)" font-weight="600">Entities / Nodes</text>
+            <text x="435" y="134" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">memory_strength = base×decay×boost</text>
+            <!-- Sub-boxes inside entities box -->
+            <rect x="338" y="142" width="58" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="367" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">retrieval_boost</text>
+            <rect x="402" y="142" width="58" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="431" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">reward_factor</text>
+            <rect x="466" y="142" width="66" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="499" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">emotional_mult</text>
+            <!-- Arrows from CRON box down-left and down-right -->
+            <line x1="220" y1="30" x2="140" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-en)"/>
+            <line x1="310" y1="30" x2="400" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-en)"/>
+            <!-- Arrows from Background box -->
+            <line x1="220" y1="70" x2="140" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-en)"/>
+            <line x1="310" y1="70" x2="400" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-en)"/>
+            <!-- Threshold zones below boxes -->
+            <rect x="20" y="186" width="210" height="22" rx="4" fill="var(--accent)" opacity="0.08"/>
+            <text x="125" y="201" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">&lt; 0.2 → invisible in search</text>
+            <rect x="330" y="186" width="210" height="22" rx="4" fill="var(--accent)" opacity="0.08"/>
+            <text x="435" y="201" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">&lt; 0.35 → no auto-inject</text>
+          </svg>
+          <figcaption>Dual decay surfaces. Relations and entities decay independently, triggered by the nightly CRON job and the per-event background pass. Each surface has its own formula, configurable half-lives, and distinct behavioral threshold.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>The memory_strength Formula</h2>
+        <p>The simplified model (hippo-memory lineage, implementation variant):</p>
+        <pre class="code"><code>memory_strength = base_strength × (1 + reinforcement_factor) × exp(−Δt / half_life)</code></pre>
+        <p>The extended model from the architectural specification decomposes each factor explicitly:</p>
+        <pre class="code"><code>strength(t)      = base × decay × retrieval_boost × emotional_multiplier
+
+decay            = 0.5 ^ (Δt / effective_half_life)
+effective_half_life = half_life × reward_factor
+reward_factor    = 1 + 0.5 × ((pos − neg) / (pos + neg + 1))
+
+retrieval_boost  = 1 + 0.1 × log₂(retrieval_count + 1)
+
+emotional_mult   = neutral:1.0 | positive:1.3 | negative:1.5 | critical:2.0</code></pre>
+        <p>Parameter semantics: <code>base_strength</code> is the initial strength at creation, in <code>[0.0, 1.0]</code>. <code>half_life</code> is configurable per entity class — 45d for project entities, 10d for minor concepts, 30d for behavioral patterns, 90d for world knowledge, 60d for operator instructions. All values live in <code>config/decay.yaml</code>.</p>
+        <p>The <code>reward_factor</code> extends the effective half-life proportionally to positive feedback history. An entity that has consistently led to good outcomes gets a longer natural life — modeling dopamine-modulated synaptic consolidation. The <code>emotional_mult</code> applies at encoding time: negative and critical memories are retained longer, matching the well-established negativity bias in human memory (emotionally charged traces are more durable).</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Reinforcement on Access — Spaced Repetition</h2>
+        <p>Each retrieval — whether from a search hit, a prompt injection, or a new Raw mention of the entity — reinforces its memory. In the simplified model this adds <code>+0.3</code> to <code>reinforcement_factor</code>. In the extended model it increments <code>retrieval_count</code>, which feeds the <code>retrieval_boost</code> term via a logarithmic scale (diminishing returns on repeated retrieval).</p>
+        <p>The cognitive basis is the <strong>testing effect</strong> (Roediger &amp; Karpicke, 2006): the act of retrieving a memory strengthens it more than passive re-exposure. This maps onto hippocampal replay — recalling re-encodes the trace at a higher stability. Cortex treats every search hit as a recall event and applies the boost accordingly.</p>
+        <p>The <code>reward_factor</code> extends the effective half-life when an entity has accumulated positive feedback (<code>pos &gt; neg</code>), operationalizing the principle that reward-predicting representations are preferentially consolidated (Schultz, 1998). Entities that have been useful stay useful longer.</p>
+        <p>Nightly, a <code>Compiled Truth</code> document is regenerated for each active entity. This is the system's equivalent of memory reconsolidation: each recall cycle rewrites the synthesized artifact with current strength weighting, so the output reflects the graph's present state rather than its state at last ingestion.</p>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>Decay Triggers and Scheduling</h2>
+        <p>Four distinct trigger modes drive decay and reinforcement. They are not mutually exclusive — a single event can activate more than one:</p>
+        <div style="overflow-x:auto;margin-top:var(--s-lg)">
+          <table style="width:100%;border-collapse:collapse;font-size:.9rem">
+            <thead>
+              <tr>
+                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Action</th>
+                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Type</th>
+                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Frequency</th>
+                <th style="text-align:left;padding:8px 12px;border-bottom:1px solid var(--border-hi);font-family:var(--font-mono);font-size:.8rem;color:var(--text);font-weight:600">Target</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Relation update</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Background</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Per event</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">weight_temporal</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Entity retrieval</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Background</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Per search</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">memory_strength</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">New Raw input</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Event-triggered</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">Immediate</td>
+                <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">reinforcement + Retain Job</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;color:var(--text-muted)">Nightly Consolidation</td>
+                <td style="padding:8px 12px;color:var(--text-muted)">CRON</td>
+                <td style="padding:8px 12px;color:var(--text-muted)">Every night</td>
+                <td style="padding:8px 12px;font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted)">Global decay + consolidation</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:var(--s-lg)">Background decay runs inline on every read/write path — no separate daemon is required. The nightly CRON job performs the bulk recalculation and triggers the sleep-cycle consolidation pass, during which <code>Compiled Truth</code> documents are regenerated and stale entities are suppressed below threshold.</p>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>Thresholds and Behavioral Consequences</h2>
+        <p>Two thresholds govern behavioral state transitions. Neither triggers deletion.</p>
+        <p><code>weight_temporal &lt; 0.2</code> on a relation: the edge becomes effectively invisible in multi-strategy search. It remains queryable via explicit temporal search, but it will not surface in standard graph traversal or prompt context assembly.</p>
+        <p><code>memory_strength &lt; 0.35</code> on an entity: the <code>Compiled Truth</code> document for that entity is no longer auto-injected into prompts. The Markdown file persists on disk and retains its search index entry, but it loses priority in the ranking pass.</p>
+        <p>The Raw Layer is immutable. Resurrection is always possible via <code>/rebuild compiled &lt;slug&gt;</code> or by re-encountering the entity in new raw input. Decay is a gradient, not a cliff — no state change is irreversible from the operator's perspective.</p>
+
+        <figure class="doc-figure" style="margin-top:var(--s-xl)">
+          <svg viewBox="0 0 500 230" role="img" aria-label="Memory lifecycle state machine: four states and transitions" style="width:100%;height:auto">
+            <defs>
+              <marker id="ah3-en" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+              </marker>
+              <marker id="ah3g-en" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
+              </marker>
+            </defs>
+            <rect width="500" height="230" fill="var(--panel)" rx="8"/>
+            <!-- ACTIVE node: top-center (x=200,y=20,w=140,h=40) -->
+            <rect x="180" y="20" width="140" height="44" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="250" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" font-weight="700">ACTIVE</text>
+            <text x="250" y="54" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">strength ≥ 0.35 · prompt-injected</text>
+            <!-- FADING node: middle-left (x=20,y=110,w=140,h=44) -->
+            <rect x="20" y="110" width="150" height="44" rx="6" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="95" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="var(--text-muted)" font-weight="700">FADING</text>
+            <text x="95" y="144" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">0.2–0.35 · searchable only</text>
+            <!-- SUPPRESSED node: bottom-center (x=170,y=185,w=160,h=40) -->
+            <rect x="170" y="185" width="160" height="38" rx="6" fill="var(--surface)" stroke="var(--text-dim)" stroke-width="1.5"/>
+            <text x="250" y="202" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="var(--text-muted)" font-weight="700">SUPPRESSED</text>
+            <text x="250" y="216" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">&lt; 0.2 · graph-invisible</text>
+            <!-- REVIVED node: right (x=350,y=110,w=130,h=44) -->
+            <rect x="350" y="110" width="130" height="44" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="415" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" font-weight="700">REVIVED</text>
+            <text x="415" y="144" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">reinjected</text>
+            <!-- Arrow: ACTIVE → FADING -->
+            <line x1="200" y1="64" x2="130" y2="110" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah3-en)"/>
+            <text x="140" y="92" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">nightly decay</text>
+            <!-- Arrow: FADING → SUPPRESSED -->
+            <line x1="140" y1="154" x2="210" y2="185" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah3-en)"/>
+            <text x="152" y="180" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">decay continues</text>
+            <!-- Arrow: SUPPRESSED → REVIVED (green) -->
+            <line x1="330" y1="204" x2="415" y2="154" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah3g-en)"/>
+            <text x="400" y="188" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">raw input</text>
+            <text x="400" y="200" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">or /rebuild</text>
+            <!-- Arrow: REVIVED → ACTIVE (green) -->
+            <line x1="415" y1="110" x2="320" y2="64" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah3g-en)"/>
+            <text x="386" y="86" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">strength restored</text>
+            <!-- Self-loop: ACTIVE → ACTIVE (retrieval boost) -->
+            <path d="M250,20 C260,-10 310,-10 320,20" stroke="var(--accent)" stroke-width="1.5" fill="none" marker-end="url(#ah3-en)"/>
+            <text x="286" y="4" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">retrieval +boost</text>
+          </svg>
+          <figcaption>Memory lifecycle state machine. An entity moves from <strong>Active</strong> to <strong>Fading</strong> to <strong>Suppressed</strong> as nightly decay accumulates. Retrieval events apply a boost at any state. Resurrection via new raw input or <code>/rebuild compiled</code> restores an entity to <strong>Revived</strong>, then back to <strong>Active</strong> once strength crosses the threshold.</figcaption>
+        </figure>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

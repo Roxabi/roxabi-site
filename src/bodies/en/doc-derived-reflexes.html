@@ -1,0 +1,298 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">DOC-06 · AGENT COGNITION</p>
+    <h1>Derived Reflexes</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">A derived reflex is not a rule — it is the action sequence that emerges inevitably when an agent holds the right atomic beliefs simultaneously.</p>
+    <p class="meta">Chapter 6 of 6 · Roxabi Cortex</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — Beliefs, Atoms, and the Pipe</a>
+      <a href="#sec-2">2 — Maxims: Debugging and Operations</a>
+      <a href="#sec-3">3 — Maxims: Security, Concurrency, and Fix-Agents</a>
+      <a href="#sec-4">4 — Maxims: Refactoring, Tests, and Dependencies</a>
+      <a href="#sec-5">5 — The Meta-Maxim</a>
+      <a href="#sec-6">6 — The Grammar of Derivation</a>
+      <a href="#sec-7">7 — What This Demonstrates</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Beliefs, Atoms, and the Pipe</h2>
+        <p>A belief expressed as a single natural-language sentence is a <strong>packet</strong>. It compresses approximately six distinct atomic beliefs — propositions that must be unpacked individually using set-algebra notation: relations between sets plus predicate logic. The unpacking is not interpretation; it is a deterministic expansion of what the sentence already claims.</p>
+        <p>A <strong>reflex</strong> is not a belief. It is the action sequence that is forced into existence when all atomic beliefs are held simultaneously. It is <em>derived</em> by composition — never written as a separate rule, never maintained as a gate. The pipeline operator <code>→</code> is functional: the output of step <em>n</em> is the sole input to step <em>n+1</em>. No global variable crosses step boundaries.</p>
+        <p>The Dilts logical-level model places beliefs at level 4 (Beliefs/Values). Reflexes live at levels 2–3 (Behaviour / Capacity). The higher level governs the lower: a correctly formulated belief at level 4 makes the reflex at level 2 automatic. This is the <em>innate &gt; triggered</em> principle — an emergent reflex needs no trigger condition written separately.</p>
+        <p>Anti-beliefs — propositions of the form <code>X ∉ Y</code> — require no explicit prohibition. If <code>Corr_valides ⊆ Archi</code> and <code>Patch ∉ Archi</code>, then <code>Patch ∉ Corr_valides</code> is <em>deduced</em> by set containment. The exclusion is logically implied, not manually enforced. This is why belief-level correctness is more robust than gate-level correctness: gates can be bypassed; deductions cannot.</p>
+        <div class="callout" style="border-left:3px solid var(--accent);padding:var(--s-md) var(--s-lg);background:var(--surface);border-radius:0 var(--r-lg) var(--r-lg) 0;margin-top:var(--s-lg)">
+          <p><strong>Key figures:</strong> ≈6 atomic beliefs per natural-language belief · derivation maps level 4 → levels 2–3 · 0 separate gates need to be written once beliefs are well-formed.</p>
+        </div>
+        <figure class="doc-figure" style="margin-top:var(--s-xl)">
+          <svg viewBox="0 0 720 320" role="img" aria-label="Belief composition into a derived reflex versus the naive short-circuit" style="width:100%;height:auto">
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto">
+                <polygon points="0 0, 8 3.5, 0 7" fill="var(--accent)"/>
+              </marker>
+              <marker id="arr-red" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto">
+                <polygon points="0 0, 8 3.5, 0 7" fill="var(--text-muted)"/>
+              </marker>
+            </defs>
+            <!-- Background -->
+            <rect width="720" height="320" fill="var(--surface)" rx="10"/>
+            <!-- Left column label -->
+            <text x="20" y="30" font-family="var(--font-mono)" font-size="11" fill="var(--accent)" letter-spacing="0.12em" text-anchor="start">ATOMIC BELIEFS — LEVEL 4</text>
+            <!-- Atomic belief boxes -->
+            <rect x="20" y="44" width="210" height="36" rx="6" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="30" y="67" font-family="var(--font-mono)" font-size="12" fill="var(--text)">C₁: obs(P) ⊊ P</text>
+            <rect x="20" y="90" width="210" height="36" rx="6" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="30" y="113" font-family="var(--font-mono)" font-size="12" fill="var(--text)">C₂: obs(P) ⊆ Sym(P)</text>
+            <rect x="20" y="136" width="210" height="36" rx="6" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="30" y="159" font-family="var(--font-mono)" font-size="12" fill="var(--text)">C₃: |Sym(P)| ≥ 1</text>
+            <rect x="20" y="182" width="210" height="36" rx="6" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="30" y="205" font-family="var(--font-mono)" font-size="12" fill="var(--text)">C₄: ∃ RC(P) : Sym ⊆ effets</text>
+            <!-- Compose arrow -->
+            <line x1="240" y1="140" x2="310" y2="140" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#arr)"/>
+            <text x="261" y="133" font-family="var(--font-mono)" font-size="10" fill="var(--accent)">compose</text>
+            <!-- Right column label top -->
+            <text x="320" y="30" font-family="var(--font-mono)" font-size="11" fill="var(--accent)" letter-spacing="0.12em">DERIVED REFLEX R — LEVELS 2–3</text>
+            <!-- Derived reflex pipeline boxes -->
+            <rect x="320" y="44" width="88" height="36" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="364" y="67" font-family="var(--font-mono)" font-size="11" fill="var(--text)" text-anchor="middle">obs(P)</text>
+            <line x1="408" y1="62" x2="428" y2="62" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arr)"/>
+            <rect x="432" y="44" width="88" height="36" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="476" y="67" font-family="var(--font-mono)" font-size="11" fill="var(--text)" text-anchor="middle">Sym(P)</text>
+            <line x1="520" y1="62" x2="540" y2="62" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arr)"/>
+            <rect x="544" y="44" width="88" height="36" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="588" y="67" font-family="var(--font-mono)" font-size="11" fill="var(--text)" text-anchor="middle">RC(P)</text>
+            <line x1="632" y1="62" x2="652" y2="62" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arr)"/>
+            <rect x="608" y="44" width="96" height="36" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="656" y="67" font-family="var(--font-mono)" font-size="11" fill="var(--text)" text-anchor="middle">Corr(P)</text>
+            <!-- Separator -->
+            <line x1="320" y1="120" x2="700" y2="120" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"/>
+            <!-- Naive reflex label -->
+            <text x="320" y="148" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)" letter-spacing="0.08em">NAIVE REFLEX ✗</text>
+            <!-- Naive pipeline -->
+            <rect x="320" y="158" width="88" height="36" rx="6" fill="var(--panel)" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="5 3"/>
+            <text x="364" y="181" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)" text-anchor="middle">obs(P)</text>
+            <line x1="408" y1="176" x2="478" y2="176" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arr-red)"/>
+            <rect x="482" y="158" width="130" height="36" rx="6" fill="var(--panel)" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="5 3"/>
+            <text x="547" y="181" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)" text-anchor="middle">patch(obs(P))</text>
+            <!-- Strikethrough on naive pipeline -->
+            <line x1="320" y1="158" x2="620" y2="200" stroke="var(--text-muted)" stroke-width="1.5" opacity="0.5"/>
+            <line x1="620" y1="158" x2="320" y2="200" stroke="var(--text-muted)" stroke-width="1.5" opacity="0.5"/>
+            <!-- Annotation -->
+            <text x="320" y="228" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">skips C₁…C₄ — patches the symptom, not the cause</text>
+          </svg>
+          <figcaption>Atomic beliefs at level 4 compose into a derived reflex. The naive short-circuit skips intermediate steps, patching the observed symptom directly.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Maxims: Debugging and Operations</h2>
+        <p>Three engineering maxims for the ops and debug domains. Each is given with its formal decomposition so the derivation is visible, not asserted.</p>
+
+        <p><strong>R₁ — "Every problem is a symptom"</strong> (root-cause / no-patch posture)</p>
+        <p>Let <code>P</code> := problem · <code>obs(P)</code> := what is observed · <code>Sym(P)</code> := symptom set · <code>RC(P)</code> := root cause(s) · <code>Corr</code> split into <code>Patch</code> and <code>Archi</code> where <code>Patch ∩ Archi = ∅</code>.</p>
+        <p>Atomic beliefs: <code>C₁: obs(P) ⊊ P</code> (observation is strictly smaller than the whole problem) · <code>C₂: obs(P) ⊆ Sym(P)</code> · <code>C₃: |Sym(P)| ≥ 1, often &gt; 1</code> · <code>C₄: ∃ RC(P) such that Sym(P) ⊆ effets(RC(P))</code> · anti-belief <code>C̄₅: Patch ∉ Corr_valides</code> · <code>C₆: Corr_valides ⊆ Archi</code>.</p>
+        <p>Derived reflex R₁: <code>obs(P) → enumerer(Sym(P)) → find(RC(P)) → architect(Corr(P))</code>.<br>
+        Naive reflex ✗: <code>obs(P) → patch(obs(P))</code> — seeing a symptom and patching it is a workaround, not a correction.</p>
+
+        <p><strong>"An exit code reports; it does not judge"</strong> (ops / CI domain)</p>
+        <p>Let <code>G</code> := gate or scanner · <code>exit(G) ≡ ranOK</code> (exit 0 means "ran without crash", not "nothing found") · <code>verdict(G) ⊥ exit(G)</code> (the verdict is orthogonal to the exit code) · anti-belief: <code>found(G) ≠ ∅ ⇏ exit(G)=broken</code> · <code>verdict(G) ∈ report(G)</code>.</p>
+        <p>Derived reflex: <code>run(G) → exit := ranOK → write(verdict→report) → gate reads report</code>.<br>
+        Naive reflex ✗: <code>found ≠ ∅ → exit ≠ 0 → set -e short-circuits the pipeline</code> — the CI never reaches the report, and findings are lost.</p>
+
+        <p><strong>"Do not diagnose a hang from a short snapshot"</strong> (debug domain)</p>
+        <p>Let <code>H</code> := hang hypothesis · <code>w</code> := observation window · <code>D</code> := expected task duration.</p>
+        <p>Atomic beliefs: <code>C₁: obs(w) where w ≪ D ⊄ preuve(H)</code> (too short a window does not constitute evidence) · <code>C₂: silence(w) ⊆ {hang, work-in-progress}</code> (silence is ambiguous) · <code>C₃: |causes(silence)| &gt; 1</code> (futex_wait + zero IO ≠ deadlock).</p>
+        <p>Derived reflex: <code>suspect(hang) → set w := D → mesurer(w) → conclude</code>.<br>
+        Naive reflex ✗: <code>obs(1s) → conclude(hang)</code> — a one-second absence of output is not a hang.</p>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Maxims: Security, Concurrency, and Fix-Agents</h2>
+
+        <p><strong>"Every input is hostile until proven otherwise"</strong> (security domain)</p>
+        <p>Let <code>I</code> := input · <code>trust(I) = ⊥</code> by default · <code>valid(I) ⇒ trust(I)</code> (only explicit validation elevates trust) · anti-belief: <code>I ∉ trusted ⇒ I ∉ {query, exec, render}</code>.</p>
+        <p>Derived reflex: <code>receive(I) → validate → sanitize → use</code>.<br>
+        Naive reflex ✗: <code>receive(I) → use(I)</code> — treating arrival as authorization.</p>
+
+        <p><strong>"Verify the canonical source after a push"</strong> (concurrent sessions domain)</p>
+        <p>Let <code>S</code> := shared state · <code>report(success) ⊊ vérité(S)</code> (the success report is a proper subset of ground truth) · <code>∃ concurrent mutators</code> such that <code>S</code> can drift between the push and the next read — other sessions, auto-merge, or CI can mutate <code>S</code> mid-task.</p>
+        <p>Derived reflex: <code>push → re-read(canonical(S)) → assert → continue</code>.<br>
+        Naive reflex ✗: <code>push → trust(report) → continue</code> — acting on a snapshot that may already be stale.</p>
+
+        <p><strong>"Verify the target exists before applying a fix"</strong> (fix-agents domain)</p>
+        <p>Let <code>T</code> := target file · <code>F</code> := fix · existence of <code>T</code> is a precondition for <code>apply(F)</code> · anti-belief: <code>¬exists(T) ⇒ apply(F)</code> is invalid — correcting an absent target is the silent revert of a strategic decision.</p>
+        <p>Derived reflex: <code>receive(F) → assert exists(T) → else escalate → apply(F)</code>.<br>
+        Naive reflex ✗: <code>receive(F) → apply(F)</code> — creating a file that was deliberately deleted.</p>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Maxims: Refactoring, Tests, and Dependencies</h2>
+
+        <p><strong>"An abstraction earns its name at three uses"</strong> (refactoring — rule of three)</p>
+        <p>Let <code>A</code> := abstraction · <code>uses(A)</code> := set of usage sites.</p>
+        <p>Atomic beliefs: <code>C₁: |uses(A)| ≥ 3 ⇒ A justified</code> (three independent uses validate that the abstraction has a stable boundary) · anti-belief <code>C̄₂: |uses(A)| &lt; 3 ⇒ A ∉ justified</code> (coupling cost exceeds benefit when the abstraction has fewer than three uses).</p>
+        <p>Derived reflex: <code>repeated pattern → count(uses) → if ≥ 3 abstract → else duplicate</code>.<br>
+        Naive reflex ✗: <code>pattern seen 2× → abstract immediately</code> — premature abstraction couples two sites before the boundary is known.</p>
+
+        <p><strong>"Every untested code is presumed broken"</strong> (tests domain)</p>
+        <p>Let <code>C</code> := code · <code>¬tested(C) ⇒ correct(C) unknown</code> · anti-belief: <code>"it compiles" ∉ proof(correct)</code> · <code>|paths(C)| &gt; 1</code> in any non-trivial function.</p>
+        <p>Derived reflex: <code>write(C) → enumerate(paths) → cover → green</code>.<br>
+        Naive reflex ✗: <code>write(C) → ship</code> — compilation is not correctness.</p>
+
+        <p><strong>"Every dependency is a debt"</strong> (dependencies domain)</p>
+        <p>Let <code>D</code> := dependency · <code>coût(D) = {attack surface, mandatory updates, CVE exposure, transitive graph}</code> · adding <code>D</code> unconditionally increments that debt · anti-belief: "it's free" is false for any non-zero transitive closure.</p>
+        <p>Derived reflex: <code>need → seek(stdlib) → else evaluate coût(D) → pin → justify</code>.<br>
+        Naive reflex ✗: <code>need → install immediately</code> — treating convenience as zero-cost.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>The Meta-Maxim: Correct at the Right Logical Level</h2>
+        <p><strong>"Correcting at the same logical level is a loop."</strong></p>
+        <p>Let <code>L</code> := current logical level · <code>fix@L</code> := applying a correction at level <code>L</code>.</p>
+        <p>Atomic beliefs: <code>C₁: recurring problem @L ⇒ probable cause @L+1</code> (recurrence at a level points to a structural fault in the level above) · anti-belief <code>C̄₂: fix@L on a cause @L+1 = palliative</code> (the symptom returns because the cause is untouched).</p>
+        <p>Derived reflex: <code>recurrence@L → ascend(L+1) → fix@L+1</code>.<br>
+        Naive reflex ✗: <code>recurrence@L → re-fix@L</code> — a saga of fifty commits over thirty-six hours, all at the tactical layer, never closes a structural debt. The loop continues until someone climbs a level.</p>
+        <p>This is the closing principle of the framework. It applies to every other maxim. When a reflex keeps failing, the fault is not in the reflex — it is in the beliefs at level 4. The correct move is to reformulate the belief one level up, then re-derive the reflex. The reflex is downstream; the belief is the root.</p>
+        <div class="callout" style="border-left:3px solid var(--accent);padding:var(--s-md) var(--s-lg);background:var(--surface);border-radius:0 var(--r-lg) var(--r-lg) 0;margin-top:var(--s-lg)">
+          <p>When a reflex misfires repeatedly: do not patch the reflex. Climb one level, inspect the belief, reformulate it, re-derive. <code>recurrence@L → ascend(L+1) → fix@L+1</code>.</p>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>The Grammar of Derivation</h2>
+        <p>The derivation is mechanical, not interpretive. Each logical form of an atomic belief maps to a specific step type in the reflex. The table is the grammar.</p>
+
+        <figure class="doc-figure" style="margin-top:var(--s-lg)">
+          <svg viewBox="0 0 680 310" role="img" aria-label="Grammar table: logical form to step type in the derived reflex" style="width:100%;height:auto">
+            <rect width="680" height="310" fill="var(--surface)" rx="10"/>
+            <rect x="12" y="12" width="4" height="286" fill="var(--accent)" rx="2"/>
+            <!-- Header row -->
+            <rect x="20" y="14" width="656" height="36" fill="var(--panel)" rx="6"/>
+            <text x="40" y="37" font-family="var(--font-mono)" font-size="12" fill="var(--accent)" font-weight="bold">FORM</text>
+            <text x="200" y="37" font-family="var(--font-mono)" font-size="12" fill="var(--accent)" font-weight="bold">READING</text>
+            <text x="400" y="37" font-family="var(--font-mono)" font-size="12" fill="var(--accent)" font-weight="bold">BECOMES IN THE REFLEX</text>
+            <!-- Row 1 -->
+            <rect x="20" y="54" width="656" height="34" fill="var(--surface)" rx="0"/>
+            <line x1="20" y1="54" x2="676" y2="54" stroke="var(--border)" stroke-width="1"/>
+            <text x="40" y="76" font-family="var(--font-mono)" font-size="12" fill="var(--text)">X ⊆ Y</text>
+            <text x="200" y="76" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">every X is Y</text>
+            <text x="400" y="76" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">a filter / guard</text>
+            <!-- Row 2 -->
+            <line x1="20" y1="88" x2="676" y2="88" stroke="var(--border)" stroke-width="1"/>
+            <rect x="20" y="88" width="656" height="34" fill="var(--panel)" rx="0"/>
+            <text x="40" y="110" font-family="var(--font-mono)" font-size="12" fill="var(--text)">X ⊊ Y</text>
+            <text x="200" y="110" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">X is a proper part of Y</text>
+            <text x="400" y="110" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">widen before acting</text>
+            <!-- Row 3 -->
+            <line x1="20" y1="122" x2="676" y2="122" stroke="var(--border)" stroke-width="1"/>
+            <text x="40" y="144" font-family="var(--font-mono)" font-size="12" fill="var(--text)">X ∉ Y</text>
+            <text x="200" y="144" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">anti-belief / exclusion</text>
+            <text x="400" y="144" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">refusal / escalation</text>
+            <!-- Row 4 -->
+            <line x1="20" y1="156" x2="676" y2="156" stroke="var(--border)" stroke-width="1"/>
+            <rect x="20" y="156" width="656" height="34" fill="var(--panel)" rx="0"/>
+            <text x="40" y="178" font-family="var(--font-mono)" font-size="12" fill="var(--text)">∃ x : P(x)</text>
+            <text x="200" y="178" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">existential</text>
+            <text x="400" y="178" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">search until found</text>
+            <!-- Row 5 -->
+            <line x1="20" y1="190" x2="676" y2="190" stroke="var(--border)" stroke-width="1"/>
+            <text x="40" y="212" font-family="var(--font-mono)" font-size="12" fill="var(--text)">∀ x : P(x)</text>
+            <text x="200" y="212" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">universal</text>
+            <text x="400" y="212" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">cover everything</text>
+            <!-- Row 6 -->
+            <line x1="20" y1="224" x2="676" y2="224" stroke="var(--border)" stroke-width="1"/>
+            <rect x="20" y="224" width="656" height="34" fill="var(--panel)" rx="0"/>
+            <text x="40" y="246" font-family="var(--font-mono)" font-size="12" fill="var(--text)">|X| &gt; 1</text>
+            <text x="200" y="246" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">cardinality ≥ 2</text>
+            <text x="400" y="246" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">enumerate, not just first</text>
+            <line x1="20" y1="258" x2="676" y2="258" stroke="var(--border)" stroke-width="1"/>
+            <!-- Column separators -->
+            <line x1="186" y1="14" x2="186" y2="258" stroke="var(--border)" stroke-width="1"/>
+            <line x1="386" y1="14" x2="386" y2="258" stroke="var(--border)" stroke-width="1"/>
+          </svg>
+          <figcaption>Every logical form in the belief set maps mechanically to a step type. The grammar removes ambiguity from the derivation.</figcaption>
+        </figure>
+
+        <p style="margin-top:var(--s-lg)">The four-step derivation algorithm applies this grammar to any belief set:</p>
+        <ol style="margin-top:var(--s-md);padding-left:var(--s-lg);display:flex;flex-direction:column;gap:var(--s-sm)">
+          <li><strong>Order</strong> atomic beliefs by data dependency — <code>obs(·)</code> first, <code>act(·)</code> last. The sequence reads from observation to action.</li>
+          <li><strong>Translate</strong> each belief into a step using the grammar above: <code>⊆/⊊</code> → transformation · anti (<code>∉</code>) → guard · <code>∃/∀</code> → search or coverage · <code>|·| &gt; 1</code> → enumeration loop.</li>
+          <li><strong>Chain</strong> steps with <code>→</code>. Output of one step is input to the next. No global variable.</li>
+          <li><strong>Name</strong> the naive reflex — the direct <code>obs → act</code> short-circuit — to make the gap visible and the drift conscious.</li>
+        </ol>
+
+        <figure class="doc-figure" style="margin-top:var(--s-xl)">
+          <svg viewBox="0 0 560 340" role="img" aria-label="The four-step derivation algorithm as a vertical flow" style="width:100%;height:auto">
+            <defs>
+              <marker id="arr2" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto">
+                <polygon points="0 0, 8 3.5, 0 7" fill="var(--accent)"/>
+              </marker>
+            </defs>
+            <rect width="560" height="340" fill="var(--surface)" rx="10"/>
+            <!-- Vertical spine -->
+            <line x1="60" y1="40" x2="60" y2="300" stroke="var(--accent)" stroke-width="2"/>
+            <!-- Step 1 -->
+            <circle cx="60" cy="52" r="18" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="60" y="57" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" text-anchor="middle" font-weight="bold">1</text>
+            <rect x="90" y="36" width="440" height="36" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="106" y="59" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Order by data dependency — obs(·) first, act(·) last</text>
+            <!-- Step 2 -->
+            <circle cx="60" cy="132" r="18" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="60" y="137" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" text-anchor="middle" font-weight="bold">2</text>
+            <rect x="90" y="116" width="440" height="36" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="106" y="135" font-family="var(--font-mono)" font-size="10" fill="var(--text)">Translate form → step type (⊆→filter, ∉→guard, ∃→search, |·|&gt;1→loop)</text>
+            <!-- Step 3 -->
+            <circle cx="60" cy="212" r="18" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="60" y="217" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" text-anchor="middle" font-weight="bold">3</text>
+            <rect x="90" y="196" width="440" height="36" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="106" y="219" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Chain with → (functional pipe — no global variable)</text>
+            <!-- Step 4 -->
+            <circle cx="60" cy="292" r="18" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="60" y="297" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" text-anchor="middle" font-weight="bold">4</text>
+            <rect x="90" y="276" width="440" height="36" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="106" y="294" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Name the naive reflex — obs → act direct — to make drift visible</text>
+            <!-- Naive box annotation -->
+            <rect x="394" y="318" width="130" height="24" rx="4" fill="var(--surface)" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="459" y="334" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)" text-anchor="middle">NAIVE ✗  obs→act</text>
+            <line x1="400" y1="312" x2="430" y2="318" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="3 2"/>
+          </svg>
+          <figcaption>Four deterministic steps turn any well-formed belief set into a derived reflex. Step 4 — naming the naive short-circuit — is what makes the engineering gap legible.</figcaption>
+        </figure>
+
+        <p style="margin-top:var(--s-lg)">Taxonomy anchor: this model feeds directly into the Cortex entity taxonomy — <strong>Belief | Value | Principle | Sentiment</strong>. Beliefs live at level 4 and are stored as first-class entities. Reflexes live at levels 2–3 and are <em>never stored as independent entities</em> — they are derived on demand from the belief graph. Conflating the two is the original category error this framework exists to prevent.</p>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>What This Demonstrates</h2>
+        <p>Five findings from the analysis of nine engineering maxims across six domains:</p>
+        <ol style="margin-top:var(--s-md);padding-left:var(--s-lg);display:flex;flex-direction:column;gap:var(--s-md)">
+          <li><strong>A natural-language belief ≈ 6 atomic beliefs.</strong> Spoken language compresses semantic content that must be explicitly unpacked before a correct reflex can be derived. The compression is not a flaw — it is the reason derivation is necessary.</li>
+          <li><strong>Decomposition surfaces anti-beliefs automatically.</strong> Propositions of the form <code>X ∉ Y</code> are not written as prohibitions; they emerge from set containment. The exclusion is logically entailed, not manually guarded — which makes it robust against the guards being removed.</li>
+          <li><strong>The reflex emerges from beliefs by composition.</strong> No separate gate, no separate rule, no separate trigger condition needs to be written. The pipe is the reflex. <em>Innate &gt; triggered.</em></li>
+          <li><strong>Correct beliefs at level 4 are more robust than guards at levels 2–3.</strong> A guard can be bypassed. A deduction cannot. Formulating the belief correctly is the upstream investment that eliminates downstream patching.</li>
+          <li><strong>Reflexes are never stored as independent entities.</strong> In the Cortex taxonomy, reflexes are derived on demand from the belief graph. Storing a reflex independently would decouple it from its beliefs, making it unverifiable and unmaintainable.</li>
+        </ol>
+        <div class="callout" style="border-left:3px solid var(--accent);padding:var(--s-md) var(--s-lg);background:var(--surface);border-radius:0 var(--r-lg) var(--r-lg) 0;margin-top:var(--s-xl)">
+          <p>The practical implication: when a reflex misfires, do not debug the reflex. Audit the beliefs. Find the atom that is missing, imprecise, or at the wrong level. Reformulate it. The correct reflex follows.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

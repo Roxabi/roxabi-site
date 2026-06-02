@@ -1,0 +1,224 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">DOC-04 · LIVING MEMORY</p>
+    <h1>Entity Taxonomy</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Why memory stays queryable instead of becoming a blob: the 2D grid that classifies every entity the Cortex holds.</p>
+    <p class="meta">Chapter 4 of 6 · Roxabi Cortex</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — Why Taxonomy at All</a>
+      <a href="#sec-2">2 — Biomimetic Foundations</a>
+      <a href="#sec-3">3 — The 2D Classification Grid</a>
+      <a href="#sec-4">4 — The Entity Node</a>
+      <a href="#sec-5">5 — Decay and Schema Fit</a>
+      <a href="#sec-6">6 — Observation → Compiled Truth</a>
+      <a href="#sec-7">7 — Actuation: Closing the Loop</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Why Taxonomy at All</h2>
+        <p>Without typed entities, the graph is an unordered blob: queries become full scans, and decay rates are uniform and therefore meaningless. A taxonomy is not bookkeeping — it conditions four concrete things: which Observation categories <code>cortex-insight</code> must produce, how memory scope is partitioned, which handlers the Retain Job registers, and which query subjects the memory API exposes.</p>
+        <p>The first intuition — an exterior world (people, orgs, projects) versus an interior world (root causes, patterns, agent preferences) — is a useful lens but collapses too many distinctions to serve as the final structure. The decision is to model entities on a <strong>2D grid</strong>, memory-type × referent, so every node carries both a cognitive register and a positional context.</p>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Biomimetic Foundations</h2>
+        <p>The grid is not invented from nothing; each axis is grounded in established cognitive science.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>Tulving</strong> — the empirically grounded episodic / semantic / procedural split maps directly onto the grid's three memory registers.</li>
+          <li><strong>Husserl &amp; Merleau-Ponty</strong> — noème (the object as intended) versus noèse (the act of intending): objects are never raw data, always objects-<em>for</em>-an-agent. This grounds the referent axis.</li>
+          <li><strong>Theory of Mind</strong> — modelling others' mental states is non-trivial and needs a dedicated <code>other</code> class, distinct from self and agent.</li>
+          <li><strong>Speech Act Theory</strong> (Austin, Searle) — communicating is acting; interaction memory is typed by illocutionary act, enabling queries like &laquo;&nbsp;predominantly directive with agent X, expressive with person Y&nbsp;&raquo;.</li>
+          <li><strong>Internal Working Models</strong> (Bowlby) — representations of relationships motivate the <code>agent:*:relationship:*</code> namespace.</li>
+          <li><strong>Hippocampal model</strong> — hippocampus encodes episodic short-term, cortex consolidates semantic long-term, the nightly sleep cycle is the consolidation pass. Architecturally: <code>cortex-insight</code> encodes, <code>cortex-memory</code> consolidates.</li>
+        </ul>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>The 2D Classification Grid</h2>
+        <p>Two axes. <strong>Memory type</strong> (Tulving): <em>episodic</em> — timestamped events, what happened; <em>semantic</em> — facts true about the world; <em>procedural</em> — how to do things. <strong>Referent</strong>: <code>self</code> (the operator), <code>agent</code> (AI agents), <code>other</code> (people, orgs), <code>object</code> (projects, artefacts, places), <code>abstract</code> (concepts, values, principles).</p>
+        <p>The interior/exterior intuition survives as a reading of the referent axis: <code>self + agent</code> is interior, <code>other + object</code> is exterior, <code>abstract</code> is transversal. Each cell carries its own default <code>half_life_days</code> and <code>emotional_multiplier</code>, which is what makes decay semantically meaningful rather than arbitrary. The <code>type</code> and <code>subtype</code> columns become path-style namespaces (<code>world:person:anya</code>, <code>agent:claude-code:rc:RC-2</code>) rather than a flat enum.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 360" role="img" aria-label="The 2D entity grid: memory-type rows (episodic, semantic, procedural) by referent columns (self, agent, other, object, abstract), with example namespaced slugs in the populated cells." style="width:100%;height:auto">
+            <!-- group brackets -->
+            <line x1="104" y1="44" x2="348" y2="44" stroke="var(--text-dim)" stroke-width="1"/>
+            <text x="226" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">interior</text>
+            <line x1="360" y1="44" x2="604" y2="44" stroke="var(--text-dim)" stroke-width="1"/>
+            <text x="482" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">exterior</text>
+            <text x="676" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">transversal</text>
+            <!-- column headers -->
+            <g font-family="var(--font-mono)" font-size="11" font-weight="700" fill="var(--accent)" text-anchor="middle">
+              <text x="164" y="62">SELF</text><text x="292" y="62">AGENT</text><text x="420" y="62">OTHER</text><text x="548" y="62">OBJECT</text><text x="676" y="62">ABSTRACT</text>
+            </g>
+            <!-- row labels -->
+            <g font-family="var(--font-mono)" font-size="10" font-weight="700" fill="var(--accent)" text-anchor="middle">
+              <text x="44" y="118" transform="rotate(-90 44 118)">EPISODIC</text>
+              <text x="44" y="210" transform="rotate(-90 44 210)">SEMANTIC</text>
+              <text x="44" y="302" transform="rotate(-90 44 302)">PROCEDURAL</text>
+            </g>
+            <!-- cells -->
+            <g font-family="var(--font-mono)" font-size="9" fill="var(--text)">
+              <!-- EPISODIC row y 74..154 -->
+              <rect x="104" y="74" width="120" height="80" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.2"/><text x="164" y="118" text-anchor="middle">self:dev-session</text>
+              <rect x="232" y="74" width="120" height="80" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.2"/><text x="292" y="118" text-anchor="middle">agent:cc:episode</text>
+              <rect x="360" y="74" width="120" height="80" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.2"/><text x="420" y="118" text-anchor="middle">person:intxn</text>
+              <rect x="488" y="74" width="120" height="80" rx="5" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+              <rect x="616" y="74" width="120" height="80" rx="5" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+              <!-- SEMANTIC row y 166..246 -->
+              <rect x="104" y="166" width="120" height="80" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.2"/><text x="164" y="210" text-anchor="middle">self:preference</text>
+              <rect x="232" y="166" width="120" height="80" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.2"/><text x="292" y="210" text-anchor="middle">agent:cc:rc:RC-2</text>
+              <rect x="360" y="166" width="120" height="80" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.2"/><text x="420" y="210" text-anchor="middle">world:person:anya</text>
+              <rect x="488" y="166" width="120" height="80" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.2"/><text x="548" y="210" text-anchor="middle">project:lyra</text>
+              <rect x="616" y="166" width="120" height="80" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.2"/><text x="676" y="210" text-anchor="middle">abstract:principle</text>
+              <!-- PROCEDURAL row y 258..338 -->
+              <rect x="104" y="258" width="120" height="80" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.2"/><text x="164" y="302" text-anchor="middle">self:routine</text>
+              <rect x="232" y="258" width="120" height="80" rx="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.2"/><text x="292" y="302" text-anchor="middle">agent:cc:skill</text>
+              <rect x="360" y="258" width="120" height="80" rx="5" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+              <rect x="488" y="258" width="120" height="80" rx="5" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+              <rect x="616" y="258" width="120" height="80" rx="5" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            </g>
+          </svg>
+          <figcaption>Memory-type × referent. Populated cells show real namespaced slugs; each cell sets its own decay defaults, so a fleeting interaction and a pinned instruction are never treated alike.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>The Entity Node</h2>
+        <p>An <strong>Entity</strong> is a durable graph node — a <code>namespace:slug</code> with a type, a subtype, strength fields, and a reference to its compiled truth. Strength follows the hippocampal-memory model.</p>
+        <pre class="code"><code>strength(t)          = base_strength
+                       × (0.5 ^ (Δt / effective_half_life))
+                       × retrieval_boost
+                       × emotional_multiplier
+
+reward_factor        = 1 + 0.5 × ((pos − neg) / (pos + neg + 1))
+effective_half_life  = half_life_days × reward_factor
+retrieval_boost      = 1 + 0.1 × log₂(retrieval_count + 1)
+emotional_multiplier : neutral 1.0 · positive 1.3 · negative 1.5 · critical 2.0</code></pre>
+        <p>A <code>pinned = TRUE</code> entity has infinite strength, exempt from decay — permanent instructions, core facts. The taxonomy shapes the defaults: <code>world:*</code> takes a long half-life; <code>agent:*:rc:*</code> takes a short one because patterns change; <code>agent:*:instruction:*</code> is long or pinned.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 320" role="img" aria-label="Entity memory strength over time: a baseline exponential decay, the same curve lifted by retrieval boosts, and a flat pinned line at maximum strength." style="width:100%;height:auto">
+            <!-- axes -->
+            <line x1="90" y1="60" x2="90" y2="280" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <line x1="90" y1="280" x2="600" y2="280" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <g font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">
+              <text x="82" y="64" text-anchor="end">1.0</text>
+              <text x="82" y="174" text-anchor="end">0.5</text>
+              <text x="82" y="284" text-anchor="end">0.0</text>
+              <text x="90" y="298" text-anchor="middle">0</text>
+              <text x="260" y="298" text-anchor="middle">30</text>
+              <text x="430" y="298" text-anchor="middle">60</text>
+              <text x="600" y="298" text-anchor="middle">90 d</text>
+              <text x="345" y="316" text-anchor="middle" fill="var(--text-muted)">time (days)</text>
+            </g>
+            <!-- pinned line -->
+            <line x1="90" y1="60" x2="600" y2="60" stroke="var(--text)" stroke-width="1.5" stroke-dasharray="2,3"/>
+            <text x="596" y="54" text-anchor="end" font-family="var(--font-mono)" font-size="10" fill="var(--text)">pinned = TRUE</text>
+            <!-- baseline decay (dim) -->
+            <path d="M90,60 C170,140 210,170 260,180 C340,196 380,224 430,236 C490,250 540,262 600,268" fill="none" stroke="var(--text-dim)" stroke-width="1.6"/>
+            <text x="470" y="262" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">baseline decay</text>
+            <!-- boosted curve (accent) with retrieval notches -->
+            <path d="M90,60 C150,120 180,140 230,150 L230,128 C300,150 320,168 372,176 L372,150 C440,170 470,186 520,196 C555,202 580,208 600,210" fill="none" stroke="var(--accent)" stroke-width="2"/>
+            <g stroke="var(--accent)" stroke-width="1.2">
+              <line x1="230" y1="150" x2="230" y2="128"/><line x1="372" y1="176" x2="372" y2="150"/>
+            </g>
+            <text x="232" y="122" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">retrieval</text>
+            <text x="520" y="190" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">with boosts</text>
+            <!-- legend panel -->
+            <rect x="624" y="60" width="128" height="120" rx="6" fill="var(--panel)" stroke="var(--border)"/>
+            <g font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">
+              <text x="636" y="80" fill="var(--text-dim)">emotional ×</text>
+              <text x="636" y="96">neutral 1.0</text>
+              <text x="636" y="110">positive 1.3</text>
+              <text x="636" y="124">negative 1.5</text>
+              <text x="636" y="138">critical 2.0</text>
+              <text x="636" y="158" fill="var(--text-dim)">schema_fit</text>
+              <text x="636" y="172">&gt;0.7 ×1.5 · &lt;0.3 ×0.5</text>
+            </g>
+          </svg>
+          <figcaption>Strength is continuous. Retrieval lifts a decaying entity (the testing effect); <code>pinned</code> entities sit flat at the top; the per-cell modifiers decide how fast the rest fade.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Decay and Schema Fit</h2>
+        <p><strong>Decay</strong> applies a temporal weight <code>weight_temporal = exp(−Δt/σ)</code> to every relation during the nightly consolidation pass. σ is configured per relation type in the <code>[graph]</code> config — domain-specific relevance windows, never hardcoded.</p>
+        <p><strong>Schema fit</strong> (<code>schema_fit</code>, 0..1) measures how well an incoming Observation matches patterns already in the graph, and it gates the Retain Job:</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><code>&lt; 0.3</code> — <strong>dark matter</strong>: novel, unclassified signal; half-life ×0.5, held provisionally and queued for review before strengthening.</li>
+          <li><code>&gt; 0.7</code> — <strong>fast-track</strong>: high-confidence consolidation; half-life ×1.5, skips the expensive dedup pass.</li>
+          <li><code>0.3 … 0.7</code> — the normal path, with conflict detection.</li>
+        </ul>
+        <p>The two interact through <code>reward_factor</code>: a <code>world:person</code> seen rarely with low schema fit fades fast; a recurring <code>agent:claude-code:rc</code> with positive outcomes earns a longer effective half-life and persists.</p>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>Observation to Compiled Truth: the Retain Job</h2>
+        <p>The <strong>Observation</strong> is the publish contract from <code>cortex-insight</code> to <code>cortex-memory</code> — a typed, encoded fact, not yet resolved against the graph (<code>id</code>, <code>source</code>, <code>timestamp</code>, <code>category</code>, <code>actors</code>, <code>topic</code>, <code>sentiment</code>, <code>payload_typed</code>, <code>correlation</code>). Insight knows how to parse sources but not graph state; memory knows how to consolidate but not source semantics. The Observation is the clean boundary between them.</p>
+        <p>For each Observation, the <strong>Retain Job</strong> (in <code>cortex-memory</code>) resolves actors to entities, deduplicates, computes <code>schema_fit</code>, detects conflicts, writes entities and relations, updates strength and decay, and triggers a <strong>Compiled Truth</strong> regeneration when impact crosses the threshold. A Compiled Truth is the per-entity markdown — durable, versioned through a <code>superseded_by</code> chain — whereas an Observation is transient. Handlers are indexed by <code>(category, target_namespace)</code>: the taxonomy directly decides which consolidation logic fires for which entity class.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 340" role="img" aria-label="Two-stage memory formation: cortex-insight encodes raw sources into a typed Observation; cortex-memory's Retain Job consolidates it into the entity graph; the graph serves compiled truth and actuation." style="width:100%;height:auto">
+            <defs>
+              <marker id="et-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <!-- dividers -->
+            <line x1="232" y1="20" x2="232" y2="320" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,4"/>
+            <line x1="560" y1="20" x2="560" y2="320" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,4"/>
+            <!-- zone labels -->
+            <text x="120" y="34" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)">cortex-insight · ENCODE</text>
+            <text x="396" y="34" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)">cortex-memory · Retain Job</text>
+            <text x="660" y="34" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)">SERVE</text>
+            <!-- zone1 -->
+            <rect x="30" y="60" width="180" height="50" rx="6" fill="var(--panel)" stroke="var(--border-hi)"/><text x="120" y="82" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text)">Raw source</text><text x="120" y="98" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">JSONL · mail · Telegram</text>
+            <line x1="120" y1="110" x2="120" y2="148" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#et-arr)"/>
+            <rect x="30" y="150" width="180" height="50" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/><text x="120" y="172" text-anchor="middle" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="var(--text)">Observation</text><text x="120" y="190" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">typed · encoded</text>
+            <!-- arrow to retain -->
+            <line x1="210" y1="175" x2="258" y2="175" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#et-arr)"/>
+            <!-- zone2 steps -->
+            <rect x="262" y="56" width="268" height="170" rx="6" fill="var(--panel)" stroke="var(--border-hi)"/>
+            <g font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">
+              <text x="278" y="80">1 · resolve actors → entities</text>
+              <text x="278" y="100">2 · deduplicate</text>
+              <text x="278" y="120">3 · compute schema_fit</text>
+              <text x="278" y="140">4 · detect conflicts</text>
+              <text x="278" y="160">5 · write entities + relations</text>
+              <text x="278" y="180">6 · update strength · decay</text>
+            </g>
+            <!-- schema_fit fork -->
+            <rect x="278" y="192" width="110" height="24" rx="12" fill="none" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="4,3"/><text x="333" y="208" text-anchor="middle" font-family="var(--font-mono)" font-size="8.5" fill="var(--accent)">&lt;0.3 dark matter</text>
+            <rect x="400" y="192" width="110" height="24" rx="12" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.2"/><text x="455" y="208" text-anchor="middle" font-family="var(--font-mono)" font-size="8.5" fill="var(--accent)">&gt;0.7 fast-track</text>
+            <!-- arrow to serve -->
+            <line x1="530" y1="140" x2="585" y2="140" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#et-arr)"/>
+            <!-- zone3 -->
+            <rect x="585" y="70" width="150" height="70" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/><text x="660" y="98" text-anchor="middle" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="var(--text)">Entity Graph</text><text x="660" y="116" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">+ Compiled Truth</text><text x="660" y="130" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">(nightly)</text>
+            <line x1="660" y1="140" x2="660" y2="178" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#et-arr)"/>
+            <rect x="585" y="180" width="150" height="46" rx="6" fill="var(--panel)" stroke="var(--border-hi)"/><text x="660" y="202" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text)">Actuation</text><text x="660" y="218" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">approval queue</text>
+          </svg>
+          <figcaption>Encode in the lake, consolidate in the warehouse. The Observation is the typed boundary; the Retain Job's six steps turn it into graph state, with <code>schema_fit</code> routing the novel and the familiar differently.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>Actuation: Closing the Loop</h2>
+        <p><strong>Actuation</strong> is how memory surfaces patterns back into behaviour: detect a recurring pattern in the graph, generate a proposed diff (a <code>CLAUDE.md</code> edit, a new skill, a memory entry, a settings allowlist), push it to the approval queue, and on approval open an auto-PR. The queue — typed by <code>diff_type</code>: <code>claude_md | memory_entry | skill | allowlist</code> — decouples detection from application, so the operator reviews before any mutation lands.</p>
+        <p>Interaction typing feeds this directly: if a thread analysis finds a persistent directive-plus-expressive pattern with a given contact, it can propose a memory entry or a <code>CLAUDE.md</code> annotation surfacing that style. Because Retain Job handlers are indexed by <code>(category, target_namespace)</code>, the taxonomy is not descriptive — it is the dispatch table that decides which logic runs and which behaviour the system is allowed to propose.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

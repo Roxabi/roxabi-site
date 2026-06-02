@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero 10 — Interactive 3D · Roxabi lab</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="./_base.css">
+<style>
+/* hero-specific CSS only */
+
+/* ── Layout ── */
+.hero {
+  min-height: calc(100svh - 60px);
+  display: grid;
+  align-items: center;
+  padding-block: var(--s-2xl);
+}
+.hero .wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2xl);
+  align-items: center;
+}
+
+/* ── Copy column ── */
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-lg);
+  max-width: 520px;
+}
+.hero-copy h1 { color: var(--text); }
+.hero-sub {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -.01em;
+  line-height: 1.3;
+}
+.hero-lead {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-sm);
+  padding-top: var(--s-xs);
+}
+
+/* ── 3D scene column ── */
+.hero-scene-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* Perspective container — JS writes --rx/--ry here */
+.scene {
+  perspective: 900px;
+  perspective-origin: 50% 45%;
+  width: 340px;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Stack container — receives the tilt transform */
+.stack {
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 20deg)) rotateY(var(--ry, -30deg));
+  transition: transform 80ms linear;
+  position: relative;
+  width: 180px;
+  height: 180px;
+}
+
+/* Each block is a CSS isometric box using 3 pseudo-elements + child divs.
+   We use actual 3D CSS transforms: each block is a flat group positioned via translateZ. */
+
+/* Single foundation block — 3 faces of a CSS 3D box */
+.fb {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+/* Faces: top, left, right */
+.fb-top,
+.fb-left,
+.fb-right {
+  position: absolute;
+  backface-visibility: hidden;
+}
+
+/* ── Block geometry ──
+   Block unit: 100px wide, 100px deep, 40px tall.
+   We render 4 stacked blocks; bottom block at z=0, others offset.
+   Using CSS 3D transforms to build each face. */
+
+/* Block dimensions as CSS vars */
+.stack {
+  --bw: 140px;   /* block width  */
+  --bd: 140px;   /* block depth  */
+  --bh: 36px;    /* block height */
+}
+
+/* Wrapper that positions each block vertically */
+.block-unit {
+  position: absolute;
+  width: var(--bw);
+  height: var(--bd);
+  left: calc((180px - var(--bw)) / 2);
+  top:  calc((180px - var(--bd)) / 2);
+  transform-style: preserve-3d;
+}
+
+/* ── Face styles ── */
+
+/* Top face */
+.block-unit .f-top {
+  position: absolute;
+  width: var(--bw);
+  height: var(--bd);
+  transform: rotateX(90deg) translateZ(calc(var(--bh) / 2));
+  transform-origin: center center;
+  border-radius: var(--r-sm);
+}
+
+/* Left face */
+.block-unit .f-left {
+  position: absolute;
+  width: var(--bh);
+  height: var(--bd);
+  left: 0;
+  transform: rotateY(-90deg) translateZ(0) translateX(calc(-1 * var(--bh) / 2));
+  transform-origin: left center;
+}
+
+/* Right face */
+.block-unit .f-right {
+  position: absolute;
+  width: var(--bh);
+  height: var(--bd);
+  right: 0;
+  transform: rotateY(90deg) translateZ(0) translateX(calc(var(--bh) / 2));
+  transform-origin: right center;
+}
+
+/* Front face */
+.block-unit .f-front {
+  position: absolute;
+  width: var(--bw);
+  height: var(--bh);
+  bottom: 0;
+  transform: rotateX(-90deg) translateZ(calc(-1 * var(--bd) / 2 + var(--bh) / 2));
+  transform-origin: center bottom;
+}
+
+/* ── Block color tiers (bottom → top = darker → brighter) ── */
+.block-unit.b0 { transform: translateZ(-54px); }
+.block-unit.b1 { transform: translateZ(-18px); }
+.block-unit.b2 { transform: translateZ(18px); }
+.block-unit.b3 { transform: translateZ(54px); }
+
+/* b0 — base layer, darkest */
+.b0 .f-top   { background: #11161d; border: 1px solid #1e2530; }
+.b0 .f-left  { background: #0d1117; border: 1px solid #1a2028; }
+.b0 .f-right { background: #0f141a; border: 1px solid #1a2028; }
+.b0 .f-front { background: #0d1117; border: 1px solid #1a2028; }
+
+/* b1 */
+.b1 .f-top   { background: #13191f; border: 1px solid #222c38; }
+.b1 .f-left  { background: #0f141a; border: 1px solid #1e2835; }
+.b1 .f-right { background: #111620; border: 1px solid #1e2835; }
+.b1 .f-front { background: #0f141a; border: 1px solid #1e2835; }
+
+/* b2 */
+.b2 .f-top   { background: #161b22; border: 1px solid #28333f; }
+.b2 .f-left  { background: #11161d; border: 1px solid #232e3a; }
+.b2 .f-right { background: #131820; border: 1px solid #232e3a; }
+.b2 .f-front { background: #11161d; border: 1px solid #232e3a; }
+
+/* b3 — top, brightest + amber edge glow */
+.b3 .f-top   {
+  background: #1c2431;
+  border: 1px solid rgba(240,180,41,.55);
+  box-shadow: 0 0 18px rgba(240,180,41,.18);
+}
+.b3 .f-left  {
+  background: #161b26;
+  border: 1px solid rgba(240,180,41,.3);
+  box-shadow: inset 0 0 12px rgba(240,180,41,.07);
+}
+.b3 .f-right {
+  background: #191f2c;
+  border: 1px solid rgba(240,180,41,.25);
+}
+.b3 .f-front {
+  background: #161b26;
+  border: 1px solid rgba(240,180,41,.2);
+}
+
+/* ── Amber aperture on top of b3 ── */
+.aperture {
+  position: absolute;
+  /* sits on f-top of b3 — we layer it via a sibling absolute inside .block-unit.b3 */
+  width: 54px;
+  height: 54px;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%) rotateX(90deg) translateZ(calc(var(--bh) / 2 + 1px));
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    #fde68a 0%,
+    #fbbf24 30%,
+    rgba(240,180,41,.15) 70%,
+    transparent 100%
+  );
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+/* Crisp inner diamond (the logo top-face polygon approximated as a rotated square) */
+.aperture-inner {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%) rotateX(90deg) translateZ(calc(var(--bh) / 2 + 2px)) rotate(45deg);
+  background: linear-gradient(135deg, #fde68a, #fbbf24 50%, #f0b429);
+  border-radius: var(--r-sm);
+  opacity: 0.92;
+  filter: blur(.5px);
+  pointer-events: none;
+}
+
+/* ── Ground glow ── */
+.ground-glow {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: 50px;
+  background: radial-gradient(ellipse at center, rgba(240,180,41,.28) 0%, transparent 70%);
+  filter: blur(8px);
+  pointer-events: none;
+  z-index: -1;
+  /* Glow pulses subtly — reduced-motion kills it via _base.css */
+  animation: glow-pulse 3.5s ease-in-out infinite;
+}
+@keyframes glow-pulse {
+  0%, 100% { opacity: .7; }
+  50%       { opacity: 1;  }
+}
+
+/* ── Depth layers: subtle connector lines between blocks ── */
+.connector {
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(to bottom, rgba(240,180,41,.35), transparent);
+  transform: translateX(-50%) rotateX(90deg);
+  pointer-events: none;
+}
+
+/* ── Ambient background gradient behind the scene ── */
+.hero-scene-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  background:
+    radial-gradient(ellipse 60% 60% at 50% 60%, rgba(240,180,41,.07) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.scene { position: relative; z-index: 1; }
+
+/* ── Responsive ── */
+@media (max-width: 820px) {
+  .hero .wrap {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .hero-copy {
+    max-width: 100%;
+    align-items: center;
+  }
+  .hero-ctas { justify-content: center; }
+  .hero-scene-wrap { order: -1; }
+  .scene { width: 280px; height: 280px; }
+  .stack { --bw: 110px; --bd: 110px; --bh: 28px; }
+  .block-unit.b0 { transform: translateZ(-42px); }
+  .block-unit.b1 { transform: translateZ(-14px); }
+  .block-unit.b2 { transform: translateZ(14px); }
+  .block-unit.b3 { transform: translateZ(42px); }
+  .ground-glow { width: 170px; }
+}
+
+/* ── Static iso angle for no-parallax fallback ──
+   Applied via JS when reduced-motion or hover:none detected.
+   Also used when tab is hidden. */
+.stack.is-static {
+  transform: rotateX(20deg) rotateY(-30deg) !important;
+  transition: none !important;
+}
+</style>
+</head>
+<body>
+<a class="lab-back" href="./index.html">← gallery</a>
+<span class="lab-tag">10 · interactive 3D</span>
+<header class="lab-nav">
+  <a class="brand" href="#"><img src="/assets/logo/foundation-block.svg" width="26" height="26" alt=""><span>Roxabi</span></a>
+  <nav class="lab-nav-links"><a href="#">Projects</a><a href="#">Constitution</a></nav>
+  <a class="btn btn-ghost btn-sm" href="#">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <div class="wrap">
+
+      <!-- Copy column -->
+      <div class="hero-copy">
+        <div class="badge">
+          <span class="dot" aria-hidden="true"></span>
+          AGPL-3.0 · Open by architecture
+        </div>
+        <h1>One person.<br>Team-scale output.</h1>
+        <p class="hero-sub">Pre-wired. Open. Yours.</p>
+        <p class="hero-lead">
+          An agent &amp; worker factory. Open-source tools plug in over NATS, CLI, skills, or API.
+        </p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#">Explore the projects →</a>
+          <a class="btn btn-ghost" href="#">GitHub</a>
+        </div>
+      </div>
+
+      <!-- 3D scene column -->
+      <div class="hero-scene-wrap" aria-hidden="true">
+        <div class="scene">
+          <div class="stack is-static" id="stack">
+
+            <!-- Block 0 — base -->
+            <div class="block-unit b0">
+              <div class="f-top"></div>
+              <div class="f-left"></div>
+              <div class="f-right"></div>
+              <div class="f-front"></div>
+            </div>
+
+            <!-- Block 1 -->
+            <div class="block-unit b1">
+              <div class="f-top"></div>
+              <div class="f-left"></div>
+              <div class="f-right"></div>
+              <div class="f-front"></div>
+            </div>
+
+            <!-- Block 2 -->
+            <div class="block-unit b2">
+              <div class="f-top"></div>
+              <div class="f-left"></div>
+              <div class="f-right"></div>
+              <div class="f-front"></div>
+            </div>
+
+            <!-- Block 3 — top, glowing aperture -->
+            <div class="block-unit b3">
+              <div class="f-top"></div>
+              <div class="f-left"></div>
+              <div class="f-right"></div>
+              <div class="f-front"></div>
+              <div class="aperture"></div>
+              <div class="aperture-inner"></div>
+            </div>
+
+          </div><!-- /stack -->
+
+          <!-- Ground glow -->
+          <div class="ground-glow" aria-hidden="true"></div>
+        </div><!-- /scene -->
+      </div><!-- /hero-scene-wrap -->
+
+    </div><!-- /wrap -->
+  </section>
+</main>
+
+<script>
+/* Pointer parallax — reduced-motion + (hover:none) + visibility guarded */
+(function () {
+  'use strict';
+
+  var stack = document.getElementById('stack');
+  if (!stack) return;
+
+  /* Query once at init; re-check on visibility change only */
+  var mqMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var mqHover  = window.matchMedia('(hover: none)');
+
+  /* Current and target angles */
+  var targetRx = 20, targetRy = -30;
+  var currentRx = 20, currentRy = -30;
+
+  /* Lerp factor — smooths cursor tracking */
+  var LERP = 0.08;
+
+  /* Max tilt from center (degrees) */
+  var MAX_RX = 14, MAX_RY = 22;
+
+  /* Base iso angle */
+  var BASE_RX = 20, BASE_RY = -30;
+
+  var rafId = null;
+  var active = false;
+
+  function applyStatic() {
+    stack.classList.add('is-static');
+    stack.style.removeProperty('--rx');
+    stack.style.removeProperty('--ry');
+  }
+
+  function applyDynamic() {
+    stack.classList.remove('is-static');
+  }
+
+  function shouldDisable() {
+    return mqMotion.matches || mqHover.matches || document.hidden;
+  }
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  function tick() {
+    if (!active) return;
+
+    currentRx = lerp(currentRx, targetRx, LERP);
+    currentRy = lerp(currentRy, targetRy, LERP);
+
+    /* Snap when close enough to avoid perpetual rAF */
+    var doneRx = Math.abs(currentRx - targetRx) < 0.02;
+    var doneRy = Math.abs(currentRy - targetRy) < 0.02;
+    if (doneRx && doneRy) {
+      currentRx = targetRx;
+      currentRy = targetRy;
+      stack.style.setProperty('--rx', currentRx.toFixed(2) + 'deg');
+      stack.style.setProperty('--ry', currentRy.toFixed(2) + 'deg');
+      rafId = null;
+      return; /* stop loop until next mousemove */
+    }
+
+    stack.style.setProperty('--rx', currentRx.toFixed(2) + 'deg');
+    stack.style.setProperty('--ry', currentRy.toFixed(2) + 'deg');
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function onMouseMove(e) {
+    if (!active) return;
+
+    /* Normalize pointer relative to viewport center: [-1, 1] */
+    var nx = (e.clientX / window.innerWidth  - 0.5) * 2;  /* left→right */
+    var ny = (e.clientY / window.innerHeight - 0.5) * 2;  /* top→bottom */
+
+    /* Invert Y so moving up tilts top toward viewer */
+    targetRx = BASE_RX - ny * MAX_RX;
+    targetRy = BASE_RY + nx * MAX_RY;
+
+    if (!rafId) {
+      rafId = requestAnimationFrame(tick);
+    }
+  }
+
+  function onMouseLeave() {
+    /* Ease back to base iso angle on cursor exit */
+    targetRx = BASE_RX;
+    targetRy = BASE_RY;
+    if (!rafId) {
+      rafId = requestAnimationFrame(tick);
+    }
+  }
+
+  function enable() {
+    if (active) return;
+    active = true;
+    applyDynamic();
+    document.addEventListener('mousemove', onMouseMove, { passive: true });
+    document.addEventListener('mouseleave', onMouseLeave);
+  }
+
+  function disable() {
+    active = false;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseleave', onMouseLeave);
+    /* Reset to static iso */
+    currentRx = BASE_RX; currentRy = BASE_RY;
+    targetRx  = BASE_RX; targetRy  = BASE_RY;
+    applyStatic();
+  }
+
+  function sync() {
+    if (shouldDisable()) {
+      disable();
+    } else {
+      enable();
+    }
+  }
+
+  /* React to media query changes (e.g. OS setting toggled) */
+  mqMotion.addEventListener('change', sync);
+  mqHover.addEventListener('change', sync);
+
+  /* Pause when tab hidden, resume when visible */
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      /* Freeze but don't fully disable — will re-enable when visible */
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    } else {
+      /* Re-evaluate conditions when returning */
+      sync();
+    }
+  });
+
+  /* Initial evaluation */
+  sync();
+}());
+</script>
+</body>
+</html>

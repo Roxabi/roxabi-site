@@ -15,10 +15,18 @@ locale_alt        = "fr_FR"
 og_image          = "/assets/og/roxabi-og.png"
 inlanguage        = ["en", "fr"]
 nav_primary_label = "Primary"
+nav_menu          = "Menu"
+skip_link         = "Skip to content"
 brand_aria        = "Roxabi home"
 nav_projects      = "Projects"
 nav_constitution  = "Constitution"
 nav_docs          = "Docs"
+doc_read          = "Read"
+doc_chapter_word  = "Chapter"
+doc_all           = "All chapters"
+doc_prev          = "Previous"
+doc_next          = "Next"
+doc_nav_aria      = "Chapter navigation"
 github_aria       = "Roxabi on GitHub"
 theme_aria        = "Switch theme"
 lang_label        = "EN"           # shows CURRENT language (like the theme toggle)
@@ -32,7 +40,7 @@ f_product         = "Product"
 f_resources       = "Resources"
 f_portfolio       = "Portfolio"
 f_github          = "GitHub"
-f_docs_soon       = "Docs (soon)"
+f_docs_soon       = "Documentation"
 f_changelog_soon  = "Changelog (soon)"
 f_legal           = "Legal"
 f_legal_notice    = "Legal notice"
@@ -46,10 +54,18 @@ locale_alt        = "en_US"
 og_image          = "/assets/og/roxabi-og-fr.png"
 inlanguage        = ["fr", "en"]
 nav_primary_label = "Principale"
+nav_menu          = "Menu"
+skip_link         = "Aller au contenu"
 brand_aria        = "Accueil Roxabi"
 nav_projects      = "Projets"
 nav_constitution  = "Constitution"
 nav_docs          = "Docs"
+doc_read          = "Lire"
+doc_chapter_word  = "Chapitre"
+doc_all           = "Tous les chapitres"
+doc_prev          = "Précédent"
+doc_next          = "Suivant"
+doc_nav_aria      = "Navigation des chapitres"
 github_aria       = "Roxabi sur GitHub"
 theme_aria        = "Changer de thème"
 lang_label        = "FR"
@@ -63,7 +79,7 @@ f_product         = "Produit"
 f_resources       = "Ressources"
 f_portfolio       = "Portfolio"
 f_github          = "GitHub"
-f_docs_soon       = "Docs (bientôt)"
+f_docs_soon       = "Documentation"
 f_changelog_soon  = "Changelog (bientôt)"
 f_legal           = "Légal"
 f_legal_notice    = "Mentions légales"
@@ -148,6 +164,32 @@ priority    = "0.8"
   og_desc  = "Des primitives open-source à forker et exécuter. Ensemble, elles se composent."
   crumb    = "Projets"
 
+[[page]]
+id          = "documentation"
+path        = "documentation/"
+body        = "documentation"
+og_type     = "website"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "breadcrumb"
+collection  = "documentation"
+ancestors   = ["home"]
+changefreq  = "monthly"
+priority    = "0.7"
+  [page.en]
+  title    = "Documentation — Roxabi"
+  desc     = "Roxabi Cortex documentation — how Roxabi builds agent cognition and living memory: architecture, the cognitive model, and operating principles. A public reference."
+  og_title = "Documentation — Roxabi"
+  og_desc  = "How Roxabi builds agent cognition and living memory — a public reference."
+  crumb    = "Documentation"
+  [page.fr]
+  title    = "Documentation — Roxabi"
+  desc     = "Documentation Roxabi Cortex — comment Roxabi construit la cognition des agents et une mémoire vivante : architecture, modèle cognitif et principes. Référence publique."
+  og_title = "Documentation — Roxabi"
+  og_desc  = "Comment Roxabi construit la cognition des agents et une mémoire vivante — une référence publique."
+  crumb    = "Documentation"
+
 # [[page]] "lyra" removed 2026-06-01 — Lyra product parked; repo renamed → roxabi-factory.
 # /projects/lyra/ now 301-redirects to /projects/ (static/_redirects). See artifacts/plans/lyra-to-roxabi-factory-rename.md
 
@@ -175,3 +217,192 @@ priority    = "0.3"
   og_title = "Mentions légales — Roxabi"
   og_desc  = "Éditeur, hébergeur, propriété intellectuelle et données personnelles de roxabi.dev."
   crumb    = "Mentions légales"
+
+# ── Documentation chapters (collection="documentation"). Index page above. ─────
+# Chapter bodies authored from forge/repo sources; nums need not be contiguous.
+
+[[page]]
+id          = "doc-observation-contract"
+path        = "documentation/observation-contract/"
+body        = "doc-observation-contract"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+chapter     = 3
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "The Observation Contract — Roxabi"
+  desc       = "How Cortex splits memory formation across two services — encoding in the lake, consolidation in the warehouse — via a typed Observation contract."
+  og_title   = "The Observation Contract — Roxabi"
+  og_desc    = "The typed contract that separates fast, source-aware encoding from slow, graph-aware memory consolidation."
+  crumb      = "Observation"
+  card_title = "The Observation Contract"
+  card_desc  = "The typed contract that separates fast, source-aware encoding from slow, graph-aware memory consolidation."
+  [page.fr]
+  title      = "Le Contrat d'Observation — Roxabi"
+  desc       = "Comment Cortex répartit la formation des souvenirs sur deux services — encodage dans le lac, consolidation dans l'entrepôt — via un contrat Observation typé."
+  og_title   = "Le Contrat d'Observation — Roxabi"
+  og_desc    = "Le contrat typé qui sépare l'encodage rapide et source-spécifique de la consolidation lente dans le graphe mémoire."
+  crumb      = "Observation"
+  card_title = "Le Contrat d'Observation"
+  card_desc  = "Le contrat typé qui sépare l'encodage rapide et source-spécifique de la consolidation lente dans le graphe mémoire."
+
+[[page]]
+id          = "doc-temporal-decay"
+path        = "documentation/temporal-decay/"
+body        = "doc-temporal-decay"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+chapter     = 5
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Temporal Decay — Roxabi"
+  desc       = "Why a living memory must forget: the exponential decay and reinforcement-on-access model that keeps the knowledge graph sharp over time."
+  og_title   = "Temporal Decay — Roxabi"
+  og_desc    = "The forgetting-curve model behind Cortex memory: decay formulas, reinforcement on access, and the thresholds that silence stale knowledge."
+  crumb      = "Decay"
+  card_title = "Temporal Decay"
+  card_desc  = "The forgetting-curve model behind Cortex memory: decay formulas, reinforcement on access, and the thresholds that silence stale knowledge."
+  [page.fr]
+  title      = "La Décroissance Temporelle — Roxabi"
+  desc       = "Pourquoi une mémoire vivante doit oublier : le modèle de décroissance exponentielle et de renforcement par l'accès qui maintient la pertinence du graphe de connaissance."
+  og_title   = "La Décroissance Temporelle — Roxabi"
+  og_desc    = "Le modèle de courbe d'oubli du Cortex : formules de décroissance, renforcement par l'accès et seuils qui silencent les connaissances périmées."
+  crumb      = "Décroissance"
+  card_title = "La Décroissance Temporelle"
+  card_desc  = "Le modèle de courbe d'oubli du Cortex : formules de décroissance, renforcement par l'accès et seuils qui silencent les connaissances périmées."
+
+[[page]]
+id          = "doc-derived-reflexes"
+path        = "documentation/derived-reflexes/"
+body        = "doc-derived-reflexes"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+chapter     = 6
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Derived Reflexes — Roxabi"
+  desc       = "A derived reflex is not a rule — it is the action sequence that emerges inevitably when an agent holds the right atomic beliefs simultaneously."
+  og_title   = "Derived Reflexes — Roxabi"
+  og_desc    = "How well-formed beliefs at Dilts level 4 automatically generate correct behavior at levels 2–3, with nine engineering maxims derived from first principles."
+  crumb      = "Reflexes"
+  card_title = "Derived Reflexes"
+  card_desc  = "How well-formed beliefs at Dilts level 4 automatically generate correct behavior at levels 2–3, with nine engineering maxims derived from first principles."
+  [page.fr]
+  title      = "Réflexes Dérivés — Roxabi"
+  desc       = "Un réflexe dérivé n'est pas une règle — c'est la séquence d'actions qui émerge inévitablement quand un agent tient simultanément les bonnes croyances atomiques."
+  og_title   = "Réflexes Dérivés — Roxabi"
+  og_desc    = "Comment des croyances bien formulées au niveau 4 de Dilts génèrent automatiquement le bon comportement aux niveaux 2–3, avec neuf maximes d'ingénierie dérivées de premiers principes."
+  crumb      = "Réflexes"
+  card_title = "Réflexes Dérivés"
+  card_desc  = "Comment des croyances bien formulées au niveau 4 de Dilts génèrent automatiquement le bon comportement aux niveaux 2–3, avec neuf maximes d'ingénierie dérivées de premiers principes."
+
+[[page]]
+id          = "doc-exocortex"
+path        = "documentation/exocortex/"
+body        = "doc-exocortex"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+chapter     = 1
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "The Exocortex — Roxabi"
+  desc       = "Thousands of siloed agent sessions, zero consolidation — the exocortex is the cognitive organ that captures, structures, and feeds it all back."
+  og_title   = "The Exocortex — Roxabi"
+  og_desc    = "Overview of the exocortex: the problem of siloed agent data, the living-memory architecture, and the ouroboros feedback loop."
+  crumb      = "Exocortex"
+  card_title = "The Exocortex"
+  card_desc  = "Overview of the exocortex: the problem of siloed agent data, the living-memory architecture, and the ouroboros feedback loop."
+  [page.fr]
+  title      = "L'Exocortex — Roxabi"
+  desc       = "Des milliers de sessions agents cloisonnées, zéro consolidation — l'exocortex est l'organe cognitif qui capte, structure et restitue l'ensemble."
+  og_title   = "L'Exocortex — Roxabi"
+  og_desc    = "Vue d'ensemble de l'exocortex : données agents cloisonnées, architecture mémoire vivante et boucle feedback ouroboros."
+  crumb      = "Exocortex"
+  card_title = "L'Exocortex"
+  card_desc  = "Vue d'ensemble de l'exocortex : données agents cloisonnées, architecture mémoire vivante et boucle feedback ouroboros."
+
+[[page]]
+id          = "doc-cognitive-framework"
+path        = "documentation/cognitive-framework/"
+body        = "doc-cognitive-framework"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+chapter     = 2
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Cognitive Framework — Roxabi"
+  desc       = "How three philosophical layers — Searle's speech acts, Husserl's schemas, and Tulving's memory lifecycle — give a reasoning agent innate, typed reflexes."
+  og_title   = "Cognitive Framework — Roxabi"
+  og_desc    = "The three-layer model (D1 Searle / D2 Husserl / D3 Tulving) that gives Roxabi Cortex principled, predictive cognitive structure."
+  crumb      = "Cognitive Framework"
+  card_title = "Cognitive Framework"
+  card_desc  = "The three-layer model (D1 Searle / D2 Husserl / D3 Tulving) that gives Roxabi Cortex principled, predictive cognitive structure."
+  [page.fr]
+  title      = "Cadre Cognitif — Roxabi"
+  desc       = "Comment trois couches philosophiques — les actes de langage de Searle, les schémas de Husserl et le cycle mémoriel de Tulving — dotent un agent raisonnant de réflexes typés et innés."
+  og_title   = "Cadre Cognitif — Roxabi"
+  og_desc    = "Le modèle en trois couches (D1 Searle / D2 Husserl / D3 Tulving) qui confère à Roxabi Cortex une structure cognitive rigoureuse et prédictive."
+  crumb      = "Cadre Cognitif"
+  card_title = "Cadre Cognitif"
+  card_desc  = "Le modèle en trois couches (D1 Searle / D2 Husserl / D3 Tulving) qui confère à Roxabi Cortex une structure cognitive rigoureuse et prédictive."
+
+[[page]]
+id          = "doc-entity-taxonomy"
+path        = "documentation/entity-taxonomy/"
+body        = "doc-entity-taxonomy"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+chapter     = 4
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Entity Taxonomy — Roxabi"
+  desc       = "Why memory stays queryable instead of becoming a blob: the 2D grid that classifies every entity the Cortex holds."
+  og_title   = "Entity Taxonomy — Roxabi"
+  og_desc    = "The biomimetic data model behind the Cortex graph: referent axis, memory type axis, decay, and compiled truth."
+  crumb      = "Taxonomy"
+  card_title = "Entity Taxonomy"
+  card_desc  = "The biomimetic data model behind the Cortex graph: referent axis, memory type axis, decay, and compiled truth."
+  [page.fr]
+  title      = "Taxonomie des Entités — Roxabi"
+  desc       = "Pourquoi la mémoire reste interrogeable plutôt que de devenir un blob : la grille 2D qui classe chaque entité que le Cortex retient."
+  og_title   = "Taxonomie des Entités — Roxabi"
+  og_desc    = "Le modèle de données biomimétique du graphe Cortex : axe référent, axe type mémoire, déclin et vérité compilée."
+  crumb      = "Taxonomie"
+  card_title = "Taxonomie des Entités"
+  card_desc  = "Le modèle de données biomimétique du graphe Cortex : axe référent, axe type mémoire, déclin et vérité compilée."
