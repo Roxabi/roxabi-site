@@ -133,8 +133,8 @@ code, .mono { font-family: var(--font-mono); }
 /* iso hub: depth-sorted dataflow scene built by app.js (initIso) */
 #iso .grid-line { stroke: var(--border); stroke-width: 1; }
 #iso .link { stroke: var(--border); stroke-opacity: .55; stroke-width: 1.2; fill: none; stroke-linecap: round; }
-#iso .mlabel { font-family: var(--font-mono); font-size: 12px; fill: var(--text-muted); }
-#iso .clabel { font-family: var(--font-mono); font-size: 11px; fill: var(--accent); letter-spacing: .04em; }
+#iso .mlabel { font-family: var(--font-mono); font-size: 9.5px; fill: var(--text-muted); letter-spacing: .02em; }
+#iso .clabel { font-family: var(--font-mono); font-size: 9px; fill: var(--accent); letter-spacing: .04em; }
 
 /* Scroll cue — bottom-centre of the hero, gentle bob, jumps to the first section. */
 .hero-scroll {
