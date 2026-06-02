@@ -87,73 +87,281 @@
         <h2>Maximes : Débogage et Opérations</h2>
         <p>Trois maximes d'ingénierie pour les domaines ops et débogage. Chacune est accompagnée de sa décomposition formelle pour que la dérivation soit visible, pas simplement affirmée.</p>
 
-        <p><strong>R₁ — « Tout problème est un symptôme »</strong> (posture root-cause / sans patch)</p>
-        <p>Soit <code>P</code> := problème · <code>obs(P)</code> := ce qui est observé · <code>Sym(P)</code> := ensemble des symptômes · <code>RC(P)</code> := cause(s) racine(s) · <code>Corr</code> partitionné en <code>Patch</code> et <code>Archi</code> où <code>Patch ∩ Archi = ∅</code>.</p>
-        <p>Croyances atomiques : <code>C₁ : obs(P) ⊊ P</code> (l'observation est strictement plus petite que le problème entier) · <code>C₂ : obs(P) ⊆ Sym(P)</code> · <code>C₃ : |Sym(P)| ≥ 1, souvent &gt; 1</code> · <code>C₄ : ∃ RC(P) tel que Sym(P) ⊆ effets(RC(P))</code> · anti-croyance <code>C̄₅ : Patch ∉ Corr_valides</code> · <code>C₆ : Corr_valides ⊆ Archi</code>.</p>
-        <p>Réflexe dérivé R₁ : <code>obs(P) → enumerer(Sym(P)) → find(RC(P)) → architect(Corr(P))</code>.<br>
-        Réflexe naïf ✗ : <code>obs(P) → patch(obs(P))</code> — voir un symptôme et le patcher est un contournement, pas une correction.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-id">R₁</span>
+            <span class="maxim-name">« Tout problème est un symptôme »</span>
+            <span class="maxim-domain">root-cause</span>
+          </div>
+          <p class="maxim-sub">Soit</p>
+          <ul class="maxim-list">
+            <li><code>P</code> <span class="g">le problème</span></li>
+            <li><code>obs(P)</code> <span class="g">ce qui est observé</span></li>
+            <li><code>Sym(P)</code> <span class="g">ensemble des symptômes</span></li>
+            <li><code>RC(P)</code> <span class="g">cause(s) racine(s)</span></li>
+            <li><code>Corr</code> <span class="g">partitionné en</span> <code>Patch</code> <span class="g">et</span> <code>Archi</code>, <span class="g">où</span> <code>Patch ∩ Archi = ∅</code></li>
+          </ul>
+          <p class="maxim-sub">Croyances atomiques</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>obs(P) ⊊ P</code> <span class="g">l'observation est strictement plus petite que le problème entier</span></li>
+            <li><span class="c">C₂</span> <code>obs(P) ⊆ Sym(P)</code></li>
+            <li><span class="c">C₃</span> <code>|Sym(P)| ≥ 1</code> <span class="g">souvent &gt; 1</span></li>
+            <li><span class="c">C₄</span> <code>∃ RC(P) tel que Sym(P) ⊆ effets(RC(P))</code></li>
+            <li class="anti"><span class="c">C̄₅</span> <code>Patch ∉ Corr_valides</code> <span class="g">anti-croyance</span></li>
+            <li><span class="c">C₆</span> <code>Corr_valides ⊆ Archi</code></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>obs(P) → enumerer(Sym(P)) → find(RC(P)) → architect(Corr(P))</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>obs(P) → patch(obs(P))</code> — voir un symptôme et le patcher est un contournement, pas une correction.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>« Un code de sortie rapporte ; il ne juge pas »</strong> (domaine ops / CI)</p>
-        <p>Soit <code>G</code> := gate ou scanner · <code>exit(G) ≡ ranOK</code> (exit 0 signifie « s'est exécuté sans crash », pas « rien trouvé ») · <code>verdict(G) ⊥ exit(G)</code> (le verdict est orthogonal au code de sortie) · anti-croyance : <code>found(G) ≠ ∅ ⇏ exit(G)=broken</code> · <code>verdict(G) ∈ report(G)</code>.</p>
-        <p>Réflexe dérivé : <code>run(G) → exit := ranOK → write(verdict→report) → gate lit le rapport</code>.<br>
-        Réflexe naïf ✗ : <code>found ≠ ∅ → exit ≠ 0 → set -e court-circuite le pipeline</code> — le CI n'atteint jamais le rapport, les findings sont perdus.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Un code de sortie rapporte ; il ne juge pas »</span>
+            <span class="maxim-domain">ops / CI</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>G</code> <span class="g">gate ou scanner</span></li>
+            <li><code>exit(G) ≡ ranOK</code> <span class="g">exit 0 signifie « s'est exécuté sans crash », pas « rien trouvé »</span></li>
+            <li><code>verdict(G) ⊥ exit(G)</code> <span class="g">le verdict est orthogonal au code de sortie</span></li>
+            <li class="anti"><code>found(G) ≠ ∅ ⇏ exit(G)=broken</code> <span class="g">anti-croyance</span></li>
+            <li><code>verdict(G) ∈ report(G)</code></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>run(G) → exit := ranOK → write(verdict→report) → gate lit le rapport</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>found ≠ ∅ → exit ≠ 0 → set -e court-circuite le pipeline</code> — le CI n'atteint jamais le rapport, les findings sont perdus.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>« Ne diagnostique pas un hang depuis une courte observation »</strong> (domaine débogage)</p>
-        <p>Soit <code>H</code> := hypothèse de hang · <code>w</code> := fenêtre d'observation · <code>D</code> := durée attendue de la tâche.</p>
-        <p>Croyances atomiques : <code>C₁ : obs(w) avec w ≪ D ⊄ preuve(H)</code> (une fenêtre trop courte ne constitue pas une preuve) · <code>C₂ : silence(w) ⊆ {hang, travail-en-cours}</code> (le silence est ambigu) · <code>C₃ : |causes(silence)| &gt; 1</code> (futex_wait + zéro IO ≠ deadlock).</p>
-        <p>Réflexe dérivé : <code>suspect(hang) → poser w := D → mesurer(w) → conclure</code>.<br>
-        Réflexe naïf ✗ : <code>obs(1s) → conclure(hang)</code> — une seconde d'absence de sortie n'est pas un hang.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Ne diagnostique pas un hang depuis une courte observation »</span>
+            <span class="maxim-domain">débogage</span>
+          </div>
+          <p class="maxim-sub">Soit</p>
+          <ul class="maxim-list">
+            <li><code>H</code> <span class="g">hypothèse de hang</span></li>
+            <li><code>w</code> <span class="g">fenêtre d'observation</span></li>
+            <li><code>D</code> <span class="g">durée attendue de la tâche</span></li>
+          </ul>
+          <p class="maxim-sub">Croyances atomiques</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>obs(w) avec w ≪ D ⊄ preuve(H)</code> <span class="g">une fenêtre trop courte ne constitue pas une preuve</span></li>
+            <li><span class="c">C₂</span> <code>silence(w) ⊆ {hang, travail-en-cours}</code> <span class="g">le silence est ambigu</span></li>
+            <li><span class="c">C₃</span> <code>|causes(silence)| &gt; 1</code> <span class="g">futex_wait + zéro IO ≠ deadlock</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>suspect(hang) → poser w := D → mesurer(w) → conclure</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>obs(1s) → conclure(hang)</code> — une seconde d'absence de sortie n'est pas un hang.</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="titre" id="sec-3">
         <span class="label">03</span>
         <h2>Maximes : Sécurité, Concurrence et Agents de Correction</h2>
 
-        <p><strong>« Toute entrée est hostile jusqu'à preuve du contraire »</strong> (domaine sécurité)</p>
-        <p>Soit <code>I</code> := entrée · <code>trust(I) = ⊥</code> par défaut · <code>valid(I) ⇒ trust(I)</code> (seule une validation explicite élève la confiance) · anti-croyance : <code>I ∉ trusted ⇒ I ∉ {query, exec, render}</code>.</p>
-        <p>Réflexe dérivé : <code>receive(I) → validate → sanitize → use</code>.<br>
-        Réflexe naïf ✗ : <code>receive(I) → use(I)</code> — traiter l'arrivée comme une autorisation.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Toute entrée est hostile jusqu'à preuve du contraire »</span>
+            <span class="maxim-domain">sécurité</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>I</code> <span class="g">entrée</span></li>
+            <li><code>trust(I) = ⊥</code> <span class="g">par défaut</span></li>
+            <li><code>valid(I) ⇒ trust(I)</code> <span class="g">seule une validation explicite élève la confiance</span></li>
+            <li class="anti"><code>I ∉ trusted ⇒ I ∉ {query, exec, render}</code> <span class="g">anti-croyance</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>receive(I) → validate → sanitize → use</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>receive(I) → use(I)</code> — traiter l'arrivée comme une autorisation.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>« Vérifie la source canonique après un push »</strong> (domaine sessions concurrentes)</p>
-        <p>Soit <code>S</code> := état partagé · <code>report(success) ⊊ vérité(S)</code> (le rapport de succès est un sous-ensemble propre de la vérité terrain) · <code>∃ mutateurs concurrents</code> tels que <code>S</code> peut dériver entre le push et la prochaine lecture — d'autres sessions, un auto-merge ou la CI peuvent muter <code>S</code> en cours de tâche.</p>
-        <p>Réflexe dérivé : <code>push → relire(canonical(S)) → asserter → continuer</code>.<br>
-        Réflexe naïf ✗ : <code>push → faire confiance au rapport → continuer</code> — agir sur un snapshot possiblement déjà périmé.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Vérifie la source canonique après un push »</span>
+            <span class="maxim-domain">concurrence</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>S</code> <span class="g">état partagé</span></li>
+            <li><code>report(success) ⊊ vérité(S)</code> <span class="g">le rapport de succès est un sous-ensemble propre de la vérité terrain</span></li>
+            <li><code>∃ mutateurs concurrents</code> <span class="g">S peut dériver entre le push et la prochaine lecture — d'autres sessions, un auto-merge ou la CI peuvent muter S en cours de tâche</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>push → relire(canonical(S)) → asserter → continuer</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>push → faire confiance au rapport → continuer</code> — agir sur un snapshot possiblement déjà périmé.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>« Vérifie que la cible existe avant d'appliquer un correctif »</strong> (domaine agents de correction)</p>
-        <p>Soit <code>T</code> := fichier cible · <code>F</code> := correctif · l'existence de <code>T</code> est une précondition pour <code>apply(F)</code> · anti-croyance : <code>¬exists(T) ⇒ apply(F)</code> est invalide — corriger une cible absente revient à annuler silencieusement une décision stratégique.</p>
-        <p>Réflexe dérivé : <code>receive(F) → asserter exists(T) → sinon escalader → apply(F)</code>.<br>
-        Réflexe naïf ✗ : <code>receive(F) → apply(F)</code> — recréer un fichier délibérément supprimé.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Vérifie que la cible existe avant d'appliquer un correctif »</span>
+            <span class="maxim-domain">agents de correction</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>T</code> <span class="g">fichier cible</span></li>
+            <li><code>F</code> <span class="g">correctif</span></li>
+            <li><span class="g">l'existence de</span> <code>T</code> <span class="g">est une précondition pour</span> <code>apply(F)</code></li>
+            <li class="anti"><code>¬exists(T) ⇒ apply(F)</code> <span class="g">est invalide — corriger une cible absente revient à annuler silencieusement une décision stratégique</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>receive(F) → asserter exists(T) → sinon escalader → apply(F)</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>receive(F) → apply(F)</code> — recréer un fichier délibérément supprimé.</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="titre" id="sec-4">
         <span class="label">04</span>
         <h2>Maximes : Refactoring, Tests et Dépendances</h2>
 
-        <p><strong>« Une abstraction mérite son nom à trois usages »</strong> (refactoring — règle des trois)</p>
-        <p>Soit <code>A</code> := abstraction · <code>uses(A)</code> := ensemble des sites d'usage.</p>
-        <p>Croyances atomiques : <code>C₁ : |uses(A)| ≥ 3 ⇒ A justifiée</code> (trois usages indépendants valident que l'abstraction a une frontière stable) · anti-croyance <code>C̄₂ : |uses(A)| &lt; 3 ⇒ A ∉ justifiée</code> (le coût de couplage dépasse le bénéfice en deçà de trois usages).</p>
-        <p>Réflexe dérivé : <code>pattern répété → count(uses) → si ≥ 3 abstraire → sinon dupliquer</code>.<br>
-        Réflexe naïf ✗ : <code>pattern vu 2× → abstraire immédiatement</code> — couplage prématuré avant que la frontière soit connue.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Une abstraction mérite son nom à trois usages »</span>
+            <span class="maxim-domain">refactoring</span>
+          </div>
+          <p class="maxim-sub">Soit</p>
+          <ul class="maxim-list">
+            <li><code>A</code> <span class="g">abstraction</span></li>
+            <li><code>uses(A)</code> <span class="g">ensemble des sites d'usage</span></li>
+          </ul>
+          <p class="maxim-sub">Croyances atomiques</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>|uses(A)| ≥ 3 ⇒ A justifiée</code> <span class="g">trois usages indépendants valident que l'abstraction a une frontière stable</span></li>
+            <li class="anti"><span class="c">C̄₂</span> <code>|uses(A)| &lt; 3 ⇒ A ∉ justifiée</code> <span class="g">le coût de couplage dépasse le bénéfice en deçà de trois usages</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>pattern répété → count(uses) → si ≥ 3 abstraire → sinon dupliquer</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>pattern vu 2× → abstraire immédiatement</code> — couplage prématuré avant que la frontière soit connue.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>« Tout code non testé est présumé cassé »</strong> (domaine tests)</p>
-        <p>Soit <code>C</code> := code · <code>¬tested(C) ⇒ correct(C) inconnu</code> · anti-croyance : <code>« ça compile » ∉ preuve(correct)</code> · <code>|paths(C)| &gt; 1</code> dans toute fonction non triviale.</p>
-        <p>Réflexe dérivé : <code>write(C) → enumerer(paths) → couvrir → vert</code>.<br>
-        Réflexe naïf ✗ : <code>write(C) → livrer</code> — la compilation n'est pas la correction.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Tout code non testé est présumé cassé »</span>
+            <span class="maxim-domain">tests</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>C</code> <span class="g">code</span></li>
+            <li><code>¬tested(C) ⇒ correct(C) inconnu</code></li>
+            <li class="anti"><code>« ça compile » ∉ preuve(correct)</code> <span class="g">anti-croyance</span></li>
+            <li><code>|paths(C)| &gt; 1</code> <span class="g">dans toute fonction non triviale</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>write(C) → enumerer(paths) → couvrir → vert</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>write(C) → livrer</code> — la compilation n'est pas la correction.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>« Toute dépendance est une dette »</strong> (domaine dépendances)</p>
-        <p>Soit <code>D</code> := dépendance · <code>coût(D) = {surface d'attaque, mises à jour obligatoires, exposition CVE, graphe transitif}</code> · ajouter <code>D</code> sans condition incrémente cette dette · anti-croyance : « c'est gratuit » est faux pour toute clôture transitive non vide.</p>
-        <p>Réflexe dérivé : <code>besoin → chercher(stdlib) → sinon évaluer coût(D) → épingler → justifier</code>.<br>
-        Réflexe naïf ✗ : <code>besoin → installer immédiatement</code> — traiter la commodité comme un coût nul.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Toute dépendance est une dette »</span>
+            <span class="maxim-domain">dépendances</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>D</code> <span class="g">dépendance</span></li>
+            <li><code>coût(D) = {surface d'attaque, mises à jour obligatoires, exposition CVE, graphe transitif}</code></li>
+            <li><span class="g">ajouter</span> <code>D</code> <span class="g">sans condition incrémente cette dette</span></li>
+            <li class="anti"><span class="g">« c'est gratuit » est faux pour toute clôture transitive non vide</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>besoin → chercher(stdlib) → sinon évaluer coût(D) → épingler → justifier</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>besoin → installer immédiatement</code> — traiter la commodité comme un coût nul.</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="titre" id="sec-5">
         <span class="label">05</span>
         <h2>La Méta-Maxime : Corriger au Bon Niveau Logique</h2>
-        <p><strong>« Corriger au même niveau logique, c'est tourner en boucle. »</strong></p>
-        <p>Soit <code>L</code> := niveau logique courant · <code>fix@L</code> := correction appliquée au niveau <code>L</code>.</p>
-        <p>Croyances atomiques : <code>C₁ : problème récurrent @L ⇒ cause probable @L+1</code> (la récurrence à un niveau pointe vers une faute structurelle au niveau supérieur) · anti-croyance <code>C̄₂ : fix@L sur une cause @L+1 = palliatif</code> (le symptôme revient car la cause est intacte).</p>
-        <p>Réflexe dérivé : <code>récurrence@L → monter(L+1) → fix@L+1</code>.<br>
-        Réflexe naïf ✗ : <code>récurrence@L → re-fix@L</code> — une saga de cinquante commits sur trente-six heures, tous au niveau tactique, ne ferme jamais une dette structurelle. La boucle continue jusqu'à ce que quelqu'un monte d'un niveau.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Corriger au même niveau logique, c'est tourner en boucle »</span>
+            <span class="maxim-domain">méta</span>
+          </div>
+          <p class="maxim-sub">Soit</p>
+          <ul class="maxim-list">
+            <li><code>L</code> <span class="g">niveau logique courant</span></li>
+            <li><code>fix@L</code> <span class="g">correction appliquée au niveau L</span></li>
+          </ul>
+          <p class="maxim-sub">Croyances atomiques</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>problème récurrent @L ⇒ cause probable @L+1</code> <span class="g">la récurrence à un niveau pointe vers une faute structurelle au niveau supérieur</span></li>
+            <li class="anti"><span class="c">C̄₂</span> <code>fix@L sur une cause @L+1 = palliatif</code> <span class="g">le symptôme revient car la cause est intacte</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>récurrence@L → monter(L+1) → fix@L+1</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>récurrence@L → re-fix@L</code> — une saga de cinquante commits sur trente-six heures, tous au niveau tactique, ne ferme jamais une dette structurelle. La boucle continue jusqu'à ce que quelqu'un monte d'un niveau.</span>
+            </div>
+          </div>
+        </div>
         <p>C'est le principe de clôture du cadre. Il s'applique à chacune des autres maximes. Quand un réflexe continue d'échouer, la faute n'est pas dans le réflexe — elle est dans les croyances au niveau 4. La bonne action est de reformuler la croyance un niveau au-dessus, puis de re-dériver le réflexe. Le réflexe est en aval ; la croyance est la racine.</p>
         <div class="callout" style="border-left:3px solid var(--accent);padding:var(--s-md) var(--s-lg);background:var(--surface);border-radius:0 var(--r-lg) var(--r-lg) 0;margin-top:var(--s-lg)">
           <p>Quand un réflexe déraille de façon répétée : ne pas déboguer le réflexe. Auditer les croyances. Trouver l'atome manquant, imprécis ou au mauvais niveau. Le reformuler. Le réflexe correct suit. <code>récurrence@L → monter(L+1) → fix@L+1</code>.</p>

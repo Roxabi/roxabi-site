@@ -439,7 +439,37 @@ table.data-table { width: 100%; border-collapse: collapse; }
 .modcard-body { font-size: .9rem; color: var(--text-muted); }
 .modcard-body p + p { margin-top: var(--s-sm); }
 
-@media (max-width: 640px) { .compare-wrap, .trinity { grid-template-columns: 1fr; } }
+/* ── Maxim — derived-reflexes structured maxim card ──────────
+   Breaks the "Let … · C₁ … · C₂ …" prose runs into one-belief-per-line
+   lists, and renders the derived-vs-naive pair as the accent/muted
+   contrast the §1 figure already establishes. Ref: lab/docs-components. */
+.maxim { background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--s-lg) var(--s-xl); margin: var(--s-lg) 0; }
+.maxim-head { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s-xs) var(--s-md); margin-bottom: var(--s-sm); }
+.maxim-id { font-family: var(--font-mono); font-size: .95rem; font-weight: 700; color: var(--accent); }
+.maxim-name { font-weight: 600; color: var(--text); }
+.maxim-domain { margin-left: auto; font-family: var(--font-mono); font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--text-dim); border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; }
+.maxim-sub { font-family: var(--font-mono); font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-dim); margin: var(--s-md) 0 6px; }
+.maxim-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.maxim-list li { font-size: .9rem; color: var(--text-muted); padding-left: 1.2rem; position: relative; }
+.maxim-list li::before { content: "·"; position: absolute; left: .2rem; color: var(--accent); font-weight: 700; }
+.maxim-list li.anti::before { content: "∉"; font-family: var(--font-mono); font-size: .72rem; top: .1em; }
+.maxim-list .c { font-family: var(--font-mono); font-weight: 600; color: var(--text); margin-right: .2rem; }
+.maxim-list .g { color: var(--text-dim); }
+.maxim-list code { font-size: .82rem; }
+/* derived-vs-naive reflex contrast */
+.reflex { display: grid; gap: 6px; margin-top: var(--s-lg); }
+.reflex-row { display: grid; grid-template-columns: max-content 1fr; gap: var(--s-md); align-items: baseline; padding: 8px var(--s-md); border-radius: 0 var(--r-sm) var(--r-sm) 0; background: var(--surface); }
+.reflex-row .r-tag { font-family: var(--font-mono); font-size: .62rem; font-weight: 700; letter-spacing: .08em; white-space: nowrap; }
+.reflex-row .r-body { font-size: .9rem; color: var(--text-muted); }
+.reflex-row .r-body code { background: none; border: none; padding: 0; font-size: .85rem; }
+.reflex-row.derived { border-left: 3px solid var(--accent); }
+.reflex-row.derived .r-tag { color: var(--accent); }
+.reflex-row.derived .r-body code { color: var(--text); }
+.reflex-row.naive { border-left: 3px solid var(--border-hi); }
+.reflex-row.naive .r-tag { color: var(--text-dim); }
+.reflex-row.naive .r-body code { color: var(--text-dim); text-decoration: line-through; text-decoration-color: var(--text-dim); }
+
+@media (max-width: 640px) { .compare-wrap, .trinity { grid-template-columns: 1fr; } .maxim { padding: var(--s-lg); } }
 
 /* Per-document footer nav: the doc's tag chips + back-to-index (derived by build.py) */
 .doc-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-md); margin-top: var(--s-2xl); padding-top: var(--s-lg); border-top: 1px solid var(--border); }

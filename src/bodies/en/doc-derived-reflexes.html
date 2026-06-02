@@ -98,73 +98,281 @@
         <h2>Maxims: Debugging and Operations</h2>
         <p>Three engineering maxims for the ops and debug domains. Each is given with its formal decomposition so the derivation is visible, not asserted.</p>
 
-        <p><strong>R₁ — "Every problem is a symptom"</strong> (root-cause / no-patch posture)</p>
-        <p>Let <code>P</code> := problem · <code>obs(P)</code> := what is observed · <code>Sym(P)</code> := symptom set · <code>RC(P)</code> := root cause(s) · <code>Corr</code> split into <code>Patch</code> and <code>Archi</code> where <code>Patch ∩ Archi = ∅</code>.</p>
-        <p>Atomic beliefs: <code>C₁: obs(P) ⊊ P</code> (observation is strictly smaller than the whole problem) · <code>C₂: obs(P) ⊆ Sym(P)</code> · <code>C₃: |Sym(P)| ≥ 1, often &gt; 1</code> · <code>C₄: ∃ RC(P) such that Sym(P) ⊆ effets(RC(P))</code> · anti-belief <code>C̄₅: Patch ∉ Corr_valides</code> · <code>C₆: Corr_valides ⊆ Archi</code>.</p>
-        <p>Derived reflex R₁: <code>obs(P) → enumerer(Sym(P)) → find(RC(P)) → architect(Corr(P))</code>.<br>
-        Naive reflex ✗: <code>obs(P) → patch(obs(P))</code> — seeing a symptom and patching it is a workaround, not a correction.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-id">R₁</span>
+            <span class="maxim-name">"Every problem is a symptom"</span>
+            <span class="maxim-domain">root-cause</span>
+          </div>
+          <p class="maxim-sub">Let</p>
+          <ul class="maxim-list">
+            <li><code>P</code> <span class="g">the problem</span></li>
+            <li><code>obs(P)</code> <span class="g">what is observed</span></li>
+            <li><code>Sym(P)</code> <span class="g">symptom set</span></li>
+            <li><code>RC(P)</code> <span class="g">root cause(s)</span></li>
+            <li><code>Corr</code> <span class="g">split into</span> <code>Patch</code> <span class="g">and</span> <code>Archi</code>, <span class="g">with</span> <code>Patch ∩ Archi = ∅</code></li>
+          </ul>
+          <p class="maxim-sub">Atomic beliefs</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>obs(P) ⊊ P</code> <span class="g">observation is strictly smaller than the whole problem</span></li>
+            <li><span class="c">C₂</span> <code>obs(P) ⊆ Sym(P)</code></li>
+            <li><span class="c">C₃</span> <code>|Sym(P)| ≥ 1</code> <span class="g">often &gt; 1</span></li>
+            <li><span class="c">C₄</span> <code>∃ RC(P) : Sym(P) ⊆ effets(RC(P))</code></li>
+            <li class="anti"><span class="c">C̄₅</span> <code>Patch ∉ Corr_valides</code> <span class="g">anti-belief</span></li>
+            <li><span class="c">C₆</span> <code>Corr_valides ⊆ Archi</code></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DERIVED</span>
+              <span class="r-body"><code>obs(P) → enumerer(Sym(P)) → find(RC(P)) → architect(Corr(P))</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAIVE</span>
+              <span class="r-body"><code>obs(P) → patch(obs(P))</code> — seeing a symptom and patching it is a workaround, not a correction.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>"An exit code reports; it does not judge"</strong> (ops / CI domain)</p>
-        <p>Let <code>G</code> := gate or scanner · <code>exit(G) ≡ ranOK</code> (exit 0 means "ran without crash", not "nothing found") · <code>verdict(G) ⊥ exit(G)</code> (the verdict is orthogonal to the exit code) · anti-belief: <code>found(G) ≠ ∅ ⇏ exit(G)=broken</code> · <code>verdict(G) ∈ report(G)</code>.</p>
-        <p>Derived reflex: <code>run(G) → exit := ranOK → write(verdict→report) → gate reads report</code>.<br>
-        Naive reflex ✗: <code>found ≠ ∅ → exit ≠ 0 → set -e short-circuits the pipeline</code> — the CI never reaches the report, and findings are lost.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">"An exit code reports; it does not judge"</span>
+            <span class="maxim-domain">ops / CI</span>
+          </div>
+          <p class="maxim-sub">Beliefs</p>
+          <ul class="maxim-list">
+            <li><code>G</code> <span class="g">a gate or scanner</span></li>
+            <li><code>exit(G) ≡ ranOK</code> <span class="g">exit 0 means "ran without crash", not "nothing found"</span></li>
+            <li><code>verdict(G) ⊥ exit(G)</code> <span class="g">the verdict is orthogonal to the exit code</span></li>
+            <li class="anti"><code>found(G) ≠ ∅ ⇏ exit(G)=broken</code> <span class="g">anti-belief</span></li>
+            <li><code>verdict(G) ∈ report(G)</code></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DERIVED</span>
+              <span class="r-body"><code>run(G) → exit := ranOK → write(verdict→report) → gate reads report</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAIVE</span>
+              <span class="r-body"><code>found ≠ ∅ → exit ≠ 0 → set -e short-circuits the pipeline</code> — the CI never reaches the report, and findings are lost.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>"Do not diagnose a hang from a short snapshot"</strong> (debug domain)</p>
-        <p>Let <code>H</code> := hang hypothesis · <code>w</code> := observation window · <code>D</code> := expected task duration.</p>
-        <p>Atomic beliefs: <code>C₁: obs(w) where w ≪ D ⊄ preuve(H)</code> (too short a window does not constitute evidence) · <code>C₂: silence(w) ⊆ {hang, work-in-progress}</code> (silence is ambiguous) · <code>C₃: |causes(silence)| &gt; 1</code> (futex_wait + zero IO ≠ deadlock).</p>
-        <p>Derived reflex: <code>suspect(hang) → set w := D → mesurer(w) → conclude</code>.<br>
-        Naive reflex ✗: <code>obs(1s) → conclude(hang)</code> — a one-second absence of output is not a hang.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">"Do not diagnose a hang from a short snapshot"</span>
+            <span class="maxim-domain">debug</span>
+          </div>
+          <p class="maxim-sub">Let</p>
+          <ul class="maxim-list">
+            <li><code>H</code> <span class="g">hang hypothesis</span></li>
+            <li><code>w</code> <span class="g">observation window</span></li>
+            <li><code>D</code> <span class="g">expected task duration</span></li>
+          </ul>
+          <p class="maxim-sub">Atomic beliefs</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>obs(w) where w ≪ D ⊄ preuve(H)</code> <span class="g">too short a window does not constitute evidence</span></li>
+            <li><span class="c">C₂</span> <code>silence(w) ⊆ {hang, work-in-progress}</code> <span class="g">silence is ambiguous</span></li>
+            <li><span class="c">C₃</span> <code>|causes(silence)| &gt; 1</code> <span class="g">futex_wait + zero IO ≠ deadlock</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DERIVED</span>
+              <span class="r-body"><code>suspect(hang) → set w := D → mesurer(w) → conclude</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAIVE</span>
+              <span class="r-body"><code>obs(1s) → conclude(hang)</code> — a one-second absence of output is not a hang.</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="titre" id="sec-3">
         <span class="label">03</span>
         <h2>Maxims: Security, Concurrency, and Fix-Agents</h2>
 
-        <p><strong>"Every input is hostile until proven otherwise"</strong> (security domain)</p>
-        <p>Let <code>I</code> := input · <code>trust(I) = ⊥</code> by default · <code>valid(I) ⇒ trust(I)</code> (only explicit validation elevates trust) · anti-belief: <code>I ∉ trusted ⇒ I ∉ {query, exec, render}</code>.</p>
-        <p>Derived reflex: <code>receive(I) → validate → sanitize → use</code>.<br>
-        Naive reflex ✗: <code>receive(I) → use(I)</code> — treating arrival as authorization.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">"Every input is hostile until proven otherwise"</span>
+            <span class="maxim-domain">security</span>
+          </div>
+          <p class="maxim-sub">Beliefs</p>
+          <ul class="maxim-list">
+            <li><code>I</code> <span class="g">input</span></li>
+            <li><code>trust(I) = ⊥</code> <span class="g">by default</span></li>
+            <li><code>valid(I) ⇒ trust(I)</code> <span class="g">only explicit validation elevates trust</span></li>
+            <li class="anti"><code>I ∉ trusted ⇒ I ∉ {query, exec, render}</code> <span class="g">anti-belief</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DERIVED</span>
+              <span class="r-body"><code>receive(I) → validate → sanitize → use</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAIVE</span>
+              <span class="r-body"><code>receive(I) → use(I)</code> — treating arrival as authorization.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>"Verify the canonical source after a push"</strong> (concurrent sessions domain)</p>
-        <p>Let <code>S</code> := shared state · <code>report(success) ⊊ vérité(S)</code> (the success report is a proper subset of ground truth) · <code>∃ concurrent mutators</code> such that <code>S</code> can drift between the push and the next read — other sessions, auto-merge, or CI can mutate <code>S</code> mid-task.</p>
-        <p>Derived reflex: <code>push → re-read(canonical(S)) → assert → continue</code>.<br>
-        Naive reflex ✗: <code>push → trust(report) → continue</code> — acting on a snapshot that may already be stale.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">"Verify the canonical source after a push"</span>
+            <span class="maxim-domain">concurrency</span>
+          </div>
+          <p class="maxim-sub">Beliefs</p>
+          <ul class="maxim-list">
+            <li><code>S</code> <span class="g">shared state</span></li>
+            <li><code>report(success) ⊊ vérité(S)</code> <span class="g">the success report is a proper subset of ground truth</span></li>
+            <li><code>∃ concurrent mutators</code> <span class="g">S can drift between the push and the next read — other sessions, auto-merge, or CI can mutate S mid-task</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DERIVED</span>
+              <span class="r-body"><code>push → re-read(canonical(S)) → assert → continue</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAIVE</span>
+              <span class="r-body"><code>push → trust(report) → continue</code> — acting on a snapshot that may already be stale.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>"Verify the target exists before applying a fix"</strong> (fix-agents domain)</p>
-        <p>Let <code>T</code> := target file · <code>F</code> := fix · existence of <code>T</code> is a precondition for <code>apply(F)</code> · anti-belief: <code>¬exists(T) ⇒ apply(F)</code> is invalid — correcting an absent target is the silent revert of a strategic decision.</p>
-        <p>Derived reflex: <code>receive(F) → assert exists(T) → else escalate → apply(F)</code>.<br>
-        Naive reflex ✗: <code>receive(F) → apply(F)</code> — creating a file that was deliberately deleted.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">"Verify the target exists before applying a fix"</span>
+            <span class="maxim-domain">fix-agents</span>
+          </div>
+          <p class="maxim-sub">Beliefs</p>
+          <ul class="maxim-list">
+            <li><code>T</code> <span class="g">target file</span></li>
+            <li><code>F</code> <span class="g">fix</span></li>
+            <li><span class="g">existence of</span> <code>T</code> <span class="g">is a precondition for</span> <code>apply(F)</code></li>
+            <li class="anti"><code>¬exists(T) ⇒ apply(F)</code> <span class="g">is invalid — correcting an absent target is the silent revert of a strategic decision</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DERIVED</span>
+              <span class="r-body"><code>receive(F) → assert exists(T) → else escalate → apply(F)</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAIVE</span>
+              <span class="r-body"><code>receive(F) → apply(F)</code> — creating a file that was deliberately deleted.</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="titre" id="sec-4">
         <span class="label">04</span>
         <h2>Maxims: Refactoring, Tests, and Dependencies</h2>
 
-        <p><strong>"An abstraction earns its name at three uses"</strong> (refactoring — rule of three)</p>
-        <p>Let <code>A</code> := abstraction · <code>uses(A)</code> := set of usage sites.</p>
-        <p>Atomic beliefs: <code>C₁: |uses(A)| ≥ 3 ⇒ A justified</code> (three independent uses validate that the abstraction has a stable boundary) · anti-belief <code>C̄₂: |uses(A)| &lt; 3 ⇒ A ∉ justified</code> (coupling cost exceeds benefit when the abstraction has fewer than three uses).</p>
-        <p>Derived reflex: <code>repeated pattern → count(uses) → if ≥ 3 abstract → else duplicate</code>.<br>
-        Naive reflex ✗: <code>pattern seen 2× → abstract immediately</code> — premature abstraction couples two sites before the boundary is known.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">"An abstraction earns its name at three uses"</span>
+            <span class="maxim-domain">refactoring</span>
+          </div>
+          <p class="maxim-sub">Let</p>
+          <ul class="maxim-list">
+            <li><code>A</code> <span class="g">abstraction</span></li>
+            <li><code>uses(A)</code> <span class="g">set of usage sites</span></li>
+          </ul>
+          <p class="maxim-sub">Atomic beliefs</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>|uses(A)| ≥ 3 ⇒ A justified</code> <span class="g">three independent uses validate that the abstraction has a stable boundary</span></li>
+            <li class="anti"><span class="c">C̄₂</span> <code>|uses(A)| &lt; 3 ⇒ A ∉ justified</code> <span class="g">coupling cost exceeds benefit below three uses</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DERIVED</span>
+              <span class="r-body"><code>repeated pattern → count(uses) → if ≥ 3 abstract → else duplicate</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAIVE</span>
+              <span class="r-body"><code>pattern seen 2× → abstract immediately</code> — premature abstraction couples two sites before the boundary is known.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>"Every untested code is presumed broken"</strong> (tests domain)</p>
-        <p>Let <code>C</code> := code · <code>¬tested(C) ⇒ correct(C) unknown</code> · anti-belief: <code>"it compiles" ∉ proof(correct)</code> · <code>|paths(C)| &gt; 1</code> in any non-trivial function.</p>
-        <p>Derived reflex: <code>write(C) → enumerate(paths) → cover → green</code>.<br>
-        Naive reflex ✗: <code>write(C) → ship</code> — compilation is not correctness.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">"Every untested code is presumed broken"</span>
+            <span class="maxim-domain">tests</span>
+          </div>
+          <p class="maxim-sub">Beliefs</p>
+          <ul class="maxim-list">
+            <li><code>C</code> <span class="g">code</span></li>
+            <li><code>¬tested(C) ⇒ correct(C) unknown</code></li>
+            <li class="anti"><code>"it compiles" ∉ proof(correct)</code> <span class="g">anti-belief</span></li>
+            <li><code>|paths(C)| &gt; 1</code> <span class="g">in any non-trivial function</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DERIVED</span>
+              <span class="r-body"><code>write(C) → enumerate(paths) → cover → green</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAIVE</span>
+              <span class="r-body"><code>write(C) → ship</code> — compilation is not correctness.</span>
+            </div>
+          </div>
+        </div>
 
-        <p><strong>"Every dependency is a debt"</strong> (dependencies domain)</p>
-        <p>Let <code>D</code> := dependency · <code>coût(D) = {attack surface, mandatory updates, CVE exposure, transitive graph}</code> · adding <code>D</code> unconditionally increments that debt · anti-belief: "it's free" is false for any non-zero transitive closure.</p>
-        <p>Derived reflex: <code>need → seek(stdlib) → else evaluate coût(D) → pin → justify</code>.<br>
-        Naive reflex ✗: <code>need → install immediately</code> — treating convenience as zero-cost.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">"Every dependency is a debt"</span>
+            <span class="maxim-domain">dependencies</span>
+          </div>
+          <p class="maxim-sub">Beliefs</p>
+          <ul class="maxim-list">
+            <li><code>D</code> <span class="g">dependency</span></li>
+            <li><code>coût(D) = {attack surface, mandatory updates, CVE exposure, transitive graph}</code></li>
+            <li><span class="g">adding</span> <code>D</code> <span class="g">unconditionally increments that debt</span></li>
+            <li class="anti"><span class="g">"it's free" is false for any non-zero transitive closure</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DERIVED</span>
+              <span class="r-body"><code>need → seek(stdlib) → else evaluate coût(D) → pin → justify</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAIVE</span>
+              <span class="r-body"><code>need → install immediately</code> — treating convenience as zero-cost.</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="titre" id="sec-5">
         <span class="label">05</span>
         <h2>The Meta-Maxim: Correct at the Right Logical Level</h2>
-        <p><strong>"Correcting at the same logical level is a loop."</strong></p>
-        <p>Let <code>L</code> := current logical level · <code>fix@L</code> := applying a correction at level <code>L</code>.</p>
-        <p>Atomic beliefs: <code>C₁: recurring problem @L ⇒ probable cause @L+1</code> (recurrence at a level points to a structural fault in the level above) · anti-belief <code>C̄₂: fix@L on a cause @L+1 = palliative</code> (the symptom returns because the cause is untouched).</p>
-        <p>Derived reflex: <code>recurrence@L → ascend(L+1) → fix@L+1</code>.<br>
-        Naive reflex ✗: <code>recurrence@L → re-fix@L</code> — a saga of fifty commits over thirty-six hours, all at the tactical layer, never closes a structural debt. The loop continues until someone climbs a level.</p>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">"Correcting at the same logical level is a loop"</span>
+            <span class="maxim-domain">meta</span>
+          </div>
+          <p class="maxim-sub">Let</p>
+          <ul class="maxim-list">
+            <li><code>L</code> <span class="g">current logical level</span></li>
+            <li><code>fix@L</code> <span class="g">applying a correction at level L</span></li>
+          </ul>
+          <p class="maxim-sub">Atomic beliefs</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>recurring problem @L ⇒ probable cause @L+1</code> <span class="g">recurrence at a level points to a structural fault in the level above</span></li>
+            <li class="anti"><span class="c">C̄₂</span> <code>fix@L on a cause @L+1 = palliative</code> <span class="g">the symptom returns because the cause is untouched</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DERIVED</span>
+              <span class="r-body"><code>recurrence@L → ascend(L+1) → fix@L+1</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAIVE</span>
+              <span class="r-body"><code>recurrence@L → re-fix@L</code> — a saga of fifty commits over thirty-six hours, all at the tactical layer, never closes a structural debt. The loop continues until someone climbs a level.</span>
+            </div>
+          </div>
+        </div>
         <p>This is the closing principle of the framework. It applies to every other maxim. When a reflex keeps failing, the fault is not in the reflex — it is in the beliefs at level 4. The correct move is to reformulate the belief one level up, then re-derive the reflex. The reflex is downstream; the belief is the root.</p>
         <div class="callout" style="border-left:3px solid var(--accent);padding:var(--s-md) var(--s-lg);background:var(--surface);border-radius:0 var(--r-lg) var(--r-lg) 0;margin-top:var(--s-lg)">
           <p>When a reflex misfires repeatedly: do not patch the reflex. Climb one level, inspect the belief, reformulate it, re-derive. <code>recurrence@L → ascend(L+1) → fix@L+1</code>.</p>
