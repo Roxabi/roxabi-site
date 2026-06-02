@@ -105,7 +105,7 @@ def jsonld_software(base, org_name, github, lang, p) -> str:
         "@context": "https://schema.org", "@type": "SoftwareSourceCode",
         "name": "Lyra", "description": p[lang]["software_desc"],
         "codeRepository": github, "programmingLanguage": "Python",
-        "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+        "license": "https://opensource.org/license/agpl-v3",
         "author": {"@type": "Organization", "name": org_name, "url": f"{base}/"},
     })
 
@@ -138,6 +138,7 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
         "home_href": href("", lang),
         "projects_href": href("projects/", lang),
         "constitution_href": href("constitution/", lang),
+        "legal_href": href("legal/", lang),
         "lang_alt_href": href(path, other),
         "projects_current": ' aria-current="page"' if p["active"] == "projects" else "",
         "constitution_current": ' aria-current="page"' if p["active"] == "constitution" else "",

@@ -34,7 +34,9 @@ f_portfolio       = "Portfolio"
 f_github          = "GitHub"
 f_docs_soon       = "Docs (soon)"
 f_changelog_soon  = "Changelog (soon)"
-f_sibling         = "Sibling brand — shared amber family."
+f_legal           = "Legal"
+f_legal_notice    = "Legal notice"
+f_sibling         = "Sibling brand, shared amber family."
 f_copyright       = "© 2026 Roxabi · AGPL-3.0 License"
 
 [lang.fr]
@@ -63,7 +65,9 @@ f_portfolio       = "Portfolio"
 f_github          = "GitHub"
 f_docs_soon       = "Docs (bientôt)"
 f_changelog_soon  = "Changelog (bientôt)"
-f_sibling         = "Marque sœur — famille ambre partagée."
+f_legal           = "Légal"
+f_legal_notice    = "Mentions légales"
+f_sibling         = "Marque sœur, famille ambre partagée."
 f_copyright       = "© 2026 Roxabi · Licence AGPL-3.0"
 
 # ── Pages. `path` is lang-agnostic and lang-prefix-free ("" = site root). ─────
@@ -99,7 +103,7 @@ id          = "constitution"
 path        = "constitution/"
 body        = "constitution"
 og_type     = "article"
-footer      = "min"
+footer      = "full"
 shader      = false
 active      = "constitution"
 jsonld      = "breadcrumb"
@@ -124,7 +128,7 @@ id          = "projects"
 path        = "projects/"
 body        = "projects"
 og_type     = "website"
-footer      = "min"
+footer      = "full"
 shader      = false
 active      = "projects"
 jsonld      = "breadcrumb"
@@ -146,3 +150,28 @@ priority    = "0.8"
 
 # [[page]] "lyra" removed 2026-06-01 — Lyra product parked; repo renamed → roxabi-factory.
 # /projects/lyra/ now 301-redirects to /projects/ (static/_redirects). See artifacts/plans/lyra-to-roxabi-factory-rename.md
+
+[[page]]
+id          = "legal"
+path        = "legal/"
+body        = "legal"
+og_type     = "website"
+footer      = "full"
+shader      = false
+active      = ""
+jsonld      = "breadcrumb"
+ancestors   = ["home"]
+changefreq  = "yearly"
+priority    = "0.3"
+  [page.en]
+  title    = "Legal notice — Roxabi"
+  desc     = "Legal notice for roxabi.dev: publisher, hosting, intellectual property, and privacy. No analytics, no tracking cookies."
+  og_title = "Legal notice — Roxabi"
+  og_desc  = "Publisher, hosting, intellectual property, and privacy for roxabi.dev."
+  crumb    = "Legal notice"
+  [page.fr]
+  title    = "Mentions légales — Roxabi"
+  desc     = "Mentions légales de roxabi.dev : éditeur, hébergeur, propriété intellectuelle et données personnelles. Aucune analytique, aucun cookie de suivi."
+  og_title = "Mentions légales — Roxabi"
+  og_desc  = "Éditeur, hébergeur, propriété intellectuelle et données personnelles de roxabi.dev."
+  crumb    = "Mentions légales"

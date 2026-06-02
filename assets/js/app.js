@@ -18,7 +18,7 @@
       if (sun && moon) { sun.style.display = t === 'light' ? 'block' : 'none'; moon.style.display = t === 'light' ? 'none' : 'block'; }
     }
     // Start the hero shader the first time we land on (or switch to) dark.
-    if (t !== 'light' && window.FluidAmber) {
+    if (t !== 'light' && window.FluidAmber && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) {
       var hero = document.getElementById('hero-bg');
       if (hero) window.FluidAmber.init(hero);
     }
