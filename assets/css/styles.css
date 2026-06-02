@@ -124,6 +124,8 @@ code, .mono { font-family: var(--font-mono); }
   content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: radial-gradient(ellipse 72% 62% at 50% 44%, transparent 22%, var(--bg) 78%);
 }
+/* Kinetic-grid shader canvas — behind the vignette + content, in both themes. */
+#hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: .55; }
 .hero .wrap { position: relative; z-index: 2; max-width: 1280px; }
 .hero h1 { margin-block: var(--s-lg) var(--s-md); font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.07; text-wrap: balance; }
 .hero .lead { font-size: 1.25rem; max-width: 620px; margin-inline: auto; }
@@ -164,9 +166,14 @@ code, .mono { font-family: var(--font-mono); }
   .hero .lead { margin-inline: 0; max-width: 46ch; }
   .hero-copy .hero-cta { justify-content: flex-start; }
   .hero .rox-dia { margin: 0; }
-  /* Glow window pooled right of the copy (which ends ~48%): bright from ~54% rightward so the
-     hub (~64%) and curtain (~75%) read as one lit zone, copy side stays dark (opacity untouched). */
-  .hero::after { background: radial-gradient(ellipse 60% 78% at 70% 46%, transparent 16%, var(--bg) 42%); }
+  /* Two-column: let the shader (and iso) read on the right, keep the copy column
+     legible with a left-weighted scrim instead of a centred vignette. */
+  #hero-bg { opacity: .85; }
+  .hero::after {
+    background:
+      linear-gradient(95deg, var(--bg) 4%, color-mix(in srgb, var(--bg) 72%, transparent) 32%, transparent 64%),
+      radial-gradient(ellipse 96% 96% at 52% 48%, transparent 60%, var(--bg) 100%);
+  }
 }
 
 /* ── Code block (always dark terminal) ────────────────── */

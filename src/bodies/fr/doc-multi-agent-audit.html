@@ -1,0 +1,170 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">MÉTHODE</p>
+    <h1>L'Audit Multi-Agents</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Braque soixante-sept agents en lecture seule sur une base de code, découpe-la en huit, et laisse chaque agent regarder exactement une chose. Le résultat n'est pas un avis — c'est un seul rapport priorisé avec un score de dette technique. Voici comment l'audit tourne, et ce que deux runs réels ont trouvé.</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sommaire">
+      <span class="t">Sommaire</span>
+      <a href="#sec-1">1 — Une lecture, beaucoup d'yeux</a>
+      <a href="#sec-2">2 — Huit domaines, une passe</a>
+      <a href="#sec-3">3 — Partition et vague</a>
+      <a href="#sec-4">4 — Dérive en deux temps, recherche en second avis</a>
+      <a href="#sec-5">5 — Le rapport qu'il produit</a>
+      <a href="#sec-6">6 — Deux audits réels</a>
+      <a href="#sec-7">7 — Ce qui passe à l'échelle</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Une lecture, beaucoup d'yeux</h2>
+        <p>Un audit est un fan-out en <strong>lecture</strong> : beaucoup d'agents qui observent, rien qui change. Le schéma est mécanique. On partitionne la base de code en tranches disjointes, on assigne chaque tranche à chaque domaine d'analyse, on exécute la grille d'agents qui en résulte par vagues, puis on remet tous leurs constats à un seul agent de synthèse qui les condense en un rapport. La même machinerie, parcourue en sens inverse, devient la remédiation autonome — voir le <a href="/fr/documentation/autonomous-remediation/">retour d'expérience</a> compagnon pour la moitié écriture.</p>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">67</span><span class="kpi-label">agents parallèles</span></div>
+          <div class="kpi-item"><span class="kpi-value">8</span><span class="kpi-label">domaines d'analyse</span></div>
+          <div class="kpi-item"><span class="kpi-value">16</span><span class="kpi-label">vagues</span></div>
+          <div class="kpi-item"><span class="kpi-value">0–100</span><span class="kpi-label">score de dette</span></div>
+        </div>
+        <p>Chaque agent tourne en arrière-plan et écrit ses constats dans un fichier ; le contexte principal reste propre et reçoit une notification à la fin. Un <code>manifest.json</code> enregistre quels agents sont terminés et lesquels restent en attente, si bien qu'un run interrompu reprend à la dernière vague au lieu de tout recommencer. Rien de ce que les agents touchent n'est modifié — la passe entière est non destructive par construction.</p>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Huit domaines, une passe</h2>
+        <p>Chaque domaine est une lentille — un jeu fixe de questions qu'un agent pose au code qu'il a sous les yeux. Huit lentilles balaient chaque partition ; une neuvième, la dérive axiale, reçoit sa propre passe en deux temps (voir §4). Les lentilles ne se recouvrent pas : deux agents ne remontent jamais la même classe de problème sous deux angles.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Domaine</th><th>Ce qu'il cherche</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Architecture</strong></td><td>Violations de couches, dépendances circulaires, couplage</td></tr>
+              <tr><td><strong>Sécurité</strong></td><td>Catégories OWASP, gestion des secrets, vecteurs d'injection</td></tr>
+              <tr><td><strong>Code smells</strong></td><td>God classes, fonctions trop longues, violations DRY</td></tr>
+              <tr><td><strong>Typage</strong></td><td>Usage de <code>Any</code>, annotations manquantes, <code>type: ignore</code></td></tr>
+              <tr><td><strong>Patterns async</strong></td><td>Races, appels bloquants dans l'async, fuites de ressources</td></tr>
+              <tr><td><strong>Gestion d'erreur</strong></td><td><code>except</code> nus, exceptions avalées, contexte perdu</td></tr>
+              <tr><td><strong>Qualité des tests</strong></td><td>Trous de couverture, patterns flaky, sur-usage de mocks</td></tr>
+              <tr><td><strong>Dette technique</strong></td><td>TODO, API dépréciées, nombres magiques</td></tr>
+              <tr><td><strong>Dérive axiale</strong></td><td>Duplication sur le mauvais axe — le piège N&times;M (§4)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Partition et vague</h2>
+        <p>La base de code est découpée en partitions source et partitions de test — des tranches par zone de code, pas par taille. Un agent reçoit une cellule <em>(domaine &times; partition)</em> : une lentille sécurité sur les adapters, une lentille typage sur le cœur du hub. Chaque prompt reste étroit et chaque constat se rattache à un endroit. Les agents se lancent par cinq — assez de parallélisme pour finir en minutes, pas au point que la synthèse finale se noie dans le contexte.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Partitionner</div><div class="step-desc">Découper le source en <code>P1–P8</code> et les tests en <code>T1–T6</code> par zone, pour que deux agents ne lisent jamais les mêmes fichiers.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Lancer une vague</div><div class="step-desc">Cinq agents domaine&times;partition démarrent en arrière-plan, chacun avec une lentille et une tranche.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Collecter</div><div class="step-desc">Attendre la fin de la vague, puis écrire les constats de chaque agent dans son propre fichier, au même format.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Pointer</div><div class="step-desc">Mettre à jour le manifeste — agents terminés et en attente — pour que le run soit reprenable d'ici.</div></div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Synthétiser</div><div class="step-desc">Un dernier agent lit tous les fichiers de constats et émet un seul rapport priorisé.</div></div></div>
+        </div>
+        <div class="callout"><p>Partitionner par zone de code rend l'audit peu coûteux à lire à la fin. Chaque constat porte déjà un fichier et une ligne ; la synthèse est une fusion, pas une nouvelle enquête.</p></div>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Dérive en deux temps, recherche en second avis</h2>
+        <p>La dérive axiale, c'est la duplication d'une préoccupation transverse à travers des frères sur l'axe non primaire — la même logique de retry copiée dans le store NATS et le store Redis, le même contrôle d'auth collé dans trois adapters. C'est la seule classe de problème qu'une lentille mono-fichier ne peut pas voir, alors elle reçoit deux passes et une confirmation.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Structurel — <code>importlinter</code></div><div class="step-desc">Exécute les contrats de couches : imports inter-couches interdits, dépendances circulaires, violations de contrat. Un code de sortie non nul est un constat ferme.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sémantique — <code>axial-adr-review</code></div><div class="step-desc">Un agent en lecture seule confronte un diff à l'ADR axial du projet et signale la duplication sur le mauvais axe que le linter ne sait pas exprimer.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Confirmer — recherche sémantique</div><div class="step-desc">La recherche d'index de code (<code>ccc</code>) mesure à quel point les frères suspectés se ressemblent vraiment, transformant une intuition en score de similarité.</div></div></div>
+        </div>
+        <p>Cette troisième étape sert aussi d'arbitre transverse. Tout constat qu'une lentille primaire remonte — un smell de sécurité, une violation DRY — est confronté à la recherche sémantique, et le score décide de son sort :</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Similarité</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td>&gt; 0,90</td><td>Duplication confirmée / pattern exact</td></tr>
+              <tr><td>0,70 – 0,90</td><td>Probable — revue manuelle requise</td></tr>
+              <tr><td>0,50 – 0,70</td><td>Signal faible — probable faux positif</td></tr>
+              <tr><td>&lt; 0,50</td><td>Écarter</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-box"><pre><code>constat(domaine)  &rarr;  ccc.confirme(top-5)
+                  &rarr;  aucun match top-5  &rArr;  sévérité &minus;1   <span class="c"># rétrograder un constat non confirmé</span></code></pre></div>
+        <p>Un constat qu'aucun second avis ne corrobore n'est pas supprimé — il est rétrogradé. L'audit préfère un constat sous-évalué à un constat faux mais sûr de lui.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Le rapport qu'il produit</h2>
+        <p>Soixante-six fichiers de constats ne valent rien comme livrable. L'agent de synthèse les lit tous et écrit un seul <code>AUDIT-SUMMARY.md</code> — le seul artefact qu'un humain est censé ouvrir en premier.</p>
+        <ul class="feature-list">
+          <li><strong>Résumé exécutif.</strong> Santé globale, posture de sécurité, état de la couverture de tests, les items de dette en tête.</li>
+          <li><strong>Paniers de sévérité.</strong> Chaque constat trié en P0 (critique), P1 (haut), P2 (moyen), P3 (bas) — avec fichier et ligne.</li>
+          <li><strong>Synthèse de dérive axiale.</strong> Contrats tenus contre rompus, pièges N&times;M, et lesquels la recherche sémantique a confirmés.</li>
+          <li><strong>Tableau de bord métriques.</strong> Nombre de problèmes par domaine, distribution des sévérités, et un unique <strong>score de dette technique</strong> sur une échelle 0–100 où 100 est immaculé.</li>
+          <li><strong>Actions recommandées.</strong> Priorisées, chacune avec une estimation d'effort, plus un top 10 des quick wins : fort impact, faible effort.</li>
+        </ul>
+        <div class="callout"><p>Le score de dette est le seul nombre suivable d'une release à l'autre. Tout le reste dit <em>quoi</em> corriger ; le score dit si la base de code se porte mieux.</p></div>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>Deux audits réels</h2>
+        <p>Le schéma n'est pas théorique. Roxabi le passe sur sa propre factory d'agents, et les recaps sont en accès ouvert. Deux méritent une lecture complète.</p>
+
+        <p><strong>A — Audit qualité, 2 juin 2026.</strong> Un balayage complet de la base de code de la factory : 3 291 fichiers, chaque domaine, chaque partition.</p>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">3 291</span><span class="kpi-label">fichiers audités</span></div>
+          <div class="kpi-item"><span class="kpi-value">1 258</span><span class="kpi-label">problèmes trouvés</span></div>
+          <div class="kpi-item"><span class="kpi-value">72/100</span><span class="kpi-label">score de dette</span></div>
+          <div class="kpi-item"><span class="kpi-value">11 / 0</span><span class="kpi-label">contrats tenus / rompus</span></div>
+        </div>
+        <p>La répartition de sévérité était 2 · 172 · 664 · 427 sur P0–P3, et les onze contrats import-linter ont tenu — l'architecture était saine, la dette était du volume, pas un effondrement. Les deux P0 sont le genre de bug qu'un simple run de tests masque. L'un était une méthode <code>process_one</code> de 165 lignes fusionnant les chemins streaming et non-streaming, les hooks de processeur, les mises à jour d'ID de session et la gestion d'erreur dans un seul bloc illisible. Le plus tranchant : <code>_log_turn</code> attrapait toute exception, la journalisait et retournait — et l'appelant faisait alors <code>ack()</code> sur le message JetStream. Une écriture SQLite échouée <em>perdait donc définitivement le tour de conversation</em>, avec une ligne de log au vert pour le masquer. Vert &ne; correct, trouvé en lisant, pas en exécutant. Cet audit est le précurseur que le rapport <a href="/fr/documentation/autonomous-remediation/">Remédiation Autonome</a> a ensuite soldé.</p>
+        <div class="callout"><p>Lire le recap : <a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/audits/2026-06-02-quality-audit/AUDIT-SUMMARY.md" target="_blank" rel="noopener"><code>2026-06-02-quality-audit/AUDIT-SUMMARY.md</code> &rarr;</a></p></div>
+
+        <p><strong>B — Audit codebase, 18 mai 2026.</strong> Une passe plus étroite, transversale, sur trois axes — pureté hexagonale, mutualisation, simplification — et un résultat d'une autre nature.</p>
+        <p>Celui-ci n'a produit aucun chiffre de dette ; il a produit une carte de refactor. Le verdict était rassurant : zéro violation import-linter, couches propres, packages isolés — la dette était <em>localisée, pas systémique</em>. Trois chantiers ressortaient : ~350 lignes de code mort issu d'un cluster de routage retiré, supprimables sans risque ; une poignée de ports implicites éparpillés hors de <code>core/ports/</code> ; et un cycle de heartbeat NATS copié verbatim à travers quatre clients, qui appelait une classe de base partagée. Ce qui rend le recap intéressant, c'est sa rigueur sur les <em>faux</em> positifs — deux duplications apparentes se sont révélées être des role interfaces (Fowler) délibérées, distinctes des driven ports (Cockburn), renommées pour casser l'homonymie plutôt que fusionnées. Un audit incapable de distinguer la dérive de l'intention génère du travail inutile ; celui-ci a tracé la ligne et livré sept PR le lendemain.</p>
+        <div class="callout"><p>Lire le recap : <a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/audits/2026-05-18-codebase-audit/summary.md" target="_blank" rel="noopener"><code>2026-05-18-codebase-audit/summary.md</code> &rarr;</a></p></div>
+
+        <p>Chaque recap — balayages qualité, audits par cluster, revues d'isolation de tokens — vit dans un seul dossier, aux côtés du playbook qui définit la méthode.</p>
+        <ul class="feature-list">
+          <li><strong>Tous les recaps d'audit</strong> &middot; <a href="https://github.com/Roxabi/roxabi-factory/tree/staging/artifacts/audits" target="_blank" rel="noopener">roxabi-factory / artifacts / audits &rarr;</a></li>
+          <li><strong>Le playbook</strong> &middot; <a href="https://github.com/Roxabi/roxabi-plugins/blob/staging/playbooks/multi-agent-audit-playbook.md" target="_blank" rel="noopener">multi-agent-audit-playbook.md &rarr;</a></li>
+        </ul>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>Ce qui passe à l'échelle</h2>
+        <p>Le nombre d'agents suit la taille de la base de code, pas l'ambition. La largeur de vague reste à peu près constante ; seul le nombre de vagues croît.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Base de code</th><th>Agents</th><th>Taille de vague</th><th>Durée</th></tr></thead>
+            <tbody>
+              <tr><td>&lt; 50 fichiers</td><td>18</td><td>4</td><td>~12 min</td></tr>
+              <tr><td>50 – 200 fichiers</td><td>34</td><td>4</td><td>~22 min</td></tr>
+              <tr><td>200 – 500 fichiers</td><td>50</td><td>5</td><td>~45 min</td></tr>
+              <tr><td>500+ fichiers</td><td>69+</td><td>5</td><td>~65+ min</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Les constats sont propres à un dépôt. La forme, non — voici les parties qui se transposent à n'importe quelle base de code.</p>
+        <ul class="feature-list">
+          <li><strong>Partitionner par zone.</strong> Un agent, une lentille, une tranche. Aucun travail en double, chaque constat épinglé à un endroit.</li>
+          <li><strong>Vagues de cinq.</strong> Assez parallèles pour être rapides, assez bornées pour que la synthèse tienne dans un seul contexte.</li>
+          <li><strong>Suivi par manifeste.</strong> Un run interrompu reprend à la dernière vague au lieu de tout recommencer.</li>
+          <li><strong>Dérive en deux temps.</strong> Un linter attrape la structure ; un agent sémantique attrape l'intention ; la recherche confirme les deux.</li>
+          <li><strong>Filtrage en second avis.</strong> Un constat non confirmé est rétrogradé, pas asséné — fort rappel sans la taxe des faux positifs.</li>
+        </ul>
+        <div class="callout"><p>L'audit n'est que la moitié lecture. Une fois le rapport là, le même fan-out tourne à l'envers pour le solder — ce run, c'est le rapport <a href="/fr/documentation/autonomous-remediation/">Remédiation Autonome</a>. Lire, puis écrire, entièrement sur le compte rendu.</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

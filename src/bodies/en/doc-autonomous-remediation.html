@@ -1,0 +1,343 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">FIELD REPORT</p>
+    <h1>Autonomous Remediation</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">An overnight audit with Kimi, an epic derived with Opus, and a workflow that drove twenty-two findings from issue to merged PR in a single afternoon — no human gate between a finding and the branch. This is how the run actually went.</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — Two Runs, Inverted Polarity</a>
+      <a href="#sec-2">2 — From Audit to Epic</a>
+      <a href="#sec-3">3 — The Harness</a>
+      <a href="#sec-4">4 — From Reviewed PR to Merged</a>
+      <a href="#sec-5">5 — Scheduling by Footprint</a>
+      <a href="#sec-6">6 — One Contract, Nineteen Agents</a>
+      <a href="#sec-7">7 — What Broke, and Why</a>
+      <a href="#sec-8">8 — The Cost, Honestly</a>
+      <a href="#sec-9">9 — What Compounds</a>
+      <a href="#sec-10">10 — Sources &amp; Code</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Two Runs, Inverted Polarity</h2>
+        <p>On 2 June 2026, Roxabi's agent factory turned its own multi-agent machinery on its own codebase. A <a href="/documentation/multi-agent-audit/">quality audit</a> had already swept the repository — 69 agents across 20 waves, eight domains, 3,291 files — and distilled <strong>1,258 raw issues into 22 actionable findings</strong>. This is the report of what came next: paying those 22 findings down, end to end, with no human gate between an issue and its merge.</p>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">22</span><span class="kpi-label">findings</span></div>
+          <div class="kpi-item"><span class="kpi-value">19/19</span><span class="kpi-label">PRs merged</span></div>
+          <div class="kpi-item"><span class="kpi-value">4 h 32 m</span><span class="kpi-label">wall-clock</span></div>
+          <div class="kpi-item"><span class="kpi-value">0</span><span class="kpi-label">human merge gates</span></div>
+        </div>
+        <p>The audit and the remediation are the same shape run in opposite directions. The audit was a <strong>read</strong> fan-out: many agents looking, nothing changing. The remediation was a <strong>write</strong> fan-out followed by a serialized merge: many agents changing, one branch absorbing. Same machinery, inverted polarity.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Phase</th><th>Wall-clock</th><th>Scale</th><th>Output</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Audit</strong> (precursor)</td><td>2 h 20 m</td><td>69 agents · 20 waves · 8 domains</td><td>1,258 issues &rarr; 22 actionable</td></tr>
+              <tr><td><strong>Remediation</strong> (this run)</td><td>4 h 32 m</td><td>19 leaves · 4 waves · auto-merge</td><td>22 findings shipped · 4 CI debt-gates</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>From Audit to Epic</h2>
+        <p>The remediation did not start from a hunch — it started from a plan, and the plan was machine-built the night before. The word &ldquo;audit&rdquo; covers two different instruments here, and they should not be confused.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th></th><th>Deterministic scanner</th><th>Deep multi-agent audit</th></tr></thead>
+            <tbody>
+              <tr><td><strong>What</strong></td><td>a suppression-marker debt metric</td><td>a qualitative read fan-out</td></tr>
+              <tr><td><strong>How</strong></td><td><code>audit_quality_debt.py</code> · <code>make quality-debt-report</code></td><td>69 agents · 20 waves · 8 domains, driven by Kimi</td></tr>
+              <tr><td><strong>Output</strong></td><td><code>quality-debt-report.json</code> (counts)</td><td>a manifest + 8 domain reports &rarr; 1,258 issues</td></tr>
+              <tr><td><strong>Cadence</strong></td><td>every PR — informational CI, never blocks</td><td>one-off, on demand (overnight)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The scanner is the standing pulse — cheap, deterministic, always on. The deep pass is the diagnosis. It ran overnight as a read-only fan-out — many agents reading, none writing — partitioning 3,291 files across eight analysis domains in twenty waves, driven by <strong>Kimi</strong>: a low-cost, long-context model routed through the LiteLLM proxy, which is what makes a 69-agent sweep affordable to run while you sleep. It surfaced 1,258 raw issues, ranked them P0–P3, and synthesised them into a committed manifest and eight domain reports. That read half has its own write-up — the companion <a href="/documentation/multi-agent-audit/">Multi-Agent Audit</a> — and its method is a reusable artefact, the <a href="https://github.com/Roxabi/roxabi-plugins/blob/staging/playbooks/multi-agent-audit-playbook.md" rel="noopener">audit playbook</a>.</p>
+        <p>A pile of 1,258 issues is not a plan. So <strong>Opus</strong> took the highest-severity findings — the <strong>P0</strong> and <strong>P1</strong> issues — and did the work that turns symptoms into a plan: it derived the <em>root causes</em> behind them. Not &ldquo;fix these two hundred lines&rdquo;, but &ldquo;these are the handful of structural causes those lines share&rdquo;.</p>
+        <p>Those root causes became epic <strong>#1662</strong> — 22 actionable findings. The epic was decomposed into leaf tasks, and the leaves were wired together with native GitHub <strong><code>blocked_by</code></strong> edges into a dependency graph: where two fixes touched the same file, one was marked blocked by the other; where footprints were disjoint, no edge. That graph <em>is</em> the schedule.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 128" role="img" aria-label="The chain from audit to execution: an overnight deep audit driven by Kimi produces 1,258 issues, Opus derives root causes from the P0 and P1 findings, those become epic #1662 with 22 actionable findings, the leaves are wired into a blocked_by dependency graph, and the workflow executes it one wave at a time." style="width:100%;height:auto">
+            <defs>
+              <marker id="ch-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <rect x="8" y="34" width="128" height="40" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="72" y="59" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Deep audit</text>
+            <text x="72" y="96" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">Kimi · 69 agents</text>
+            <text x="72" y="108" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">20 waves · 8 domains</text>
+            <rect x="158" y="34" width="128" height="40" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="222" y="59" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Root cause</text>
+            <text x="222" y="96" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">Opus · from</text>
+            <text x="222" y="108" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">P0 / P1 findings</text>
+            <rect x="308" y="34" width="128" height="40" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="372" y="59" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Epic #1662</text>
+            <text x="372" y="96" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">22 actionable</text>
+            <text x="372" y="108" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">findings</text>
+            <rect x="458" y="34" width="128" height="40" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="522" y="59" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">blocked_by</text>
+            <text x="522" y="96" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">shared &rArr; serial</text>
+            <text x="522" y="108" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">disjoint &rArr; parallel</text>
+            <rect x="608" y="34" width="128" height="40" rx="8" fill="var(--accent)"/>
+            <text x="672" y="59" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent-on)">Workflow</text>
+            <text x="672" y="96" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">one wave</text>
+            <text x="672" y="108" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">per invocation</text>
+            <line x1="136" y1="54" x2="158" y2="54" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ch-arr)"/>
+            <line x1="286" y1="54" x2="308" y2="54" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ch-arr)"/>
+            <line x1="436" y1="54" x2="458" y2="54" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ch-arr)"/>
+            <line x1="586" y1="54" x2="608" y2="54" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ch-arr)"/>
+          </svg>
+          <figcaption>From a model's overnight reading to a machine-walkable schedule. Kimi audits, Opus root-causes, the epic decomposes, <code>blocked_by</code> edges encode the order — and the workflow just walks the graph.</figcaption>
+        </figure>
+        <div class="callout"><p>The dependency graph is the contract between planning and execution. The epic's <code>blocked_by</code> edges <em>are</em> the wave schedule — the harness reads them, it does not invent them.</p></div>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>The Harness</h2>
+        <p>The schedule is data; the harness is the engine that executes it. <a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/plans/epic-1662-wave.mjs" rel="noopener"><code>epic-1662-wave.mjs</code></a> is a <strong>Workflow script</strong> — deterministic JavaScript control flow (loops, fan-out, conditionals) wrapped around model-driven <code>agent()</code> calls. Each invocation runs exactly <strong>one dependency-wave</strong> of leaves and, deliberately, <strong>does not merge</strong> — merging is the main loop's job. That split is what lets each wave's dependents branch from an already-merged base.</p>
+        <p>Inside, every leaf runs the same pipeline, adapted to its size.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 444" role="img" aria-label="The per-issue pipeline inside the harness: implement (small issues get one agent, large ones are planned, sub-implemented in parallel, then integrated), open a PR with a decision trace, then a review-validate-fix loop of at most two rounds, deferring any residual to a sibling issue, before handing off to the main loop which merges." style="width:100%;height:auto">
+            <defs>
+              <marker id="hp-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <rect x="150" y="20" width="460" height="80" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="380" y="44" text-anchor="middle" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">① Implement — size-adaptive</text>
+            <text x="380" y="66" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">S → one impl agent (isolated worktree)</text>
+            <text x="380" y="86" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">F → PLAN ⇒ sub-impl ×N (disjoint files) ⇒ INTEGRATE</text>
+            <line x1="380" y1="100" x2="380" y2="116" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#hp-arr)"/>
+            <rect x="290" y="116" width="180" height="30" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="380" y="136" text-anchor="middle" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="var(--text)">PR · decision trace</text>
+            <line x1="380" y1="146" x2="380" y2="162" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#hp-arr)"/>
+            <rect x="150" y="162" width="460" height="46" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="380" y="182" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">② Review · 5 lenses in parallel</text>
+            <text x="380" y="199" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">correctness · axial · security · tests · rules</text>
+            <line x1="380" y1="208" x2="380" y2="226" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#hp-arr)"/>
+            <text x="392" y="221" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-muted)">blocking / major</text>
+            <rect x="150" y="226" width="460" height="46" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="380" y="246" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">③ Validate · 2 skeptics / finding</text>
+            <text x="380" y="263" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">refute by default — survive only if confirmed</text>
+            <line x1="380" y1="272" x2="380" y2="290" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#hp-arr)"/>
+            <text x="392" y="285" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-muted)">confirmed</text>
+            <rect x="150" y="290" width="460" height="46" rx="8" fill="var(--accent)"/>
+            <text x="380" y="310" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent-on)">④ Fix · apply → re-gate → push</text>
+            <text x="380" y="327" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent-on)">at most two rounds, then defer residual</text>
+            <path d="M150,313 C112,313 112,185 150,185" fill="none" stroke="var(--accent)" stroke-width="1.4" marker-end="url(#hp-arr)"/>
+            <text x="104" y="249" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)" transform="rotate(-90 104 249)">≤ 2 rounds</text>
+            <line x1="610" y1="313" x2="646" y2="313" stroke="var(--accent)" stroke-width="1.4" marker-end="url(#hp-arr)"/>
+            <rect x="648" y="293" width="104" height="40" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="700" y="310" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">Defer →</text>
+            <text x="700" y="323" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">sibling issue</text>
+            <line x1="380" y1="336" x2="380" y2="378" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#hp-arr)"/>
+            <rect x="150" y="378" width="460" height="48" rx="8" fill="none" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="5,4"/>
+            <text x="380" y="398" text-anchor="middle" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="var(--text)">main loop (not the workflow)</text>
+            <text x="380" y="416" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">CI green → +reviewed → auto-merge → next wave</text>
+          </svg>
+          <figcaption>One leaf, end to end. The dashed box is the only part outside the workflow script: the harness produces a reviewed PR and stops; the main loop merges and re-invokes it for the next wave.</figcaption>
+        </figure>
+        <ul class="feature-list">
+          <li><strong>Implement.</strong> A small leaf gets one implementation agent in an isolated git worktree. A large one is first decomposed by a <code>PLAN</code> agent into <em>disjoint</em> file-groups, implemented by parallel sub-agents (no two touch the same file, so the merge is conflict-free by construction), then stitched together by an <code>INTEGRATE</code> agent. Either way it ends in a PR carrying a decision trace.</li>
+          <li><strong>Review.</strong> Five lenses read the diff in parallel — correctness, axial architecture, security, tests, and rules-compliance — each a specialist agent. Only blocking and major findings advance.</li>
+          <li><strong>Validate.</strong> Every advancing finding faces two skeptics, each prompted to <em>refute it by default</em>. A finding survives only if confirmed — plausible-but-wrong review noise dies here.</li>
+          <li><strong>Fix &amp; defer.</strong> A fixer applies the confirmed findings, re-runs the gates, and pushes. The loop runs at most twice; anything still unresolved is filed as a deferred sibling issue, blocked by the original — the batch never stalls on a stubborn finding.</li>
+        </ul>
+        <p>The shape is small enough to read in one screen — a parallel review panel, then a per-finding skeptic vote:</p>
+        <div class="codeblock">
+          <div class="codeblock-header">epic-1662-wave.mjs · review → validate</div>
+          <pre><code><span class="c">// 5 lenses read the diff in parallel — each a specialist agent</span>
+<span class="k">const</span> reviews = <span class="k">await</span> parallel(LENSES.map((L) =&gt; () =&gt;
+  agent(reviewPrompt(n, L, diff), { agentType: L.agent, schema: FINDINGS_SCHEMA })))
+
+<span class="c">// keep blocking/major, then refute each finding with 2 skeptics</span>
+<span class="k">const</span> verdicts = <span class="k">await</span> parallel(findings.map((f) =&gt; () =&gt;
+  parallel([1, 2].map((k) =&gt; () =&gt;
+    agent(validatePrompt(n, f, diff, k), { schema: VERDICT_SCHEMA })))
+    .then((votes) =&gt; ({ f, real: votes.some((v) =&gt; v.real) }))))
+
+<span class="k">const</span> confirmed = verdicts.filter((v) =&gt; v.real).map((v) =&gt; v.f)</code></pre>
+        </div>
+        <p>Four properties hold for every agent in the run, by construction:</p>
+        <ul class="feature-list">
+          <li><strong>Typed output, never prose.</strong> Every agent is forced to emit a structured result against a JSON schema — the failure mode &ldquo;agent ended in a paragraph instead of a result&rdquo; is designed out.</li>
+          <li><strong>One contract, injected verbatim.</strong> The same RCA rules (§6) go into every prompt, so nineteen uncoordinated agents reason the same way.</li>
+          <li><strong>Retry at the inference level.</strong> A <code>tryAgent</code> wrapper retries three times with escalating back-off — the fix for the opening-night overload storm, now a default.</li>
+          <li><strong>Isolate, defer, continue.</strong> A leaf that throws is caught, recorded, and skipped; the wave never aborts on one failure. Concurrency is capped at three issues in flight, for merge cadence.</li>
+        </ul>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>From Reviewed PR to Merged</h2>
+        <p>The workflow hands back a reviewed PR; the <strong>main loop</strong> takes it from there — and this is where it stays autonomous. The split matters: the workflow develops, the main loop merges, so dependents always branch from a freshly-merged base.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">CI gate</div><div class="step-desc"><code>ci</code> and the secret scan must be green — the same checks the agent already ran locally.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Label + auto-merge</div><div class="step-desc">Add the <code>reviewed</code> label, turn on <code>gh pr merge --auto</code>. No human approval in the path.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Strict-base watcher</div><div class="step-desc"><code>staging</code> requires up-to-date branches; a poll loop runs <code>update-branch</code> on every <code>BEHIND</code> and aborts on <code>DIRTY</code>.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Merged → unblock</div><div class="step-desc">The merge releases the leaves that were <code>blocked_by</code> it, opening the next wave.</div></div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Next wave</div><div class="step-desc">Re-invoke the workflow; its agents branch from the base the last wave just merged.</div></div></div>
+        </div>
+        <div class="callout"><p>The merge gate was <strong>CI green + a <code>reviewed</code> label + the in-run cross-agent review</strong> — and nothing else. No human approval stood between a passing PR and the <code>staging</code> branch.</p></div>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Scheduling by Footprint</h2>
+        <p>Nineteen leaves cannot all run at once — some touch the same files, and two agents editing one file produce a merge conflict, not a feature. The scheduler used a single predicate, read straight off the epic's <code>blocked_by</code> graph: <strong>disjoint footprint ⇒ parallel; shared file ⇒ serial.</strong> Parallelism was capped at three concurrent agents, and authorized only where footprints were provably disjoint.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 205" role="img" aria-label="The four-wave schedule: W1 nine leaves in parallel, W2 three leaves gated on W1 merges, W3 five leaves strictly serial because they share CI files, W4 two leaves serial sharing a CLAUDE.md." style="width:100%;height:auto">
+            <defs>
+              <marker id="wv-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <text x="20" y="22" font-family="var(--font-mono)" font-size="10" letter-spacing="0.15em" fill="var(--text-dim)">WAVE SCHEDULE</text>
+            <text x="740" y="22" text-anchor="end" font-family="var(--font-mono)" font-size="10" letter-spacing="0.1em" fill="var(--text-dim)">TIME &rarr;</text>
+            <rect x="32" y="72" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <rect x="26" y="66" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <rect x="20" y="60" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="89" y="90" text-anchor="middle" font-family="var(--font-mono)" font-size="14" font-weight="700" fill="var(--text)">W1</text>
+            <text x="89" y="110" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">9 leaves</text>
+            <text x="89" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--text-dim)">parallel fan-out</text>
+            <rect x="216" y="66" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <rect x="210" y="60" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="279" y="90" text-anchor="middle" font-family="var(--font-mono)" font-size="14" font-weight="700" fill="var(--text)">W2</text>
+            <text x="279" y="110" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">3 leaves</text>
+            <text x="279" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--text-dim)">gated start</text>
+            <rect x="400" y="60" width="138" height="76" rx="8" fill="var(--accent)"/>
+            <text x="469" y="90" text-anchor="middle" font-family="var(--font-mono)" font-size="14" font-weight="700" fill="var(--accent-on)">W3</text>
+            <text x="469" y="110" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent-on)">5 leaves</text>
+            <text x="469" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--accent-on)">strictly serial</text>
+            <rect x="590" y="60" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="659" y="90" text-anchor="middle" font-family="var(--font-mono)" font-size="14" font-weight="700" fill="var(--text)">W4</text>
+            <text x="659" y="110" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">2 leaves</text>
+            <text x="659" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--text-dim)">serial</text>
+            <line x1="172" y1="98" x2="208" y2="98" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#wv-arr)"/>
+            <line x1="356" y1="98" x2="398" y2="98" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#wv-arr)"/>
+            <line x1="540" y1="98" x2="588" y2="98" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#wv-arr)"/>
+            <text x="89" y="172" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">disjoint footprints</text>
+            <text x="89" y="186" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">core · infra · config</text>
+            <text x="279" y="172" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">waits on a</text>
+            <text x="279" y="186" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">W1 merge</text>
+            <text x="469" y="172" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">share ci.yml ·</text>
+            <text x="469" y="186" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">pre-commit · stack.yml</text>
+            <text x="659" y="172" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">share a</text>
+            <text x="659" y="186" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">CLAUDE.md</text>
+          </svg>
+          <figcaption>Four waves, scheduled by footprint: parallel where leaves are disjoint, serial where they share a file. Serializing W3 — five leaves all editing the CI config — kept the batch conflict-free.</figcaption>
+        </figure>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Wave</th><th>Leaves</th><th>Strategy</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td><strong>W1</strong></td><td>9</td><td>parallel fan-out</td><td>disjoint footprints — core, infra, config, adapters</td></tr>
+              <tr><td><strong>W2</strong></td><td>3</td><td>gated start</td><td>each depends on a W1 merge</td></tr>
+              <tr><td><strong>W3</strong></td><td>5</td><td>strictly serial</td><td>all share <code>ci.yml</code> · <code>pre-commit</code> · <code>stack.yml</code></td></tr>
+              <tr><td><strong>W4</strong></td><td>2</td><td>serial</td><td>share a <code>CLAUDE.md</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><p>Serializing W3 was the single most important scheduling decision. Five leaves all appended to the same CI config; run in parallel they would have clobbered each other. Run in order, each saw the previous one's change.</p></div>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>One Contract, Nineteen Agents</h2>
+        <p>Nineteen agents worked in isolation, none aware of the others. What kept their output consistent — and reviewable — was a single reasoning contract, injected verbatim into every implementation agent and echoed into every PR body.</p>
+        <div class="formula-box"><pre><code>obs(finding)  &rarr;  root_cause              <span class="c"># not the symptom</span>
+              &rarr;  corrections &isin; {Patch ⊻ Archi}   <span class="c"># choose, explicitly</span>
+              &rarr;  fix at the level of the cause
+              &rarr;  trust(input)?  ·  tested &and; correct   <span class="c"># green &ne; correct</span>
+              &rarr;  trace the decision in the PR body</code></pre></div>
+        <p>The rule that did the most work was <strong>green &ne; correct</strong>: a passing CI run is necessary, never sufficient. And forcing every agent to choose between a <em>patch</em> (treat the symptom) and an <em>architectural</em> fix (move the cause) — out loud, in the PR — turned nineteen uncoordinated runs into an auditable record. This document is writable because that record exists.</p>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>What Broke, and Why</h2>
+        <p>The value of a retrospective is in the failures. Seven blockers stalled the run; each was traced to a root cause and fixed at that level, not patched over. The expensive ones were systemic — and now live as hardened defaults in the orchestration harness.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>What broke</th><th>Root cause</th><th>Fix</th></tr></thead>
+            <tbody>
+              <tr><td>9 of 9 agents failed on the first try</td><td>A transient <code>API 529</code> overload on first inference, masked as &ldquo;completed&rdquo;</td><td>Retry + back-off at the inference level</td></tr>
+              <tr><td>Heavy agents ended in prose, no result</td><td>Large diffs blew the structured-output budget</td><td>Make the diff optional, fetch it out of band, split oversized leaves</td></tr>
+              <tr><td>PRs never merged</td><td>A strict-merge <em>behind-deadlock</em> — no PR is up to date, so the auto-update never fires</td><td>A manual <code>update-branch</code> watcher loop per PR</td></tr>
+              <tr><td>Parallel refactors went <code>DIRTY</code></td><td>Interdependent edits to the same CI files</td><td>Serialize waves by shared-file footprint</td></tr>
+              <tr><td>The required CI check silently vanished</td><td>An unquoted colon in a YAML step <code>name:</code> invalidated the whole workflow</td><td>Quote any <code>name:</code> with a colon + a validate-YAML gate</td></tr>
+              <tr><td>A debt-gate cried wolf</td><td>The formatter reflowed a multi-line call off its comment line</td><td>Rewrote the gate to walk balanced parens, multi-line-aware</td></tr>
+              <tr><td>One agent shipped broken wiring</td><td>A worktree branched off a <em>stale local</em> <code>staging</code> and never saw the new hooks</td><td>Fast-forward and pin the base to <code>origin/staging</code> before spawning</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><p>Only the last needed a human rescue. Everything else was caught, root-caused, and turned into a default — the difference between a one-off fix and a pipeline that runs cleaner next time.</p></div>
+      </div>
+
+      <div class="titre" id="sec-8">
+        <span class="label">08</span>
+        <h2>The Cost, Honestly</h2>
+        <p>Time is hard data, read straight off PR timestamps. Tokens are not — only two of roughly thirty agent invocations were instrumented, so the full-run total is an order-of-magnitude estimate, and it is labelled as one.</p>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">4 h 32 m</span><span class="kpi-label">first PR &rarr; last merge</span></div>
+          <div class="kpi-item"><span class="kpi-value">~3 min</span><span class="kpi-label">mean CI per PR</span></div>
+          <div class="kpi-item"><span class="kpi-value">~96</span><span class="kpi-label">commits</span></div>
+          <div class="kpi-item"><span class="kpi-value">+4.6k / −1.5k</span><span class="kpi-label">lines changed</span></div>
+        </div>
+        <div class="caveat-grid">
+          <div class="caveat-card">
+            <div class="caveat-q">What was measured?</div>
+            <div class="caveat-body">Two post-compaction recovery agents reported <strong>122,505 tokens</strong> with high confidence, straight from their task notifications.</div>
+          </div>
+          <div class="caveat-card">
+            <div class="caveat-q">What was estimated?</div>
+            <div class="caveat-body">The workflow agents and the orchestrator loop were never instrumented. Full run: <strong>~1.5–2.5 M tokens</strong>, low confidence.</div>
+            <div class="caveat-direction"><strong>Next:</strong> per-agent token capture in the harness — you cannot optimize what you cannot see.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-9">
+        <span class="label">09</span>
+        <h2>What Compounds</h2>
+        <p>The findings were specific to one codebase. The patterns are not — these are the parts that carry to the next run.</p>
+        <ul class="feature-list">
+          <li><strong>Leaves over umbrellas.</strong> Schedule on the actionable leaf; let parent issues auto-close when their children merge. No phantom dependencies.</li>
+          <li><strong>Footprint-based parallelism.</strong> &ldquo;Disjoint footprint ⇒ parallel; shared file ⇒ serial&rdquo; is a cleaner predicate for conflict avoidance than issue size or priority.</li>
+          <li><strong>Decision-trace PR bodies.</strong> Root cause + Patch ⊻ Archi + level, in every PR. It makes independent agents auditable — and a retrospective writable.</li>
+          <li><strong>Isolate, defer, continue.</strong> A failed leaf is isolated and deferred; the wave moves on. No single failure stalls the batch.</li>
+          <li><strong>Baseline-grandfather for debt gates.</strong> A new gate ships blocking <em>new</em> violations while grandfathering the existing ones, with a burn-down to follow — so the gate lands today instead of waiting on a 90-item refactor.</li>
+        </ul>
+        <div class="callout"><p>One operator drove twenty-two findings to merge in a single afternoon — and every decision is on the record. That is the whole thesis in one run: <strong>team-scale output, fully auditable, no lock-in.</strong></p></div>
+      </div>
+
+      <div class="titre" id="sec-10">
+        <span class="label">10</span>
+        <h2>Sources &amp; Code</h2>
+        <p>Every artefact in this report is public. The repository is <a href="https://github.com/Roxabi/roxabi-factory" rel="noopener">Roxabi/roxabi-factory</a> (AGPL-3.0).</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Artefact</th><th>What it is</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/issues/1662" rel="noopener">Epic #1662</a></td><td>the 22-finding epic (closed)</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/plans/epic-1662-wave.mjs" rel="noopener"><code>epic-1662-wave.mjs</code></a></td><td>the workflow harness (§3)</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/plans/epic-1662-ledger.md" rel="noopener"><code>epic-1662-ledger.md</code></a></td><td>execution ledger (single source of truth)</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/audits/2026-06-02-quality-audit/AUDIT-SUMMARY.md" rel="noopener"><code>AUDIT-SUMMARY.md</code></a></td><td>the deep-audit final report</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/audits/2026-06-02-quality-audit/REMEDIATION-RECAP.md" rel="noopener"><code>REMEDIATION-RECAP.md</code></a></td><td>the retrospective this doc distils</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-plugins/blob/staging/playbooks/multi-agent-audit-playbook.md" rel="noopener">multi-agent audit playbook</a></td><td>the reusable audit methodology</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/blob/staging/docs/playbooks/quality-debt-pipeline.md" rel="noopener">quality-debt pipeline playbook</a></td><td>the standing debt-scanner how-to</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

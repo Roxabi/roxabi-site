@@ -302,8 +302,14 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
         body = body.replace("{{doc_tags}}", tag_pills(p.get("tags", []), lang))
     if p.get("collection") == "documentation" and p.get("tags"):
         body = body.replace("</main>", doc_footer_nav(lang, p) + "\n</main>")
-    scripts = ('<script src="/assets/vendor/aurora-curtain.js"></script>\n'
-               '<script src="/assets/js/app.js"></script>') if p["shader"] \
+    # `shader` is a vendored module id (e.g. "kinetic-grid") or false. When set,
+    # load assets/vendor/<id>.js — it auto-inits #hero-bg on dark. Back-compat:
+    # shader = true still resolves to the original aurora-curtain.
+    shader = p.get("shader")
+    if shader is True:
+        shader = "aurora-curtain"
+    scripts = ('<script src="/assets/vendor/%s.js"></script>\n'
+               '<script src="/assets/js/app.js"></script>') % shader if shader \
         else '<script src="/assets/js/app.js"></script>'
 
     ctx.update({

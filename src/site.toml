@@ -93,7 +93,7 @@ path        = ""
 body        = "home"
 og_type     = "website"
 footer      = "full"
-shader      = false
+shader      = "kinetic-grid"
 active      = ""
 jsonld      = "home"
 og_alt      = true            # emit og:image:alt (= title)
@@ -374,6 +374,68 @@ priority    = "0.6"
   crumb      = "Décroissance"
   card_title = "La Décroissance Temporelle"
   card_desc  = "Le modèle de courbe d'oubli du Cortex : formules de décroissance, renforcement par l'accès et seuils qui silencent les connaissances périmées."
+
+[[page]]
+id          = "doc-multi-agent-audit"
+path        = "documentation/multi-agent-audit/"
+body        = "doc-multi-agent-audit"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["Audit"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "The Multi-Agent Audit — Roxabi"
+  desc       = "How Roxabi audits a codebase with 67 parallel agents across eight analysis domains — partitioned, wave-scheduled, drift-checked two ways, then collapsed into one prioritized report with a technical-debt score."
+  og_title   = "The Multi-Agent Audit — Roxabi"
+  og_desc    = "Sixty-seven read-only agents, eight domains, two-step axial-drift verification, and a single synthesized report — with two real audit recaps explained."
+  crumb      = "Audit"
+  card_title = "The Multi-Agent Audit"
+  card_desc  = "Sixty-seven parallel agents across eight domains, two-step drift verification, and one prioritized report — the read half of the factory, with two real recaps in the open."
+  [page.fr]
+  title      = "L'Audit Multi-Agents — Roxabi"
+  desc       = "Comment Roxabi audite une base de code avec 67 agents parallèles sur huit domaines d'analyse — partitionné, ordonnancé par vagues, vérifié deux fois contre la dérive, puis condensé en un seul rapport priorisé avec un score de dette technique."
+  og_title   = "L'Audit Multi-Agents — Roxabi"
+  og_desc    = "Soixante-sept agents en lecture seule, huit domaines, une vérification de dérive axiale en deux temps et un rapport synthétisé unique — avec deux recaps d'audit réels expliqués."
+  crumb      = "Audit"
+  card_title = "L'Audit Multi-Agents"
+  card_desc  = "Soixante-sept agents parallèles sur huit domaines, vérification de dérive en deux temps, et un rapport priorisé unique — la moitié lecture de la factory, avec deux recaps réels en accès ouvert."
+
+[[page]]
+id          = "doc-autonomous-remediation"
+path        = "documentation/autonomous-remediation/"
+body        = "doc-autonomous-remediation"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["REX"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Autonomous Remediation — Roxabi"
+  desc       = "A field report: how Roxabi's agent factory turned an overnight Kimi audit into an Opus-derived epic, then autonomously drove 22 quality-audit findings to merged PRs in one afternoon — the workflow harness, the wave scheduling, the blockers, and the cost."
+  og_title   = "Autonomous Remediation — Roxabi"
+  og_desc    = "From a Kimi audit to an Opus-derived epic to an autonomous workflow: 22 quality-audit findings driven to merged PRs in an afternoon, with the harness explained."
+  crumb      = "Remediation"
+  card_title = "Autonomous Remediation"
+  card_desc  = "A field report: an overnight Kimi audit, an Opus-derived epic, and a workflow that drove 22 findings to merged PRs autonomously — harness, scheduling, blockers, and cost."
+  [page.fr]
+  title      = "Remédiation Autonome — Roxabi"
+  desc       = "Retour d'expérience : comment la factory d'agents Roxabi a transformé un audit nocturne avec Kimi en epic dérivé par Opus, puis mené 22 constats d'audit qualité jusqu'à des PR fusionnées en une après-midi, sans intervention humaine — le harnais workflow, l'ordonnancement par vagues, les blocages et le coût."
+  og_title   = "Remédiation Autonome — Roxabi"
+  og_desc    = "D'un audit Kimi à un epic dérivé par Opus jusqu'à un workflow autonome : 22 constats menés à des PR fusionnées en une après-midi, avec le harnais expliqué."
+  crumb      = "Remédiation"
+  card_title = "Remédiation Autonome"
+  card_desc  = "Retour d'expérience : un audit nocturne avec Kimi, un epic dérivé par Opus, et un workflow qui a mené 22 constats à des PR fusionnées de façon autonome — harnais, ordonnancement, blocages, coût."
 
 [[page]]
 id          = "doc-derived-reflexes"

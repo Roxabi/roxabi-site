@@ -1,0 +1,170 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">METHODOLOGY</p>
+    <h1>The Multi-Agent Audit</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Point sixty-seven read-only agents at one codebase, slice it eight ways, and let each agent look at exactly one thing. The output is not opinions — it is a single prioritized report with a technical-debt score. This is how the audit runs, and what two real ones found.</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — One Read, Many Eyes</a>
+      <a href="#sec-2">2 — Eight Domains, One Pass</a>
+      <a href="#sec-3">3 — Partition and Wave</a>
+      <a href="#sec-4">4 — Two-Step Drift, Second-Opinion Search</a>
+      <a href="#sec-5">5 — The Report It Produces</a>
+      <a href="#sec-6">6 — Two Real Audits</a>
+      <a href="#sec-7">7 — What Scales</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>One Read, Many Eyes</h2>
+        <p>An audit is a <strong>read</strong> fan-out: many agents looking, nothing changing. The pattern is mechanical. Partition the codebase into disjoint slices, assign every slice to every analysis domain, run the resulting grid of agents in waves, then hand all of their findings to a single synthesis agent that collapses them into one report. The same machinery, run in the opposite direction, becomes autonomous remediation — see the companion <a href="/documentation/autonomous-remediation/">field report</a> for the write half.</p>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">67</span><span class="kpi-label">parallel agents</span></div>
+          <div class="kpi-item"><span class="kpi-value">8</span><span class="kpi-label">analysis domains</span></div>
+          <div class="kpi-item"><span class="kpi-value">16</span><span class="kpi-label">waves</span></div>
+          <div class="kpi-item"><span class="kpi-value">0–100</span><span class="kpi-label">debt score</span></div>
+        </div>
+        <p>Every agent runs in the background and writes its findings to a file; the main context stays clean and is notified on completion. A <code>manifest.json</code> records which agents finished and which are pending, so an interrupted run resumes from the last wave instead of starting over. Nothing the agents touch is mutated — the entire pass is non-destructive by construction.</p>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Eight Domains, One Pass</h2>
+        <p>Each domain is a lens — a fixed set of questions an agent asks of the code in front of it. Eight lenses sweep every partition; a ninth, axial drift, gets its own two-step pass (see §4). The lenses do not overlap, so two agents never report the same class of issue from different angles.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Domain</th><th>What it looks for</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Architecture</strong></td><td>Layer violations, circular dependencies, coupling</td></tr>
+              <tr><td><strong>Security</strong></td><td>OWASP categories, credential handling, injection vectors</td></tr>
+              <tr><td><strong>Code Smells</strong></td><td>God classes, long functions, DRY violations</td></tr>
+              <tr><td><strong>Type Safety</strong></td><td><code>Any</code> usage, missing hints, <code>type: ignore</code></td></tr>
+              <tr><td><strong>Async Patterns</strong></td><td>Race conditions, blocking calls inside async, resource leaks</td></tr>
+              <tr><td><strong>Error Handling</strong></td><td>Bare excepts, swallowed exceptions, missing context</td></tr>
+              <tr><td><strong>Test Quality</strong></td><td>Coverage gaps, flaky patterns, mock overuse</td></tr>
+              <tr><td><strong>Tech Debt</strong></td><td>TODOs, deprecated APIs, magic numbers</td></tr>
+              <tr><td><strong>Axial Drift</strong></td><td>Wrong-axis duplication — the N&times;M trap (§4)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Partition and Wave</h2>
+        <p>The codebase is cut into source partitions and test partitions — slices by code area, not by size. One agent gets one <em>(domain &times; partition)</em> cell: a security lens over the adapters, a type-safety lens over the hub core. That keeps every prompt narrow and every finding traceable to a place. Agents launch five at a time — enough parallelism to finish in minutes, not so much that the final synthesis drowns in context.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Partition</div><div class="step-desc">Split source into <code>P1–P8</code> and tests into <code>T1–T6</code> by code area, so no two agents read the same files.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Launch a wave</div><div class="step-desc">Five domain&times;partition agents start in the background, each with one lens and one slice.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Collect</div><div class="step-desc">Wait for the wave to finish, then write each agent's findings to its own file in a consistent format.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Checkpoint</div><div class="step-desc">Update the manifest — completed and pending agents — so the run is resumable from here.</div></div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Synthesize</div><div class="step-desc">A final agent reads every findings file and emits one prioritized report.</div></div></div>
+        </div>
+        <div class="callout"><p>Partitioning by code area is what makes the audit cheap to read at the end. Each finding already carries a file and a line; synthesis is a merge, not a re-investigation.</p></div>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Two-Step Drift, Second-Opinion Search</h2>
+        <p>Axial drift is the duplication of a cross-cutting concern across siblings on the non-primary axis — the same retry logic copied into the NATS store and the Redis store, the same auth check pasted across three adapters. It is the one class of issue a single-file lens cannot see, so it gets two passes and a confirmation.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Structural — <code>importlinter</code></div><div class="step-desc">Runs the layer contracts: forbidden cross-layer imports, circular dependencies, contract violations. A non-zero exit is a hard finding.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Semantic — <code>axial-adr-review</code></div><div class="step-desc">A read-only agent checks a diff against the project's axial ADR and flags wrong-axis duplication the linter cannot express.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Confirm — semantic search</div><div class="step-desc">Code-index search (<code>ccc</code>) measures how alike the suspected siblings actually are, turning a hunch into a similarity score.</div></div></div>
+        </div>
+        <p>That third step is also a cross-domain referee. Any finding a primary lens raises — a security smell, a DRY violation — is checked against semantic search, and the score decides its fate:</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Similarity</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td>&gt; 0.90</td><td>Confirmed duplication / exact pattern match</td></tr>
+              <tr><td>0.70 – 0.90</td><td>Probable — manual review required</td></tr>
+              <tr><td>0.50 – 0.70</td><td>Weak signal — likely false positive</td></tr>
+              <tr><td>&lt; 0.50</td><td>Discard</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formula-box"><pre><code>finding(domain)  &rarr;  ccc.confirm(top-5)
+                 &rarr;  no match in top-5  &rArr;  severity &minus;1   <span class="c"># downgrade an unconfirmed claim</span></code></pre></div>
+        <p>A claim no second opinion can corroborate is not deleted — it is demoted. The audit prefers an under-stated finding to a confident wrong one.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>The Report It Produces</h2>
+        <p>Sixty-six findings files are useless as a deliverable. The synthesis agent reads them all and writes a single <code>AUDIT-SUMMARY.md</code> — the only artifact a human is meant to open first.</p>
+        <ul class="feature-list">
+          <li><strong>Executive summary.</strong> Overall health, security posture, test-coverage status, the headline debt items.</li>
+          <li><strong>Severity buckets.</strong> Every finding sorted into P0 (critical), P1 (high), P2 (medium), P3 (low) — with file and line.</li>
+          <li><strong>Axial-drift summary.</strong> Contracts kept versus broken, N&times;M traps, and which were confirmed by semantic search.</li>
+          <li><strong>Metrics dashboard.</strong> Issue counts per domain, the severity distribution, and a single <strong>technical-debt score</strong> on a 0–100 scale where 100 is pristine.</li>
+          <li><strong>Recommended actions.</strong> Prioritized, each with an effort estimate, plus a top-10 quick-wins list: high impact, low effort.</li>
+        </ul>
+        <div class="callout"><p>The debt score is the one number you can track release over release. Everything else tells you <em>what</em> to fix; the score tells you whether the codebase is getting healthier.</p></div>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>Two Real Audits</h2>
+        <p>The pattern is not theoretical. Roxabi runs it on its own agent factory, and the recaps live in the open. Two are worth reading in full.</p>
+
+        <p><strong>A — Quality audit, 2 June 2026.</strong> A full sweep of the factory codebase: 3,291 files, every domain, every partition.</p>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">3,291</span><span class="kpi-label">files audited</span></div>
+          <div class="kpi-item"><span class="kpi-value">1,258</span><span class="kpi-label">issues found</span></div>
+          <div class="kpi-item"><span class="kpi-value">72/100</span><span class="kpi-label">debt score</span></div>
+          <div class="kpi-item"><span class="kpi-value">11 / 0</span><span class="kpi-label">contracts kept / broken</span></div>
+        </div>
+        <p>The severity split was 2 · 172 · 664 · 427 across P0–P3, and all eleven import-linter contracts held — the architecture was sound, the debt was volume, not collapse. The two P0s are the kind of bug a single test run hides. One was a 165-line <code>process_one</code> method fusing streaming and non-streaming paths, processor hooks, session-ID updates, and error handling into one unreadable block. The sharper one: <code>_log_turn</code> caught every exception, logged it, and returned — and the caller then <code>ack()</code>'d the JetStream message. A failed SQLite write therefore <em>permanently lost the conversation turn</em>, with a green log line to mask it. Green &ne; correct, found by reading, not by running. This audit is the precursor the <a href="/documentation/autonomous-remediation/">Autonomous Remediation</a> report later paid down.</p>
+        <div class="callout"><p>Read the recap: <a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/audits/2026-06-02-quality-audit/AUDIT-SUMMARY.md" target="_blank" rel="noopener"><code>2026-06-02-quality-audit/AUDIT-SUMMARY.md</code> &rarr;</a></p></div>
+
+        <p><strong>B — Codebase audit, 18 May 2026.</strong> A narrower, transversal pass on three axes — hexagonal purity, code mutualization, simplification — and a different kind of result.</p>
+        <p>This one scored no debt number; it produced a refactor map. The verdict was reassuring: zero import-linter violations, clean layers, isolated packages — the debt was <em>localized, not systemic</em>. Three jobs stood out: ~350 lines of dead code from a retired routing cluster, removable with zero risk; a handful of implicit ports scattered outside <code>core/ports/</code>; and a NATS heartbeat lifecycle copied verbatim across four clients, begging for a shared base class. What makes the recap worth reading is its discipline about <em>false</em> positives — two apparent duplications turned out to be deliberate role interfaces (Fowler) distinct from driven ports (Cockburn), and were renamed to break the homonymy rather than merged. An audit that cannot tell drift from intent generates busywork; this one drew the line and shipped seven PRs the next day.</p>
+        <div class="callout"><p>Read the recap: <a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/audits/2026-05-18-codebase-audit/summary.md" target="_blank" rel="noopener"><code>2026-05-18-codebase-audit/summary.md</code> &rarr;</a></p></div>
+
+        <p>Every recap — quality sweeps, cluster audits, token-isolation reviews — sits in one folder, alongside the playbook that defines the method.</p>
+        <ul class="feature-list">
+          <li><strong>All audit recaps</strong> &middot; <a href="https://github.com/Roxabi/roxabi-factory/tree/staging/artifacts/audits" target="_blank" rel="noopener">roxabi-factory / artifacts / audits &rarr;</a></li>
+          <li><strong>The playbook</strong> &middot; <a href="https://github.com/Roxabi/roxabi-plugins/blob/staging/playbooks/multi-agent-audit-playbook.md" target="_blank" rel="noopener">multi-agent-audit-playbook.md &rarr;</a></li>
+        </ul>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>What Scales</h2>
+        <p>Agent count tracks codebase size, not ambition. The wave width stays roughly constant; only the number of waves grows.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Codebase</th><th>Agents</th><th>Wave size</th><th>Duration</th></tr></thead>
+            <tbody>
+              <tr><td>&lt; 50 files</td><td>18</td><td>4</td><td>~12 min</td></tr>
+              <tr><td>50 – 200 files</td><td>34</td><td>4</td><td>~22 min</td></tr>
+              <tr><td>200 – 500 files</td><td>50</td><td>5</td><td>~45 min</td></tr>
+              <tr><td>500+ files</td><td>69+</td><td>5</td><td>~65+ min</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The findings are specific to one repository. The shape is not — these are the parts that carry to any codebase.</p>
+        <ul class="feature-list">
+          <li><strong>Partition by area.</strong> One agent, one lens, one slice. No duplicate work, every finding pinned to a place.</li>
+          <li><strong>Five-by-five waves.</strong> Parallel enough to be fast, bounded enough that synthesis still fits in one context.</li>
+          <li><strong>Manifest-tracked.</strong> An interrupted run resumes from the last wave instead of starting over.</li>
+          <li><strong>Two-step drift.</strong> A linter catches structure; a semantic agent catches intent; search confirms both.</li>
+          <li><strong>Second-opinion gating.</strong> An unconfirmed claim is downgraded, not asserted — high recall without the false-positive tax.</li>
+        </ul>
+        <div class="callout"><p>The audit is only the read half. Once the report exists, the same fan-out runs in reverse to pay it down — that run is the <a href="/documentation/autonomous-remediation/">Autonomous Remediation</a> report. Read, then write, fully on the record.</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>
