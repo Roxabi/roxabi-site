@@ -38,14 +38,14 @@
         <p>Cortex treats the Ebbinghaus curve as its baseline — the shape of decay before any reinforcement is applied. The practical implication is deterministic: an entity left untouched will cross the invisibility threshold at a predictable time. The system does not need heuristics to decide when to suppress it; the math does.</p>
 
         <figure class="doc-figure" style="margin-top:var(--s-xl)">
-          <svg viewBox="0 0 600 280" role="img" aria-label="Decay and reinforcement curve: memory_strength over time with retrieval spikes" style="width:100%;height:auto">
+          <svg viewBox="0 0 760 280" role="img" aria-label="Decay and reinforcement curve: memory_strength over time with retrieval spikes" style="width:100%;height:auto">
             <defs>
               <marker id="ah-en" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
                 <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
               </marker>
             </defs>
             <!-- Grid background -->
-            <rect width="600" height="280" fill="var(--panel)" rx="8"/>
+            <rect width="760" height="280" fill="var(--panel)" rx="8"/>
             <!-- Grid lines -->
             <line x1="60" y1="20" x2="60" y2="240" stroke="var(--border)" stroke-width="1"/>
             <line x1="60" y1="240" x2="580" y2="240" stroke="var(--border)" stroke-width="1"/>
@@ -73,9 +73,9 @@
             <text x="580" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">120d</text>
             <!-- Axis labels -->
             <text x="320" y="274" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-dim)">Time (days)</text>
-            <!-- Threshold labels -->
-            <text x="583" y="167" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">auto-inject threshold</text>
-            <text x="583" y="200" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">link visibility threshold</text>
+            <!-- Threshold labels: placed to the right of the chart with room in the wider viewBox -->
+            <text x="588" y="167" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">auto-inject threshold</text>
+            <text x="588" y="200" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">link visibility threshold</text>
             <!-- Red shaded zone below 0.35 threshold (y=163 to y=240), between curve and axis -->
             <!-- Approximate: shade from x=60 to x=580, y=163 to y=240 -->
             <rect x="60" y="163" width="520" height="77" fill="var(--accent)" opacity="0.06"/>
@@ -130,13 +130,13 @@
         <p>The separation is intentional. A relation can fade while the entities it connects remain strong, and vice versa. Decay on edges prunes stale graph topology; decay on entities controls prompt salience. Both run independently, on different schedules, with different thresholds.</p>
 
         <figure class="doc-figure" style="margin-top:var(--s-xl)">
-          <svg viewBox="0 0 560 220" role="img" aria-label="Dual decay surfaces: relations and entities with their triggers" style="width:100%;height:auto">
+          <svg viewBox="0 0 560 230" role="img" aria-label="Dual decay surfaces: relations and entities with their triggers" style="width:100%;height:auto">
             <defs>
               <marker id="ah2-en" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
                 <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
               </marker>
             </defs>
-            <rect width="560" height="220" fill="var(--panel)" rx="8"/>
+            <rect width="560" height="230" fill="var(--panel)" rx="8"/>
             <!-- Trigger boxes at top center -->
             <rect x="185" y="14" width="160" height="32" rx="5" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1"/>
             <text x="265" y="28" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Nightly CRON</text>
@@ -152,16 +152,16 @@
             <text x="30" y="164" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">σ=30d normal</text>
             <text x="30" y="177" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">σ=90d foundational</text>
             <!-- Right box: Entities / Nodes -->
-            <rect x="330" y="100" width="210" height="80" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <rect x="330" y="100" width="210" height="90" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
             <text x="435" y="118" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)" font-weight="600">Entities / Nodes</text>
             <text x="435" y="134" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">memory_strength = base×decay×boost</text>
-            <!-- Sub-boxes inside entities box -->
-            <rect x="338" y="142" width="58" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
-            <text x="367" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">retrieval_boost</text>
-            <rect x="402" y="142" width="58" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
-            <text x="431" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">reward_factor</text>
-            <rect x="466" y="142" width="66" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
-            <text x="499" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">emotional_mult</text>
+            <!-- Sub-boxes inside entities box: two rows to avoid overlap -->
+            <rect x="335" y="142" width="96" height="18" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="383" y="155" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">retrieval_boost</text>
+            <rect x="438" y="142" width="95" height="18" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="485" y="155" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">reward_factor</text>
+            <rect x="375" y="164" width="96" height="18" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="423" y="177" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">emotional_mult</text>
             <!-- Arrows from CRON box down-left and down-right -->
             <line x1="220" y1="30" x2="140" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-en)"/>
             <line x1="310" y1="30" x2="400" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-en)"/>
@@ -171,8 +171,8 @@
             <!-- Threshold zones below boxes -->
             <rect x="20" y="186" width="210" height="22" rx="4" fill="var(--accent)" opacity="0.08"/>
             <text x="125" y="201" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">&lt; 0.2 → invisible in search</text>
-            <rect x="330" y="186" width="210" height="22" rx="4" fill="var(--accent)" opacity="0.08"/>
-            <text x="435" y="201" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">&lt; 0.35 → no auto-inject</text>
+            <rect x="330" y="196" width="210" height="22" rx="4" fill="var(--accent)" opacity="0.08"/>
+            <text x="435" y="211" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">&lt; 0.35 → no auto-inject</text>
           </svg>
           <figcaption>Dual decay surfaces. Relations and entities decay independently, triggered by the nightly CRON job and the per-event background pass. Each surface has its own formula, configurable half-lives, and distinct behavioral threshold.</figcaption>
         </figure>
@@ -260,7 +260,7 @@ emotional_mult   = neutral:1.0 | positive:1.3 | negative:1.5 | critical:2.0</cod
         <p>The Raw Layer is immutable. Resurrection is always possible via <code>/rebuild compiled &lt;slug&gt;</code> or by re-encountering the entity in new raw input. Decay is a gradient, not a cliff — no state change is irreversible from the operator's perspective.</p>
 
         <figure class="doc-figure" style="margin-top:var(--s-xl)">
-          <svg viewBox="0 0 500 230" role="img" aria-label="Memory lifecycle state machine: four states and transitions" style="width:100%;height:auto">
+          <svg viewBox="0 -28 500 258" role="img" aria-label="Memory lifecycle state machine: four states and transitions" style="width:100%;height:auto">
             <defs>
               <marker id="ah3-en" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
                 <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
@@ -269,7 +269,7 @@ emotional_mult   = neutral:1.0 | positive:1.3 | negative:1.5 | critical:2.0</cod
                 <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
               </marker>
             </defs>
-            <rect width="500" height="230" fill="var(--panel)" rx="8"/>
+            <rect y="-28" width="500" height="258" fill="var(--panel)" rx="8"/>
             <!-- ACTIVE node: top-center (x=200,y=20,w=140,h=40) -->
             <rect x="180" y="20" width="140" height="44" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
             <text x="250" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" font-weight="700">ACTIVE</text>

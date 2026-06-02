@@ -39,7 +39,7 @@
         <p>Les conséquences pratiques se composent. Ajouter une nouvelle source revient à écrire un nouveau parser et un nouveau pipeline dans <code>cortex-insight</code> uniquement — <code>cortex-memory</code> reste inchangé. Le service insight peut être entièrement réécrit sans toucher à la connaissance accumulée. L'asymétrie des dépendances est aussi explicite : insight est lourd (parsers, regex, appels LLM, consumers NATS, traitement tabulaire) ; memory est minimal (store de graphe, NATS).</p>
 
         <figure class="doc-figure">
-          <svg viewBox="0 0 780 220" role="img" aria-label="Flux lac / entrepôt : producteurs → cortex-insight → contrat Observation → cortex-memory → consommateurs" style="width:100%;height:auto">
+          <svg viewBox="0 0 860 220" role="img" aria-label="Flux lac / entrepôt : producteurs → cortex-insight → contrat Observation → cortex-memory → consommateurs" style="width:100%;height:auto">
             <defs>
               <marker id="arrfr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
                 <path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/>
@@ -69,30 +69,30 @@
             <rect x="202" y="108" width="151" height="36" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
             <text x="277" y="126" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">parsers source-spécifiques</text>
             <text x="277" y="140" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">/ ETL</text>
-            <!-- Flèche amber + label Observation -->
-            <line x1="365" y1="110" x2="415" y2="110" stroke="var(--accent)" stroke-width="3" marker-end="url(#arrfr)"/>
-            <text x="390" y="100" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="600" fill="var(--accent)">Observation</text>
-            <text x="390" y="130" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">roxabi.memory</text>
-            <text x="390" y="143" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">.observations.publish</text>
-            <!-- Ligne pointillée frontière -->
-            <line x1="390" y1="10" x2="390" y2="210" stroke="var(--accent)" stroke-width="1" stroke-dasharray="5,4" opacity="0.5"/>
-            <text x="391" y="22" font-family="var(--font-mono)" font-size="9" fill="var(--accent)" opacity="0.7">frontière</text>
-            <!-- cortex-memory -->
-            <rect x="415" y="10" width="195" height="200" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
-            <text x="512" y="32" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)" letter-spacing="0.06em">cortex-memory</text>
-            <text x="512" y="48" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">(entrepôt)</text>
-            <rect x="427" y="60" width="171" height="26" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-            <text x="512" y="77" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text)">Retain Job</text>
-            <rect x="427" y="96" width="171" height="26" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-            <text x="512" y="113" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">graphe d'entités + relations</text>
-            <rect x="427" y="132" width="171" height="26" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-            <text x="512" y="149" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">décroissance · dedup · vérité compilée</text>
+            <!-- Flèche amber + label Observation (gap: x=365..495, centre x=430) -->
+            <line x1="365" y1="110" x2="492" y2="110" stroke="var(--accent)" stroke-width="3" marker-end="url(#arrfr)"/>
+            <text x="430" y="97" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="600" fill="var(--accent)">Observation</text>
+            <text x="430" y="130" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">roxabi.memory</text>
+            <text x="430" y="143" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">.observations.publish</text>
+            <!-- Ligne pointillée frontière (x=430 = centre du gap) -->
+            <line x1="430" y1="10" x2="430" y2="210" stroke="var(--accent)" stroke-width="1" stroke-dasharray="5,4" opacity="0.5"/>
+            <text x="430" y="22" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)" opacity="0.7">frontière</text>
+            <!-- cortex-memory (décalé +80 : x=415+80=495) -->
+            <rect x="495" y="10" width="195" height="200" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="592" y="32" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)" letter-spacing="0.06em">cortex-memory</text>
+            <text x="592" y="48" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">(entrepôt)</text>
+            <rect x="507" y="60" width="171" height="26" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="592" y="77" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text)">Retain Job</text>
+            <rect x="507" y="96" width="171" height="26" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="592" y="113" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">graphe d'entités + relations</text>
+            <rect x="507" y="132" width="171" height="26" rx="4" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="592" y="149" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">décroissance · dedup · vérité compilée</text>
             <!-- Flèche memory → consommateurs -->
-            <line x1="610" y1="110" x2="648" y2="110" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#arrfr-muted)"/>
+            <line x1="690" y1="110" x2="728" y2="110" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#arrfr-muted)"/>
             <!-- Consommateurs -->
-            <rect x="650" y="80" width="120" height="60" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
-            <text x="710" y="106" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">Consommateurs</text>
-            <text x="710" y="120" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">(assemble / actuate)</text>
+            <rect x="730" y="80" width="120" height="60" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="790" y="106" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">Consommateurs</text>
+            <text x="790" y="120" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">(assemble / actuate)</text>
           </svg>
           <figcaption>Flux lac / entrepôt : producteurs → cortex-insight (lac) → contrat Observation → cortex-memory (entrepôt) → consommateurs. La ligne amber en pointillés marque la frontière : insight ne stocke jamais le graphe ; memory ne parse jamais les données brutes.</figcaption>
         </figure>

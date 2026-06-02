@@ -15,15 +15,20 @@ Run:  python3 src/build.py        (Python 3.11+, stdlib only)
 """
 from __future__ import annotations
 
+import html
 import json
+import os
+import re
 import shutil
 import sys
 import tomllib
+import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src"
-DIST = ROOT / "dist"
+# Output dir defaults to ./dist; override with ROXABI_DIST for isolated builds (e.g. parallel QA).
+DIST = Path(os.environ["ROXABI_DIST"]).resolve() if os.environ.get("ROXABI_DIST") else ROOT / "dist"
 LANGS = ("en", "fr")
 
 
@@ -138,6 +143,37 @@ def build_jsonld(base, org_name, github, lang, p) -> str:
     raise SystemExit(f"unknown jsonld kind: {kind}")
 
 
+# ── Section anchors (derive readable URL fragments from each <h2>) ─────────────
+_SEC_RE = re.compile(r'id="(sec-\d+)"[^>]*>.*?<h2[^>]*>(.*?)</h2>', re.S)
+
+
+def slugify(text: str) -> str:
+    """'Why « Exocortex »' → 'why-exocortex'. Strips tags/entities/accents."""
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = html.unescape(text)
+    text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+
+
+def derive_section_anchors(body: str) -> str:
+    """Rewrite hand-authored `sec-N` section ids (and their TOC `#sec-N` hrefs)
+    to slugs derived from each section's <h2>, so URL fragments are readable.
+    No-op on pages without `sec-N` ids (e.g. the constitution, already slugged)."""
+    used: set = set()
+    mapping: dict = {}
+    for secid, title in _SEC_RE.findall(body):
+        slug = slugify(title) or secid
+        base, n = slug, 2
+        while slug in used:
+            slug, n = f"{base}-{n}", n + 1
+        used.add(slug)
+        mapping[secid] = slug
+    for secid, slug in mapping.items():
+        body = body.replace(f'id="{secid}"', f'id="{slug}"')
+        body = body.replace(f'href="#{secid}"', f'href="#{slug}"')
+    return body
+
+
 # ── Documentation collection (index cards + chapter prev/next, all derived) ────
 def doc_chapter_list() -> list:
     """Documentation chapters (collection pages with a chapter number), ordered."""
@@ -229,6 +265,8 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
     body = load(SRC / "bodies" / lang / f"{p['body']}.html").rstrip("\n")
     # Give the skip-link a focus target (bodies author a bare <main>).
     body = body.replace("<main>", '<main id="main" tabindex="-1">', 1)
+    # Derive readable section anchors from each <h2> (sec-N → title slug).
+    body = derive_section_anchors(body)
     # Documentation collection: derive index cards + per-chapter prev/next nav.
     if "{{doc_chapters}}" in body:
         body = body.replace("{{doc_chapters}}", doc_cards(lang))

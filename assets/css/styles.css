@@ -228,7 +228,9 @@ a.proj-card:hover .arrow { transform: translateX(3px); }
 /* ── Constitution / article layout ────────────────────── */
 .doc-hero { border-bottom: 1px solid var(--border); text-align: center; padding-block: var(--s-2xl); }
 .doc-hero .meta { font-family: var(--font-mono); font-size: .75rem; color: var(--text-dim); margin-top: var(--s-md); }
-.constitution { display: grid; grid-template-columns: 220px 1fr; gap: var(--s-2xl); align-items: start; }
+.constitution { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--s-2xl); align-items: start; }
+.const-body { min-width: 0; } /* grid item must shrink below content min-content, else wide code/figures pin the track open */
+.const-body pre.code, pre.code { overflow-x: auto; max-width: 100%; } /* docs author <pre class="code">; long unwrappable lines scroll instead of overflowing the page */
 .toc { position: sticky; top: 80px; font-size: .85rem; display: flex; flex-direction: column; gap: 6px; border-left: 1px solid var(--border); padding-left: var(--s-md); }
 .toc a { color: var(--text-muted); padding: 2px 0; border-left: 2px solid transparent; margin-left: calc(-1 * var(--s-md) - 2px); padding-left: var(--s-md); transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease); }
 .toc a:hover { color: var(--text); }

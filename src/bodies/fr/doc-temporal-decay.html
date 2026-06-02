@@ -38,13 +38,13 @@
         <p>Cortex traite la courbe d'Ebbinghaus comme sa ligne de base — la forme de la décroissance avant tout renforcement. La conséquence pratique est déterministe : une entité laissée sans renforcement franchira le seuil d'invisibilité à un moment prévisible. Le système n'a pas besoin d'heuristiques pour décider quand la supprimer ; les mathématiques s'en chargent.</p>
 
         <figure class="doc-figure" style="margin-top:var(--s-xl)">
-          <svg viewBox="0 0 600 280" role="img" aria-label="Courbe de décroissance et renforcement : memory_strength d'une entité dans le temps avec pics de rappel" style="width:100%;height:auto">
+          <svg viewBox="0 0 760 280" role="img" aria-label="Courbe de décroissance et renforcement : memory_strength d'une entité dans le temps avec pics de rappel" style="width:100%;height:auto">
             <defs>
               <marker id="ah-fr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
                 <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
               </marker>
             </defs>
-            <rect width="600" height="280" fill="var(--panel)" rx="8"/>
+            <rect width="760" height="280" fill="var(--panel)" rx="8"/>
             <line x1="60" y1="20" x2="60" y2="240" stroke="var(--border)" stroke-width="1"/>
             <line x1="60" y1="240" x2="580" y2="240" stroke="var(--border)" stroke-width="1"/>
             <line x1="190" y1="20" x2="190" y2="240" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,4"/>
@@ -64,8 +64,8 @@
             <text x="450" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">90j</text>
             <text x="580" y="256" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">120j</text>
             <text x="320" y="274" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-dim)">Temps (jours)</text>
-            <text x="583" y="167" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">seuil auto-inject</text>
-            <text x="583" y="200" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">seuil visibilité lien</text>
+            <text x="588" y="167" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">seuil auto-inject</text>
+            <text x="588" y="200" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">seuil visibilité lien</text>
             <rect x="60" y="163" width="520" height="77" fill="var(--accent)" opacity="0.06"/>
             <rect x="60" y="20" width="520" height="143" fill="var(--accent)" opacity="0.04"/>
             <path d="M60,20 C80,30 120,55 147,79" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
@@ -95,13 +95,13 @@
         <p>La séparation est intentionnelle. Une relation peut s'estomper tandis que les entités qu'elle connecte restent fortes, et inversement. La décroissance sur les arêtes élague la topologie périmée du graphe ; la décroissance sur les entités contrôle la saillance dans les prompts. Les deux s'exécutent indépendamment, selon des planifications et des seuils différents.</p>
 
         <figure class="doc-figure" style="margin-top:var(--s-xl)">
-          <svg viewBox="0 0 560 220" role="img" aria-label="Deux surfaces de décroissance : relations et entités avec leurs déclencheurs" style="width:100%;height:auto">
+          <svg viewBox="0 0 560 230" role="img" aria-label="Deux surfaces de décroissance : relations et entités avec leurs déclencheurs" style="width:100%;height:auto">
             <defs>
               <marker id="ah2-fr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
                 <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
               </marker>
             </defs>
-            <rect width="560" height="220" fill="var(--panel)" rx="8"/>
+            <rect width="560" height="230" fill="var(--panel)" rx="8"/>
             <rect x="185" y="14" width="160" height="32" rx="5" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1"/>
             <text x="265" y="28" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">CRON nocturne</text>
             <text x="265" y="41" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">recalcul global</text>
@@ -114,23 +114,24 @@
             <text x="30" y="151" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">σ=7j  contextuelle</text>
             <text x="30" y="164" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">σ=30j normale</text>
             <text x="30" y="177" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">σ=90j fondationnelle</text>
-            <rect x="330" y="100" width="210" height="80" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <rect x="330" y="100" width="210" height="90" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
             <text x="435" y="118" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)" font-weight="600">Entités / Nœuds</text>
             <text x="435" y="134" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">memory_strength = base×decay×boost</text>
-            <rect x="338" y="142" width="58" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
-            <text x="367" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">retrieval_boost</text>
-            <rect x="402" y="142" width="58" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
-            <text x="431" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">reward_factor</text>
-            <rect x="466" y="142" width="66" height="20" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
-            <text x="499" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">emotional_mult</text>
+            <!-- Sub-boxes: two rows to avoid overlap -->
+            <rect x="335" y="142" width="96" height="18" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="383" y="155" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">retrieval_boost</text>
+            <rect x="438" y="142" width="95" height="18" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="485" y="155" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">reward_factor</text>
+            <rect x="375" y="164" width="96" height="18" rx="3" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="423" y="177" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">emotional_mult</text>
             <line x1="220" y1="30" x2="140" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-fr)"/>
             <line x1="310" y1="30" x2="400" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-fr)"/>
             <line x1="220" y1="70" x2="140" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-fr)"/>
             <line x1="310" y1="70" x2="400" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ah2-fr)"/>
             <rect x="20" y="186" width="210" height="22" rx="4" fill="var(--accent)" opacity="0.08"/>
             <text x="125" y="201" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">&lt; 0,2 → invisible en recherche</text>
-            <rect x="330" y="186" width="210" height="22" rx="4" fill="var(--accent)" opacity="0.08"/>
-            <text x="435" y="201" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">&lt; 0,35 → pas d'auto-injection</text>
+            <rect x="330" y="196" width="210" height="22" rx="4" fill="var(--accent)" opacity="0.08"/>
+            <text x="435" y="211" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent)" opacity="0.9">&lt; 0,35 → pas d'auto-injection</text>
           </svg>
           <figcaption>Deux surfaces de décroissance. Relations et entités décroissent indépendamment, déclenchées par le CRON nocturne et le traitement d'arrière-plan par événement. Chaque surface a sa propre formule, ses demi-vies configurables et son seuil comportemental distinct.</figcaption>
         </figure>
@@ -218,7 +219,7 @@ emotional_mult      = neutre:1,0 | positif:1,3 | négatif:1,5 | critique:2,0</co
         <p>La couche Brute est immuable. La résurrection est toujours possible via <code>/rebuild compiled &lt;slug&gt;</code> ou en rencontrant à nouveau l'entité dans une nouvelle entrée brute. La décroissance est un gradient, non une falaise — aucun changement d'état n'est irréversible du point de vue de l'opérateur.</p>
 
         <figure class="doc-figure" style="margin-top:var(--s-xl)">
-          <svg viewBox="0 0 500 230" role="img" aria-label="Machine à états du cycle de vie mémoriel : quatre états et transitions" style="width:100%;height:auto">
+          <svg viewBox="0 -28 500 258" role="img" aria-label="Machine à états du cycle de vie mémoriel : quatre états et transitions" style="width:100%;height:auto">
             <defs>
               <marker id="ah3-fr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
                 <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
@@ -227,7 +228,7 @@ emotional_mult      = neutre:1,0 | positif:1,3 | négatif:1,5 | critique:2,0</co
                 <polygon points="0 0, 8 3, 0 6" fill="var(--accent)"/>
               </marker>
             </defs>
-            <rect width="500" height="230" fill="var(--panel)" rx="8"/>
+            <rect y="-28" width="500" height="258" fill="var(--panel)" rx="8"/>
             <!-- ACTIF node -->
             <rect x="180" y="20" width="140" height="44" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
             <text x="250" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" font-weight="700">ACTIF</text>
