@@ -1,6 +1,6 @@
 # Migration plan — `lyra` → `roxabi-factory`
 
-**Status:** plan only (not executed) · **Created:** 2026-06-01
+**Status:** in progress (updated 2026-06-02) — Phase 1 (GitHub) ✅ · Phase 3 (site) ✅ · Phases 2 (infra/M₁), 4 (brand+cross-repo), 5 (verify) **pending** · **Created:** 2026-06-01
 **Trigger:** reality C — `lyra` repo becomes the agent & worker **factory**; the **Lyra product dies temporarily** (may return). The **Lyra agent persists** as a config-driven seed inside the factory (`config.toml` → `lyra bot init`).
 **Constraint:** none on prod (user: "pas de contrainte, on peut faire ça quand on veut").
 
@@ -18,7 +18,7 @@
 
 ---
 
-## Phase 1 — GitHub repo rename (independent, ~reversible, 5 min)
+## Phase 1 — GitHub repo rename (independent, ~reversible, 5 min) — ✅ DONE 2026-06-02
 
 ```bash
 gh repo rename roxabi-factory -R Roxabi/lyra
@@ -53,7 +53,7 @@ systemctl --user daemon-reload && systemctl --user start 'roxabi-factory-*'
 ```
 ↳ Update Syncthing folder pointing at the old data dir. Verify bots reconnect (Telegram/Discord) + NATS subjects unchanged.
 
-## Phase 3 — roxabi-site (Lyra product retired)
+## Phase 3 — roxabi-site (Lyra product retired) — ✅ DONE
 
 | File | Change |
 |------|--------|
@@ -75,10 +75,10 @@ Then `python3 src/build.py` → confirm 7 pages, no `/projects/lyra/`, no dangli
 
 ## Phase 5 — Verify
 
-- [ ] `github.com/Roxabi/lyra` redirects to `…/roxabi-factory`
+- [x] `github.com/Roxabi/lyra` redirects to `…/roxabi-factory` — ✅ verified 2026-06-02
 - [ ] services up under `roxabi-factory-*`, bots reconnected, NATS OK
 - [ ] data intact at new dir; Syncthing syncing
-- [ ] site builds; `/projects/lyra/` 301s; no residual product links
+- [x] site builds; `/projects/lyra/` 301s; no residual product links — ✅ live roxabi.dev
 - [ ] `grep -ri lyra` across repos = only the *agent name* (intended) + historical brand refs
 
 ---

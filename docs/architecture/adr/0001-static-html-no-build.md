@@ -1,7 +1,7 @@
 ---
 id: ADR-0001
 title: Static hand-authored HTML — no framework, no backend, no build
-status: proposed
+status: accepted
 date: 2026-06-01
 deciders: [Mickael]
 ---

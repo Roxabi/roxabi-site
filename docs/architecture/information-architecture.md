@@ -136,5 +136,5 @@ One idea per sentence in hero + headings. If a word can be cut, cut it.
   First SVG draft reads too wireframe → needs a refinement pass to match the
   solid-block character of the reference PNG
   (`~/.roxabi/forge/roxabi-site/brand/concepts/17-foundation-block-amber-core.png`).
-- **Domain** — confirm `roxabi.dev` vs alternatives before Cloudflare Pages setup.
+- **Domain** — ✅ **`roxabi.dev` live** (Cloudflare Pages, 2026-06-02). Apex only — `www` redirect not set (low-priority, deferred).
 - **Docs hosting** — external links at launch; hub = later ADR.
