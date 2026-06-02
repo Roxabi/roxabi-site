@@ -20,8 +20,9 @@
       <a href="#sec-6">6 — Un seul contrat, dix-neuf agents</a>
       <a href="#sec-7">7 — Ce qui a cassé, et pourquoi</a>
       <a href="#sec-8">8 — Le coût, sans fard</a>
-      <a href="#sec-9">9 — Ce qui se capitalise</a>
-      <a href="#sec-10">10 — Sources &amp; code</a>
+      <a href="#sec-9">9 — La preuve que c'est passé</a>
+      <a href="#sec-10">10 — Ce qui se capitalise</a>
+      <a href="#sec-11">11 — Sources &amp; code</a>
     </nav>
 
     <div class="const-body prose">
@@ -326,6 +327,31 @@
 
       <div class="titre" id="sec-9">
         <span class="label">09</span>
+        <h2>La preuve que c'est passé</h2>
+        <p>Dix-neuf PR fusionnées prouvent que le <em>processus</em> est allé au bout. Elles ne prouvent pas que le <em>code</em> est juste — un pipeline vert et un epic clos peuvent tous deux reposer sur un correctif qui a discrètement dérivé de son intention. Une fois le run terminé, un audit de second niveau a donc relu directement la source fusionnée sur <code>staging</code>, constat par constat, avec une seule question : chaque correctif a-t-il vraiment atterri comme sa PR le prétendait ?</p>
+        <p>Trois agents spécialistes se sont partagé la surface — refactors et architecture, les chemins sensibles à la sécurité, et la dérive inter-couches — et ont lu les fichiers, pas les diffs.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Auditeur</th><th>Périmètre</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td><code>backend-dev</code></td><td>refactors DRY, axe d'étage, configs, protocoles</td><td>8 / 8 &#x2705;</td></tr>
+              <tr><td><code>security-auditor</code></td><td><code>process_one</code>, journalisation des tours, catch large, <code>sleep()</code></td><td>4 / 4 &#x2705;</td></tr>
+              <tr><td><code>axial-adr-review</code></td><td>pollution inter-couches, dérive hors de l'axe primaire</td><td>2 fuites mineures</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">19/19</span><span class="kpi-label">feuilles confirmées dans la source</span></div>
+          <div class="kpi-item"><span class="kpi-value">0</span><span class="kpi-label">régression</span></div>
+          <div class="kpi-item"><span class="kpi-value">0</span><span class="kpi-label">bloqueur</span></div>
+          <div class="kpi-item"><span class="kpi-value">3</span><span class="kpi-label">points résiduels</span></div>
+        </div>
+        <p>Les deux fuites architecturales étaient réelles mais minces — du code de cœur de hub discriminant encore deux types de message propres à une plateforme là où un trait générique a sa place, et un classificateur d'erreurs s'appuyant sur les noms de modules d'adaptateur plutôt que sur une taxonomie que les adaptateurs déclarent. Ajoutez une limite codée en dur qui réclame un nom, et c'était tout le résidu : versé en suivis non bloquants, au dossier plutôt qu'enfoui.</p>
+        <div class="callout"><p>La machinerie qui a <em>trouvé</em> la dette a été retournée sur le code qui l'a <em>résorbée</em>. <strong>19 correctifs sur 19 confirmés dans la source, zéro régression</strong> — et les trois points qu'elle a soulevés sont versés au dossier, pas balayés. La validation, c'est le fan-out de lecture, rejoué une fois de plus.</p></div>
+      </div>
+
+      <div class="titre" id="sec-10">
+        <span class="label">10</span>
         <h2>Ce qui se capitalise</h2>
         <p>Les constats étaient propres à une base de code. Les patterns, non — voici les parties qui se reportent au run suivant.</p>
         <ul class="feature-list">
@@ -338,8 +364,8 @@
         <div class="callout"><p>Un seul opérateur a mené vingt-deux constats jusqu'à la fusion en une seule après-midi — et chaque décision est au dossier. C'est toute la thèse en un run : <strong>le rendement d'une équipe, entièrement auditable, sans verrouillage.</strong></p></div>
       </div>
 
-      <div class="titre" id="sec-10">
-        <span class="label">10</span>
+      <div class="titre" id="sec-11">
+        <span class="label">11</span>
         <h2>Sources &amp; code</h2>
         <p>Chaque artefact de ce compte rendu est public. Le dépôt est <a href="https://github.com/Roxabi/roxabi-factory" rel="noopener">Roxabi/roxabi-factory</a> (AGPL-3.0).</p>
         <div class="tbl-wrap">

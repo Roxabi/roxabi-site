@@ -20,8 +20,9 @@
       <a href="#sec-6">6 — One Contract, Nineteen Agents</a>
       <a href="#sec-7">7 — What Broke, and Why</a>
       <a href="#sec-8">8 — The Cost, Honestly</a>
-      <a href="#sec-9">9 — What Compounds</a>
-      <a href="#sec-10">10 — Sources &amp; Code</a>
+      <a href="#sec-9">9 — Proof It Landed</a>
+      <a href="#sec-10">10 — What Compounds</a>
+      <a href="#sec-11">11 — Sources &amp; Code</a>
     </nav>
 
     <div class="const-body prose">
@@ -326,6 +327,31 @@
 
       <div class="titre" id="sec-9">
         <span class="label">09</span>
+        <h2>Proof It Landed</h2>
+        <p>Nineteen merged PRs prove the <em>process</em> finished. They do not prove the <em>code</em> is right — a green pipeline and a closed epic can both sit on top of a fix that quietly drifted from its intent. So once the run was done, a second-layer audit read the merged <code>staging</code> source directly, finding by finding, asking one question: did each fix actually land the way its PR claimed?</p>
+        <p>Three specialist agents split the surface — refactors and architecture, the security-sensitive paths, and cross-layer drift — and read the files, not the diffs.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Auditor</th><th>Scope</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td><code>backend-dev</code></td><td>DRY refactors, stage-axis, configs, protocols</td><td>8 / 8 &#x2705;</td></tr>
+              <tr><td><code>security-auditor</code></td><td><code>process_one</code>, turn-logging, broad-catch, <code>sleep()</code></td><td>4 / 4 &#x2705;</td></tr>
+              <tr><td><code>axial-adr-review</code></td><td>cross-layer pollution, drift off the primary axis</td><td>2 minor leaks</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">19/19</span><span class="kpi-label">leaves confirmed in source</span></div>
+          <div class="kpi-item"><span class="kpi-value">0</span><span class="kpi-label">regressions</span></div>
+          <div class="kpi-item"><span class="kpi-value">0</span><span class="kpi-label">blockers</span></div>
+          <div class="kpi-item"><span class="kpi-value">3</span><span class="kpi-label">residual nits</span></div>
+        </div>
+        <p>The two architectural leaks were real but small — hub-core code still discriminating two platform-specific message types where a generic trait belongs, and an error classifier keying off adapter module names instead of a taxonomy the adapters register. Add one hardcoded limit that wants a name, and that was the whole residue: filed as non-blocking follow-ups, on the record rather than buried.</p>
+        <div class="callout"><p>The same machinery that <em>found</em> the debt was turned back on the code that <em>paid it down</em>. <strong>19 of 19 fixes confirmed in source, zero regressions</strong> — and the three nits it surfaced are filed, not swept. Validation is just the read fan-out, run once more.</p></div>
+      </div>
+
+      <div class="titre" id="sec-10">
+        <span class="label">10</span>
         <h2>What Compounds</h2>
         <p>The findings were specific to one codebase. The patterns are not — these are the parts that carry to the next run.</p>
         <ul class="feature-list">
@@ -338,8 +364,8 @@
         <div class="callout"><p>One operator drove twenty-two findings to merge in a single afternoon — and every decision is on the record. That is the whole thesis in one run: <strong>team-scale output, fully auditable, no lock-in.</strong></p></div>
       </div>
 
-      <div class="titre" id="sec-10">
-        <span class="label">10</span>
+      <div class="titre" id="sec-11">
+        <span class="label">11</span>
         <h2>Sources &amp; Code</h2>
         <p>Every artefact in this report is public. The repository is <a href="https://github.com/Roxabi/roxabi-factory" rel="noopener">Roxabi/roxabi-factory</a> (AGPL-3.0).</p>
         <div class="tbl-wrap">
