@@ -5,7 +5,7 @@
 base       = "https://roxabi.dev"
 github     = "https://github.com/Roxabi"
 org_name   = "Roxabi"
-lastmod    = "2026-06-01"          # sitemap <lastmod>; bump on content change
+lastmod    = "2026-06-02"          # sitemap <lastmod>; bump on content change
 
 # ── Per-language chrome strings (nav, footer, locale, og image) ──────────────
 [lang.en]
@@ -161,6 +161,31 @@ priority    = "0.8"
   og_title = "Projets — Roxabi"
   og_desc  = "Des primitives open-source à forker et exécuter. Ensemble, elles se composent."
   crumb    = "Projets"
+
+[[page]]
+id          = "proj-roxabi-plugins"
+path        = "projects/roxabi-plugins/"
+body        = "proj-roxabi-plugins"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "projects"
+jsonld      = "breadcrumb"
+ancestors   = ["home", "projects"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title    = "roxabi-plugins — Roxabi"
+  desc     = "roxabi-plugins is an open-source Claude Code marketplace. Its flagship, dev-core, drives the full dev lifecycle from one command — /dev and its sub-skills explained: tiers, gates, pipeline, agents."
+  og_title = "roxabi-plugins — Roxabi"
+  og_desc  = "Open-source Claude Code plugins. How dev-core's /dev orchestrator routes an issue through frame, spec, plan, implement, review, and ship."
+  crumb    = "roxabi-plugins"
+  [page.fr]
+  title    = "roxabi-plugins — Roxabi"
+  desc     = "roxabi-plugins est une marketplace Claude Code open-source. Son fer de lance, dev-core, pilote tout le cycle de dev depuis une commande — /dev et ses sous-skills expliqués : tiers, gates, pipeline, agents."
+  og_title = "roxabi-plugins — Roxabi"
+  og_desc  = "Plugins Claude Code open-source. Comment l'orchestrateur /dev de dev-core mène une issue de frame à spec, plan, implement, review et ship."
+  crumb    = "roxabi-plugins"
 
 [[page]]
 id          = "documentation"

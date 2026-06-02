@@ -1,0 +1,185 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">PLUGINS OPEN-SOURCE</p>
+    <h1>roxabi-plugins</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Une marketplace Claude Code — la couche réutilisable au-dessus de l'agent. Son fer de lance, <code>dev-core</code>, transforme une seule commande en tout le cycle de développement : cadrer, analyser, spécifier, planifier, implémenter, relire, livrer. Voici comment fonctionnent <code>/dev</code> et ses sous-skills.</p>
+    <div class="doc-hero-tags"><span class="tag">Claude Code</span><span class="tag">Bun</span><span class="tag">MIT</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — Ce que c'est</a>
+      <a href="#sec-2">2 — dev-core en un coup d'œil</a>
+      <a href="#sec-3">3 — /dev, l'orchestrateur</a>
+      <a href="#sec-4">4 — Trois tiers</a>
+      <a href="#sec-5">5 — Le pipeline : les sous-skills de /dev</a>
+      <a href="#sec-6">6 — De l'issue à la PR fusionnée</a>
+      <a href="#sec-7">7 — La couche agents</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Ce que c'est</h2>
+        <p>Toute équipe sur Claude Code réinvente les mêmes choses — un <code>CLAUDE.md</code>, une commande de review maison, une façon de structurer les prompts de CI, un rituel de sync des docs. Ça marche, mais rien ne voyage d'un projet à l'autre. <strong>roxabi-plugins</strong>, c'est cette couche jetable rendue réutilisable : une marketplace open-source où chaque plugin embarque un bundle opinioné et éprouvé pour un domaine.</p>
+        <p>Un plugin est autonome. Il embarque trois types de briques, que Claude Code découvre à l'installation :</p>
+        <ul class="feature-list">
+          <li><strong>Skills</strong> — des workflows à trigger-phrase. Tu décris une tâche en langage naturel ; le skill correspondant se déclenche. Aucune slash-command à mémoriser.</li>
+          <li><strong>Agents</strong> — des sous-process spécialisés (un ingénieur backend, un auditeur sécurité) qu'un skill invoque pour un travail ciblé.</li>
+          <li><strong>Hooks</strong> — des garde-fous qui se déclenchent à chaque appel d'outil : scan de secrets, formateur, commande de test imposée.</li>
+        </ul>
+        <div class="callout"><p>Les plugins sont <strong>agnostiques au projet</strong>. Chacun lit ta stack depuis <code>.claude/stack.yml</code> au runtime — <code>{commands.test}</code>, <code>{backend.path}</code>, <code>{package_manager}</code> — donc le même <code>dev-core</code> pilote un monorepo NestJS et un service Django sans changer une ligne.</p></div>
+        <p>L'installation tient en deux commandes : <code>claude plugin marketplace add Roxabi/roxabi-plugins</code>, puis <code>claude plugin install dev-core</code>.</p>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>dev-core en un coup d'œil</h2>
+        <p>Le plugin phare. Il couvre tout l'arc, de l'issue GitHub à la PR fusionnée, et c'est celui qu'on détaille ici. Tout passe par une porte d'entrée unique : <code>/dev</code>.</p>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">33</span><span class="kpi-label">skills</span></div>
+          <div class="kpi-item"><span class="kpi-value">9</span><span class="kpi-label">agents</span></div>
+          <div class="kpi-item"><span class="kpi-value">3</span><span class="kpi-label">hooks de sûreté</span></div>
+          <div class="kpi-item"><span class="kpi-value">5</span><span class="kpi-label">phases du workflow</span></div>
+        </div>
+        <p>Les trois hooks se déclenchent à chaque appel d'outil, sans skill — ils sont le plancher sous tout le reste.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Hook</th><th>Déclencheur</th><th>Ce qu'il fait</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Contrôle sécurité</strong></td><td>PreToolUse · Edit/Write</td><td>Bloque les secrets en dur, les motifs d'injection SQL et de commande</td></tr>
+              <tr><td><strong>Garde des tests</strong></td><td>PreToolUse · Bash</td><td>Impose <code>bun run test</code> plutôt que <code>bun test</code> — ce dernier utilise le runner Bun et fait tourner le CPU à vide</td></tr>
+              <tr><td><strong>Auto-format</strong></td><td>PostToolUse · Edit/Write</td><td>Lance le formateur de <code>stack.yml</code> selon l'extension du fichier ; no-op silencieux si non configuré</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>/dev, l'orchestrateur</h2>
+        <p>C'est le cœur du plugin. <code>/dev</code> n'est <strong>pas</strong> un skill qui écrit du code — c'est une <strong>machine à états</strong> qui scanne où en est le travail, décide de la suite et délègue au bon sous-skill. Une seule porte pour tout le cycle de vie.</p>
+        <p>Tu le pointes sur une issue. Il s'occupe du reste.</p>
+        <div class="formula-box"><pre><code>/dev #42              <span class="c">reprend / démarre depuis l'issue</span>
+/dev "dark mode"      <span class="c">trouve ou crée l'issue, puis démarre</span>
+/dev #42 --from spec  <span class="c">saute à une étape (warn si deps manquantes)</span>
+/dev #42 --audit      <span class="c">checkpoint de raisonnement avant spec / plan / implement</span></code></pre></div>
+        <p>Chaque invocation déroule la même boucle silencieuse : scanner l'état, trouver la première étape non faite, gater si une décision humaine est due, déléguer, puis re-scanner dans le même tour et continuer.</p>
+        <div class="formula-box"><pre><code>scan-state.sh ──► Σ (état sur disque) ──► tier τ ──► amorce la task list
+      │                                                  │
+      ▼                                                  ▼
+  parcourt ──► S* = 1ʳᵉ étape ni faite ni sautée ──► [gate ?] ──► lance skill S*
+      ▲                                                  │
+      └──────────────── re-scan Σ (même tour) ◄──────────┘</code></pre></div>
+        <p>La progression est suivie à deux endroits, pour qu'une session puisse mourir et reprendre proprement :</p>
+        <ul class="feature-list">
+          <li><strong>Les artifacts sur disque</strong> — <code>frames/</code>, <code>analyses/</code>, <code>specs/</code>, <code>plans/</code>. Vérité <em>inter-session</em> ; c'est ainsi que <code>/dev</code> sait que tu as déjà écrit la spec la semaine dernière.</li>
+          <li><strong>La task list</strong> — vérité <em>intra-session</em>, plus une carte d'état en mémoire pour les étapes qui ne laissent aucun fichier (validate, review, fix).</li>
+        </ul>
+        <p>Trois règles le gardent honnête et hors de ton chemin :</p>
+        <ul class="feature-list">
+          <li><strong>Gates humains.</strong> L'approbation est demandée à frame, spec et plan — jamais d'auto-avance par-dessus une décision.</li>
+          <li><strong>Transitions silencieuses.</strong> Pas de « Running /X… », pas de « Moving to Y » — la sortie du skill suivant <em>est</em> le message.</li>
+          <li><strong>Compact pause.</strong> Après <code>/plan</code> (en F-lite / F-full), <code>/dev</code> s'arrête et recommande <code>/compact</code> avant de builder — le lourd contexte de planification est du poids mort pour les agents d'implémentation, qui démarrent à neuf.</li>
+        </ul>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Trois tiers</h2>
+        <p>Avant de parcourir le pipeline, <code>/dev</code> jauge le travail. Le tier décide des étapes qui tournent et de celles qu'on saute — un fix de typo ne devrait pas subir une analyse profonde et un gate de spec.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Tier</th><th>Critères</th><th>Pipeline</th></tr></thead>
+            <tbody>
+              <tr><td><strong>S</strong></td><td>&le;3 fichiers, pas d'architecture, pas de risque</td><td>triage → implement → pr → validate → review → fix* → cleanup*</td></tr>
+              <tr><td><strong>F-lite</strong></td><td>Scope clair, domaine unique</td><td>frame → spec → plan → implement → verify → ship</td></tr>
+              <tr><td><strong>F-full</strong></td><td>Nouvelle architecture, besoins flous, &gt;2 domaines</td><td>frame → analyze → spec → plan → implement → verify → ship</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><code>*</code> = conditionnel — ne tourne que si applicable.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Le pipeline : les sous-skills de /dev</h2>
+        <p>Cinq phases, quatorze étapes. Chaque étape est un skill autonome auquel <code>/dev</code> délègue — ce sont ses sous-skills. Ils se regroupent en <strong>Frame → Shape → Build → Verify → Ship</strong>.</p>
+        <div class="formula-box"><pre><code>FRAME ──────────► SHAPE ─────► BUILD ──────────► VERIFY ────────────► SHIP
+triage            analyze      plan  ⛓           ci-watch             promote
+recheck           spec  ⛓      implement         validate             cleanup
+frame  ⛓                       pr                review → fix ⟲</code></pre></div>
+        <p>Chaque étape a une <strong>classe</strong> : <em>gate</em> ⛓ demande l'approbation humaine, <em>adv</em> avance automatiquement, <em>verdict</em> bifurque selon le résultat, <em>loop</em> itère.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Phase</th><th>Étape → skill</th><th>Classe</th><th>Ce qu'elle fait</th><th>Sautée si</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Frame</strong></td><td><code>triage</code> → /issue-triage</td><td>adv</td><td>Labels, taille, priorité, dépendances</td><td>déjà triée</td></tr>
+              <tr><td></td><td><code>recheck</code> → /recheck</td><td>adv</td><td>Drift-check avant de coder (git-drift, symbole disparu, dep résolue)</td><td>jamais</td></tr>
+              <tr><td></td><td><code>frame</code> → /frame</td><td><strong>gate</strong></td><td>Cadre le problème depuis l'issue</td><td>tier S</td></tr>
+              <tr><td><strong>Shape</strong></td><td><code>analyze</code> → /analyze</td><td>adv</td><td>Analyse profonde + consultation d'experts</td><td>tiers S, F-lite</td></tr>
+              <tr><td></td><td><code>spec</code> → /spec</td><td><strong>gate</strong></td><td>Spec + critères d'acceptation, smart splitting</td><td>tier S</td></tr>
+              <tr><td><strong>Build</strong></td><td><code>plan</code> → /plan</td><td><strong>gate</strong></td><td>Plan d'implémentation en micro-tasks</td><td>tier S</td></tr>
+              <tr><td></td><td><code>implement</code> → /implement</td><td>adv</td><td>Écrit le code + les tests via les agents domaine</td><td>—</td></tr>
+              <tr><td></td><td><code>pr</code> → /pr</td><td>adv</td><td>Ouvre la PR (Conventional Commits, lie l'issue)</td><td>—</td></tr>
+              <tr><td><strong>Verify</strong></td><td><code>ci-watch</code> → /ci-watch</td><td>adv</td><td>Dashboard CI live, dump des logs en cas d'échec</td><td>pas de PR</td></tr>
+              <tr><td></td><td><code>validate</code> → /validate</td><td>adv</td><td>Implémentation vs spec, quality gates</td><td>—</td></tr>
+              <tr><td></td><td><code>review</code> → /code-review</td><td><strong>verdict</strong></td><td>Review multi-domaine → approuve ou demande des changements</td><td>—</td></tr>
+              <tr><td></td><td><code>fix</code> → /fix</td><td><strong>loop</strong></td><td>Applique les constats acceptés (&le;2 itérations, puis abandon)</td><td>déjà appliqué</td></tr>
+              <tr><td><strong>Ship</strong></td><td><code>promote</code> → /promote</td><td>—</td><td>staging → production</td><td>toujours (standalone)</td></tr>
+              <tr><td></td><td><code>cleanup</code> → /cleanup</td><td>adv</td><td>Supprime les worktrees / branches périmés</td><td>rien de périmé</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><p>Avant la première étape de code, <code>/dev</code> amorce silencieusement un worktree git (<code>/setup-worktree</code>) sous <code>.claude/worktrees/{N}-slug</code> sur <code>feat/{N}-slug</code>. Tous les tiers buildent en isolation — jamais sur <code>main</code> ni <code>staging</code>.</p></div>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>De l'issue à la PR fusionnée</h2>
+        <p>Déroulé de bout en bout (F-full ici), la chaîne ressemble à ça. Les gates sont marqués <code>⛓</code> ; les étapes <code>*</code> sont conditionnelles.</p>
+        <div class="formula-box"><pre><code>/dev #42
+  └ triage ─ recheck ─ frame ⛓ ─ analyze ─ spec ⛓ ─ plan ⛓
+                                                       │
+                                   ⏸ compact pause (F-lite / F-full)
+                                                       │
+        implement ─ pr ─ ci-watch ─ validate ─ code-review
+                                                  │
+            APPROVED ─────────────────────────────┼──── CHANGES → fix ⟲ (≤2) → code-review
+                                                   ▼
+                                          merge → staging → cleanup
+                                                   │
+                                       (manuel) /promote → production</code></pre></div>
+        <div class="callout"><p>C'est entièrement reprenable. Tue la session en plein milieu, relance <code>/dev #42</code> — le re-scan lit les artifacts sur disque et reprend exactement là où il en était. Idempotent par construction.</p></div>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>La couche agents</h2>
+        <p><code>/dev</code> orchestre ; il ne touche pas le code lui-même. Des skills comme <code>implement</code> et <code>fix</code> invoquent les <strong>agents</strong> — la seule couche qui écrit. Neuf au total, en trois tiers. Chacun porte un config guard (échoue vite si <code>stack.yml</code> manque), un chemin d'escalade et un seuil de confiance : sous 70–80 % de certitude, il s'arrête et demande plutôt que de deviner.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Tier</th><th>Agents</th><th>Rôle</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Domaine</strong></td><td><code>frontend-dev</code> · <code>backend-dev</code> · <code>devops</code></td><td>Implémentation — UI, services, infrastructure &amp; CI</td></tr>
+              <tr><td><strong>Qualité</strong></td><td><code>tester</code> · <code>fixer</code> · <code>security-auditor</code></td><td>Tests, correctifs de review acceptés, audit OWASP</td></tr>
+              <tr><td><strong>Stratégie</strong></td><td><code>architect</code> · <code>product-lead</code> · <code>doc-writer</code></td><td>ADRs, analyse &amp; specs, documentation</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Lis-le à la source — l'orchestrateur, les sous-skills et les agents vivent tous en accès ouvert.</p>
+        <ul class="feature-list">
+          <li><strong>Le repo</strong> · <a href="https://github.com/Roxabi/roxabi-plugins" target="_blank" rel="noopener">github.com/Roxabi/roxabi-plugins &rarr;</a></li>
+          <li><strong>dev-core</strong> · <a href="https://github.com/Roxabi/roxabi-plugins/blob/staging/plugins/dev-core/README.md" target="_blank" rel="noopener">plugins/dev-core/README.md &rarr;</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>
