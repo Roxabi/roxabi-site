@@ -1,0 +1,90 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">SAAS STARTER · TYPESCRIPT MONOREPO</p>
+    <h1>roxabi-boilerplate</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">A production-ready SaaS starter. A Bun + TurboRepo TypeScript monorepo with auth, multi-tenancy, RBAC, API keys, and email already wired — plus a built-in Claude agent team that runs the full development lifecycle. Skip the plumbing every product rebuilds; start on the thing you actually want to ship.</p>
+    <div class="doc-hero-tags"><span class="tag">TypeScript</span><span class="tag">Bun</span><span class="tag">MIT</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — What it is</a>
+      <a href="#sec-2">2 — The stack</a>
+      <a href="#sec-3">3 — What's already wired</a>
+      <a href="#sec-4">4 — A built-in AI team</a>
+      <a href="#sec-5">5 — Run it</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>What it is</h2>
+        <p>Building a SaaS product from scratch means wiring the same infrastructure every time — auth, multi-tenancy, API keys, permissions, email, CI, documentation — before you write a single line of the thing that makes your product yours. roxabi-boilerplate ships all of that production-ready, so a team starts at its first real feature instead of its tenth piece of boilerplate.</p>
+        <p>It pairs a modern TypeScript monorepo with an integrated AI agent team for the full lifecycle — issue triage, implementation, code review, deployment. The plumbing is done; the workflow comes with it.</p>
+        <div class="callout"><p>The value is everything you don't write. Auth, tenancy, and CI are solved problems — this is them, solved, so your first commit is product.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>The stack</h2>
+        <p>A TurboRepo monorepo orchestrates three apps over shared packages, so only what changed rebuilds. The choices are deliberately current and strict — Bun for speed, Biome for one fast lint-and-format, TypeScript in strict mode throughout.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Layer</th><th>Technology</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Monorepo</strong></td><td>Bun + TurboRepo &middot; task graph + build caching</td></tr>
+              <tr><td><strong>Language</strong></td><td>TypeScript 5.x, strict</td></tr>
+              <tr><td><strong>Frontend</strong></td><td>TanStack Start (SSR) — <code>web</code></td></tr>
+              <tr><td><strong>Backend</strong></td><td>NestJS + Fastify — <code>api</code></td></tr>
+              <tr><td><strong>Docs</strong></td><td>Fumadocs + Next.js — <code>docs</code></td></tr>
+              <tr><td><strong>Tooling</strong></td><td>Biome (lint + format) &middot; Vitest + Playwright &middot; Lefthook</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Shared packages — <code>ui</code>, <code>types</code>, <code>config</code>, <code>email</code> — are consumed across the apps through Bun workspaces, so a contract or a component is defined once and reused everywhere.</p>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>What's already wired</h2>
+        <p>The infrastructure most SaaS products need on day one, present and tested before you start.</p>
+        <ul class="feature-list">
+          <li><strong>Passwordless auth</strong> — magic-link email via better-auth, secure server-side sessions.</li>
+          <li><strong>Multi-tenancy</strong> — organizations you invite into, switch between, and manage.</li>
+          <li><strong>RBAC</strong> — role-based access control scoped per organization.</li>
+          <li><strong>API keys</strong> — per-org issuance and revocation.</li>
+          <li><strong>Email</strong> — templated, in its own shared package.</li>
+          <li><strong>Quality gates</strong> — Lefthook hooks (commit-msg, pre-commit, pre-push) and semantic release: Conventional Commits → changelog + tags.</li>
+        </ul>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>A built-in AI team</h2>
+        <p>The boilerplate ships with a Claude agent team configured for the whole dev lifecycle — the same <a href="/projects/roxabi-plugins/">roxabi-plugins</a> workflow the rest of the portfolio runs on. An issue goes from triage through implementation, review, and merge along a defined path, with the git hooks and CI as the enforcement.</p>
+        <div class="formula-box"><pre><code>GitHub Issue → Branch → Implement → PR → Review → Merge</code></pre></div>
+        <p>It is not a bolt-on. The agents, the standards docs they read, and the pipeline they follow are part of the repo — clone it and the workflow is already there.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Run it</h2>
+        <p>Requirements: Node ≥&nbsp;24, Bun 1.3.9+, and Docker for the database. Install brings the git hooks with it; one command brings up every app.</p>
+        <div class="formula-box"><pre><code>bun install
+bun run db:up &amp;&amp; bun run db:migrate &amp;&amp; bun run db:seed
+bun run dev          # web :3000 · api :4000 · email :3001</code></pre></div>
+        <p>Apps, shared packages, the docs site, and the full standards library are all in the open.</p>
+        <ul class="feature-list">
+          <li><strong>The repo</strong> &middot; <a href="https://github.com/Roxabi/roxabi-boilerplate" target="_blank" rel="noopener">github.com/Roxabi/roxabi-boilerplate &rarr;</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

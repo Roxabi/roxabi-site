@@ -333,6 +333,37 @@ repo          = "https://github.com/Roxabi/roxabi-forge"
   software_desc = "Plugin Claude Code pour artefacts visuels HTML — diagrammes, galeries, decks, guides et présentations via huit skills, produisant des fichiers autonomes à la charte Roxabi, déployables sur Cloudflare Pages en une commande."
 
 [[page]]
+id               = "proj-roxabi-boilerplate"
+path             = "projects/roxabi-boilerplate/"
+body             = "proj-roxabi-boilerplate"
+og_type          = "article"
+footer           = "full"
+shader           = false
+active           = "projects"
+jsonld           = "breadcrumb+software"
+ancestors        = ["home", "projects"]
+changefreq       = "monthly"
+priority         = "0.6"
+software_name    = "roxabi-boilerplate"
+repo             = "https://github.com/Roxabi/roxabi-boilerplate"
+language         = "TypeScript"
+software_license = "https://opensource.org/license/MIT"
+  [page.en]
+  title         = "roxabi-boilerplate — Roxabi"
+  desc          = "roxabi-boilerplate is a production-ready SaaS starter — a Bun + TurboRepo monorepo with auth, multi-tenancy, RBAC, API keys and email already wired, plus a built-in Claude agent team for the full dev lifecycle. Skip the plumbing, build the product."
+  og_title      = "roxabi-boilerplate — Roxabi"
+  og_desc       = "A production-ready SaaS starter: Bun + TurboRepo monorepo with auth, multi-tenancy, RBAC and email wired, plus a built-in Claude agent team for the dev lifecycle."
+  crumb         = "roxabi-boilerplate"
+  software_desc = "Production-ready SaaS boilerplate — a Bun + TurboRepo TypeScript monorepo (TanStack Start web, NestJS + Fastify API, Fumadocs) with auth, multi-tenancy, RBAC, API keys and email wired, plus an integrated Claude agent team."
+  [page.fr]
+  title         = "roxabi-boilerplate — Roxabi"
+  desc          = "roxabi-boilerplate est un starter SaaS prêt pour la production — un monorepo Bun + TurboRepo avec auth, multi-tenancy, RBAC, clés d'API et email déjà câblés, plus une équipe d'agents Claude intégrée pour tout le cycle de dev. Saute la plomberie, construis le produit."
+  og_title      = "roxabi-boilerplate — Roxabi"
+  og_desc       = "Un starter SaaS prêt pour la production : monorepo Bun + TurboRepo avec auth, multi-tenancy, RBAC et email câblés, plus une équipe d'agents Claude pour le cycle de dev."
+  crumb         = "roxabi-boilerplate"
+  software_desc = "Boilerplate SaaS prêt pour la production — un monorepo TypeScript Bun + TurboRepo (web TanStack Start, API NestJS + Fastify, Fumadocs) avec auth, multi-tenancy, RBAC, clés d'API et email câblés, plus une équipe d'agents Claude intégrée."
+
+[[page]]
 id          = "documentation"
 path        = "documentation/"
 body        = "documentation"
