@@ -41,22 +41,31 @@
 <section id="projects">
   <div class="wrap">
     <h2 data-reveal>Des primitives à forker dès aujourd'hui</h2>
-    <p class="lead" data-reveal style="max-width:620px;margin-top:var(--s-md)">Chacune fonctionne seule. Ensemble, elles donnent à un développeur solo une fondation full-stack. D'autres arrivent ici à mesure qu'elles s'ouvrent.</p>
+    <p class="lead" data-reveal style="max-width:620px;margin-top:var(--s-md)">Chacune fonctionne seule. Ensemble, elles donnent à un développeur solo une fondation full-stack. Un aperçu ci-dessous — le portfolio complet est à un clic.</p>
     <div class="grid grid-2" style="margin-top:var(--s-xl)">
-      <a class="card proj-card" href="https://github.com/Roxabi/roxabi-factory" rel="noopener" data-reveal>
+      <a class="card proj-card" href="/fr/projects/roxabi-factory/" data-reveal>
         <div class="top"><h3>roxabi-factory</h3><span class="tag">En construction</span></div>
-        <p>Une usine d'agents et de workers. Auto-hébergeable — forke ce qu'il te faut, fais-la tourner sur tes propres machines.</p>
-        <p class="portfolio-note" style="margin-top:var(--s-md)">Voir sur GitHub <span class="arrow">→</span></p>
+        <p>Un moteur d'agents auto-hébergeable. Hub-and-spoke sur un bus NATS, pools d'agents par scope, une flotte de workers qui se branchent sur le fil.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">Comment ça marche <span class="arrow">→</span></p>
       </a>
-      <div class="card proj-card roadmap" data-reveal>
-        <div class="top"><h3>Bientôt disponibles</h3><span class="tag">En ouverture</span></div>
-        <ul class="roadmap-list">
-          <li><span class="mono">voiceCLI</span><span class="mono-note">TTS · STT</span></li>
-          <li><span class="mono">llmCLI</span><span class="mono-note">routage LLM</span></li>
-          <li><span class="mono">imageCLI</span><span class="mono-note">génération d'images</span></li>
-          <li><span class="mono">cortex</span><span class="mono-note">mémoire</span></li>
-        </ul>
-      </div>
+      <a class="card proj-card" href="/fr/projects/voicecli/" data-reveal>
+        <div class="top"><h3>voiceCLI</h3><span class="tag">Open source</span></div>
+        <p>Une CLI locale pour la voix — TTS et STT. Un script Markdown pilote chaque moteur, avec un satellite NATS pour la voix multi-hôtes.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">Comment ça marche <span class="arrow">→</span></p>
+      </a>
+      <a class="card proj-card" href="/fr/projects/roxabi-plugins/" data-reveal>
+        <div class="top"><h3>roxabi-plugins</h3><span class="tag">Open source</span></div>
+        <p>Des plugins Claude Code réutilisables. <code>dev-core</code> transforme une commande en tout le cycle de dev — cadrer, spécifier, planifier, implémenter, relire, livrer.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">Comment ça marche <span class="arrow">→</span></p>
+      </a>
+      <a class="card proj-card" href="/fr/projects/roxabi-boilerplate/" data-reveal>
+        <div class="top"><h3>roxabi-boilerplate</h3><span class="tag">Open source</span></div>
+        <p>Un starter SaaS prêt pour la production. Monorepo Bun + TurboRepo avec auth, multi-tenancy et RBAC câblés — plus une équipe d'agents Claude intégrée.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">Comment ça marche <span class="arrow">→</span></p>
+      </a>
+    </div>
+    <div class="hero-cta" data-reveal style="margin-top:var(--s-xl);justify-content:flex-start">
+      <a class="btn btn-ghost" href="/fr/projects/">Voir les 7 primitives →</a>
     </div>
   </div>
 </section>
