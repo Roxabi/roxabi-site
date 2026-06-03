@@ -251,6 +251,22 @@ def doc_footer_nav(lang: str, p: dict) -> str:
             f'</nav>')
 
 
+def doc_meta(lang: str, p: dict) -> str:
+    """Version + last-updated label for a documentation article, injected into the
+    doc hero (reuses the `.doc-hero .meta` style). Both values are lang-agnostic
+    data in site.toml; only the field labels are localized. Empty when neither set."""
+    L = SITE["lang"][lang]
+    ver, upd = p.get("version"), p.get("updated")
+    if not ver and not upd:
+        return ""
+    parts = []
+    if ver:
+        parts.append(f'{L["doc_version"]}&nbsp;{ver}')
+    if upd:
+        parts.append(f'{L["doc_updated"]} <time datetime="{upd}">{upd}</time>')
+    return '<p class="meta">' + " · ".join(parts) + "</p>"
+
+
 # ── Page render ───────────────────────────────────────────────────────────────
 def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None:
     base, github, org_name = SITE["base"], SITE["github"], SITE["org_name"]
@@ -304,6 +320,14 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
         body = body.replace("{{doc_filter}}", doc_filter(lang))
     if "{{doc_count}}" in body:
         body = body.replace("{{doc_count}}", str(len(doc_list())))
+    # Version/last-updated label: inject into the doc hero just after the tag chips
+    # (anchored on the still-untouched {{doc_tags}} marker). Derived from site.toml,
+    # never copy-pasted into bodies.
+    if p.get("collection") == "documentation" and p.get("tags"):
+        meta = doc_meta(lang, p)
+        if meta:
+            anchor = '<div class="doc-hero-tags">{{doc_tags}}</div>'
+            body = body.replace(anchor, anchor + "\n    " + meta, 1)
     if "{{doc_tags}}" in body:
         body = body.replace("{{doc_tags}}", tag_pills(p.get("tags", []), lang))
     if p.get("collection") == "documentation" and p.get("tags"):
