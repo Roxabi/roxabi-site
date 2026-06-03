@@ -41,32 +41,40 @@
       <div class="titre" id="sec-3">
         <span class="label">03</span>
         <h2>Un worker n'est pas un outil</h2>
-        <p>La décision la plus clarifiante du design. Le mot &laquo;&nbsp;outil&nbsp;&raquo; avait dérivé à travers quatre espaces de design parallèles ; voici la ligne qui les résout.</p>
-        <p>Un <strong>worker</strong> est un service permanent sur le bus. Un <strong>outil</strong> est une surface d'invocation visible par le modèle de langage. Ce ne sont pas la même chose, et un worker n'est pas un paquet d'outils — <em>un worker est un service qui expose des outils.</em> Un worker en expose plusieurs.</p>
-        <p>Le worker image expose <code>image.generate</code> ; le worker voix expose <code>voice.tts</code> et <code>voice.stt</code>. Pour la boucle de raisonnement de l'agent, un <code>image.generate</code> distant et un <code>bash</code> intégré sont identiques — même forme, même type de résultat. La différence de transport est invisible.</p>
+        <p>La décision la plus clarifiante du design. Les mots &laquo;&nbsp;outil&nbsp;&raquo; et &laquo;&nbsp;worker&nbsp;&raquo; avaient dérivé à travers quatre espaces de design parallèles ; voici la ligne qui les résout.</p>
+        <p>Deux rôles, tenus séparés. Un <strong>provider</strong> est le service qui <em>porte</em> un outil — et quand c'est un processus auto-hébergé qu'on fait tourner sur le bus avec un heartbeat, c'est un <strong>satellite</strong>. Un provider expose plusieurs outils : le satellite image expose <code>image.generate</code>, <code>image.list_engines</code>, <code>image.cancel</code>. Un <strong>worker</strong> est l'autre bout — une instance de calcul qui <em>consomme</em> des outils pour exécuter un job. Un worker n'est pas un outil, ni un provider ; c'est ce qui fait le travail.</p>
+        <p>Et un worker n'improvise pas. Il fait tourner un <strong>workerEngine</strong> — un pipeline codé, une séquence déterministe — qui appelle trois sortes d'étapes : le <strong>harness</strong> (un tour agentique pur, où le modèle décide et où ses outils du tour s'exécutent, sans aucune logique de workflow propre), les outils, et du code interne simple. Le harness est un <em>appelé</em> du moteur, pas une de ses saveurs — de l'agentique là où l'on veut une décision, du code là où l'on veut une garantie.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>Provider</strong> — le service qui porte un outil. Indépendant du transport ; un provider, plusieurs outils.</li>
+          <li><strong>Satellite</strong> — un provider déployé en processus auto-hébergé sur le bus, avec un heartbeat. Tout satellite est un provider ; tout provider n'est pas un satellite.</li>
+          <li><strong>Worker</strong> — une instance de calcul qui consomme des outils pour exécuter un job. Ni outil, ni provider.</li>
+          <li><strong>workerEngine</strong> — le pipeline codé que fait tourner un worker ; orchestre harness, outils et code interne.</li>
+          <li><strong>Harness</strong> — un tour agentique pur ; le modèle décide. Une étape que le moteur appelle, jamais le pipeline lui-même.</li>
+        </ul>
+        <p>Pour la boucle de raisonnement du modèle, un <code>image.generate</code> distant et un <code>bash</code> intégré sont identiques — même forme, même type de résultat. La différence de transport est invisible.</p>
         <figure class="doc-figure">
-          <svg viewBox="0 0 760 360" role="img" aria-label="Un worker expose plusieurs outils, enregistrés une fois et consommés à l'identique par le harness et la flotte de workers, aux côtés d'outils intégrés — la différence de transport est invisible pour le modèle." style="width:100%;height:auto">
+          <svg viewBox="0 0 760 360" role="img" aria-label="Un provider — un satellite quand il est auto-hébergé sur le bus — expose plusieurs outils, enregistrés une fois et consommés à l'identique par le harness et les workers, aux côtés d'outils intégrés — la différence de transport est invisible pour le modèle." style="width:100%;height:auto">
             <defs><marker id="ft1-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker></defs>
             <rect x="20" y="30" width="250" height="212" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
-            <text x="145" y="58" text-anchor="middle" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">Worker Image</text>
-            <text x="145" y="74" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">service permanent · une identité</text>
+            <text x="145" y="58" text-anchor="middle" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">Satellite Image</text>
+            <text x="145" y="74" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">un provider · heartbeat · une identité</text>
             <rect x="44" y="92" width="202" height="36" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.3"/>
             <text x="145" y="115" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">image.generate</text>
             <rect x="44" y="136" width="202" height="36" rx="6" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.2"/>
             <text x="145" y="159" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">image.list_engines</text>
             <rect x="44" y="180" width="202" height="36" rx="6" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.2"/>
             <text x="145" y="203" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">image.cancel</text>
-            <text x="145" y="232" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--text-dim)">1 worker → N outils</text>
+            <text x="145" y="232" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--text-dim)">1 provider → N outils</text>
             <rect x="330" y="98" width="118" height="60" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
             <text x="389" y="124" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Registre</text>
             <text x="389" y="142" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">découvert par heartbeat</text>
             <line x1="270" y1="128" x2="328" y2="128" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft1-arr)"/>
             <rect x="520" y="44" width="220" height="58" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
             <text x="630" y="70" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Harness</text>
-            <text x="630" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">boucle de tour agentique</text>
+            <text x="630" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">tour agentique pur</text>
             <rect x="520" y="156" width="220" height="58" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
-            <text x="630" y="182" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Flotte de workers</text>
-            <text x="630" y="200" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">boucle de jobs</text>
+            <text x="630" y="182" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Worker</text>
+            <text x="630" y="200" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">fait tourner un workerEngine</text>
             <path d="M448,118 C484,104 490,80 518,74" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft1-arr)"/>
             <path d="M448,140 C484,156 490,178 518,184" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft1-arr)"/>
             <text x="486" y="132" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-dim)">consomment</text>
@@ -74,7 +82,7 @@
             <text x="380" y="318" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">pour le modèle :&#160;&#160;<tspan font-weight="700">bash</tspan> (intégré)&#160;&#160;&#8801;&#160;&#160;<tspan font-weight="700">image.generate</tspan> (distant)</text>
             <text x="380" y="334" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-dim)">le transport est invisible — une forme, un type de résultat</text>
           </svg>
-          <figcaption>Un worker est un service qui expose des outils. Enregistré une fois, chaque outil est consommé à l'identique par le harness et la flotte de workers — un appel distant et un intégré sont indiscernables pour le modèle.</figcaption>
+          <figcaption>Un provider expose des outils — un satellite quand il est auto-hébergé sur le bus. Enregistré une fois, chaque outil est consommé à l'identique par le harness et les workers — un appel distant et un intégré sont indiscernables pour le modèle.</figcaption>
         </figure>
       </div>
 
@@ -127,6 +135,12 @@
   plomberie github      expose un outil intégré   → reste plomberie
   substrat d'inférence  expose un appel generate  → reste plomberie</code></pre></div>
         <p>Un domaine de plomberie peut <em>exposer</em> un outil sans <em>devenir</em> de nature outil. Exposer un outil ne promeut pas le domaine wire. C'est cette règle qui garde la séparation honnête, au lieu de laisser tout dériver vers &laquo;&nbsp;outil&nbsp;&raquo;.</p>
+        <p>Une seconde règle trace la ligne <em>à l'intérieur</em> de &laquo;&nbsp;provider&nbsp;&raquo; — car tout provider ne tourne pas sur le bus :</p>
+        <div class="formula-box"><pre><code>provider  ⊋  satellite
+
+  processus auto-hébergé sur le bus    →  satellite  (heartbeat — voix, image, notre adapter Postiz)
+  une API cloud / un CLI one-shot      →  provider   (pas de heartbeat — X, GitHub, un outil bash)</code></pre></div>
+        <p>Un provider n'est un <strong>satellite</strong> que lorsqu'il est quelque chose qu'on fait tourner sur le bus et qui émet un heartbeat ; une API cloud qu'on ne fait qu'appeler, ou un outil en ligne de commande one-shot, est un provider sans l'empreinte d'un satellite. Et un piège à éviter : un <strong>backing service</strong> auto-hébergé — une application entière comme notre fork Postiz (web, base de données, Redis) — est de l'infrastructure, comme Postgres. Un conteneur qui tourne n'est pas un heartbeat ; le heartbeat vient de <em>notre</em> adapter placé devant. Backing service, provider, outil : trois couches, jamais confondues.</p>
         <p>Le gain, c'est un plan adressable. Les sujets de nature outil portent un marqueur <code>tool.</code> — <code>…tool.voice.tts…</code> — pour que le côté consommateur s'abonne au plan d'outils entier d'un coup, et découvre ce qui est disponible via un registre unique.</p>
         <div class="callout"><p>L'isolation est le but. Dès que &laquo;&nbsp;les outils&nbsp;&raquo; forment un plan, le harness et les workers les adressent et les découvrent comme un tout.</p></div>
       </div>
@@ -140,7 +154,7 @@
           <li><strong>Tranche fine</strong> — un signal → un post → approbation → publication ; mesurer le reach. La clé de voûte.</li>
           <li><strong>Généraliser</strong> — le harness et le job-watcher, sur ce que la tranche a prouvé nécessaire.</li>
           <li><strong>Outils</strong> — le registre partagé, le SDK d'outils, les satellites migrés sur le modèle à cinq couches.</li>
-          <li><strong>Harness &amp; workers</strong> — un worker de tour sans état et une flotte de workers de jobs, consommant tous deux le plan d'outils.</li>
+          <li><strong>Harness &amp; workers</strong> — le harness agentique pur et une flotte de workers faisant tourner des workerEngines, consommant tous deux le plan d'outils.</li>
         </ul>
         <figure class="doc-figure">
           <svg viewBox="0 0 760 250" role="img" aria-label="La roadmap en cinq étapes séquentielles : Substrat en production, puis la Tranche fine comme clé de voûte actuelle, puis Généraliser, Outils, et Harness plus Workers." style="width:100%;height:auto">
