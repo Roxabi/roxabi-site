@@ -1,6 +1,6 @@
 # Information Architecture — roxabi.dev
 
-Derived from Brand Book v1.5 (`~/.roxabi/forge/roxabi-site/brand/BRAND-BOOK.md`).
+Derived from Brand Book v1.5 (`brand/BRAND-BOOK.md`).
 Status: **proposed** — 2026-06-01.
 
 ## Principle
@@ -134,7 +134,7 @@ One idea per sentence in hero + headings. If a word can be cut, cut it.
   (isometric cube, slate faces, amber edges, glowing amber core).
   SVG at `assets/logo/foundation-block.svg` (+ `-16.svg` favicon variant).
   First SVG draft reads too wireframe → needs a refinement pass to match the
-  solid-block character of the reference PNG
-  (`~/.roxabi/forge/roxabi-site/brand/concepts/17-foundation-block-amber-core.png`).
+  solid-block character of the canonical logo `brand/logo/foundation-block.svg`
+  (concept render archived at `~/.roxabi/roxabi-site/concept/17-foundation-block-amber-core.png`).
 - **Domain** — ✅ **`roxabi.dev` live** (Cloudflare Pages, 2026-06-02). Apex only — `www` redirect not set (low-priority, deferred).
 - **Docs hosting** — external links at launch; hub = later ADR.

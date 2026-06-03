@@ -26,7 +26,7 @@ home."** The site itself should embody that: a visitor who views source should
 see exactly what runs. A build step or a framework runtime contradicts the
 message it sells.
 
-Design tokens are already locked (`~/.roxabi/forge/roxabi-site/brand/DESIGN.md`,
+Design tokens are already locked (`brand/DESIGN.md`,
 Brand Book §6): one palette, one accent, Inter + JetBrains Mono.
 
 ## Decision
@@ -104,7 +104,8 @@ no backend, no build step.**
   Canonical base assumed `https://roxabi.dev`.
 
 ## References
-- Brand Book §6 — color, typography, logo: `~/.roxabi/forge/roxabi-site/brand/BRAND-BOOK.md`
-- Design tokens: `~/.roxabi/forge/roxabi-site/brand/DESIGN.md`
-- Prototypes: `~/.roxabi/forge/roxabi-site/brand/roxabi-landing.html`, `roxabi-direction-d-final.html`
+- Brand Book §6 — color, typography, logo: `brand/BRAND-BOOK.md`
+- Design tokens: `brand/DESIGN.md`
+- Logo (canonical): `brand/logo/foundation-block.svg`
+- Prototypes (archived, not in repo): `~/.roxabi/roxabi-site/exploration/{roxabi-landing,roxabi-direction-d-final}.html` (cf. ADR-0003)
 - Sibling pattern: `roxabi-1page` (Cloudflare Pages static)
