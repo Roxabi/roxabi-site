@@ -1,0 +1,94 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">LLM SERVING · LOCAL-FIRST</p>
+    <h1>llmCLI</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">One CLI for serving local language models on your own GPU. <code>llama.cpp</code> and GGUF backends sit behind an OpenAI-compatible HTTP endpoint, hot-swappable from a TOML catalog, with a shared LiteLLM proxy any tool on your LAN can call. The sibling of voiceCLI and imageCLI — same shape, the inference layer.</p>
+    <div class="doc-hero-tags"><span class="tag">Python</span><span class="tag">llama.cpp</span><span class="tag">AGPL-3.0</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — What it is</a>
+      <a href="#sec-2">2 — A catalog of models</a>
+      <a href="#sec-3">3 — One endpoint, every caller</a>
+      <a href="#sec-4">4 — Proxy &amp; worker</a>
+      <a href="#sec-5">5 — Run it</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>What it is</h2>
+        <p>Serving a local model usually means babysitting a server process — picking ports, juggling VRAM, restarting to change weights. llmCLI wraps that into a single command: pull a GGUF, serve it on an OpenAI-compatible endpoint, hot-swap to another without touching the callers. Everything runs on hardware you own — no cloud keys, no per-token billing, no model that vanishes when a provider deprecates it.</p>
+        <p>It is the third sibling in the local-first CLI family. voiceCLI does speech, imageCLI does pixels, llmCLI does tokens — the same operational shape applied to the inference layer that the others lean on.</p>
+        <div class="callout"><p>The durable contract is the <strong>OpenAI endpoint</strong>, not the engine. Callers speak one API; the model behind it swaps freely.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>A catalog of models</h2>
+        <p>Models are config, not code. The host settings live in one TOML; each model is a single flat file in a <code>models/</code> directory — name the file, name the model. Drop a new one in and <code>llmcli list</code> picks it up immediately, no restart.</p>
+        <div class="formula-box"><pre><code># ~/.roxabi/llmcli/models/qwen3-14b-q5.toml
+engine   = "llamacpp"
+repo     = "Qwen/Qwen3-14B-GGUF"
+file     = "qwen3-14b-q5_k_m.gguf"
+port     = 8092
+vram_gib = 11
+flags    = ["-ngl", "99", "-c", "8192", "-fa", "on", "--jinja"]</code></pre></div>
+        <p>The catalog lets each host carry what its card can hold — a 16&nbsp;GB workstation pins the heavy models, a 10&nbsp;GB always-on box keeps small ones resident. <code>llmcli swap</code> hot-swaps the running engine; <code>llmcli status</code> reports engines, ports, VRAM, and uptime at a glance.</p>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>One endpoint, every caller</h2>
+        <p>The server exposes the OpenAI chat-completions API, so anything that speaks that protocol works unchanged — your own scripts, an SDK, an agent. The point is uniformity: a local Qwen and a hosted model are the same call shape to whatever sits in front.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Command</th><th>Does</th></tr></thead>
+            <tbody>
+              <tr><td><code>llmcli pull &lt;name&gt;</code></td><td>Download a model into the shared HF hub cache.</td></tr>
+              <tr><td><code>llmcli serve [name]</code></td><td>Start the daemon and serve a model.</td></tr>
+              <tr><td><code>llmcli swap &lt;name&gt;</code></td><td>Hot-swap the running model in place.</td></tr>
+              <tr><td><code>llmcli status</code> &middot; <code>list</code></td><td>Engines, ports, VRAM, uptime · catalog + running state.</td></tr>
+              <tr><td><code>llmcli chat &lt;name&gt; "…"</code></td><td>One-shot call, bypassing the proxy.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Proxy &amp; worker</h2>
+        <p>Two deployment surfaces ship as Podman Quadlet units. The <strong>LiteLLM proxy</strong> runs on every host and gives the whole LAN one address — Claude Code, agents, and tools all route through it, mixing local engines with cloud models behind a single config. The <strong>NATS worker</strong> runs only where a GPU lives, exposing local inference on the message bus.</p>
+        <div class="formula-box"><pre><code>llama-server :PORT   ◄── llmcli serve (catalog-driven hot-swap)
+      ▲
+      │ OpenAI API
+      ├── agents          (LiteLLM library, per-agent config)
+      └── litellm proxy   ◄── claude-code, LAN tools</code></pre></div>
+        <p>That is how llmCLI plugs into <a href="/projects/roxabi-factory/">roxabi-factory</a>: the worker registers on the bus, so any agent can reach a local model without knowing which machine holds the GPU.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Run it</h2>
+        <p>Requirements: Python 3.12, a CUDA GPU for local serving, and the <a href="https://docs.astral.sh/uv/" rel="noopener">uv</a> package manager. The proxy alone runs anywhere; the engine wants the GPU.</p>
+        <div class="formula-box"><pre><code>uv sync
+cp models/*.toml ~/.roxabi/llmcli/models/   # seed the catalog
+llmcli pull qwen3_6-35b-a3b-tq3             # fetch a model
+systemctl --user start llmcli               # proxy on :18091
+llmcli status</code></pre></div>
+        <p>Engines, catalog, proxy, and the NATS worker are all in the open.</p>
+        <ul class="feature-list">
+          <li><strong>The repo</strong> &middot; <a href="https://github.com/Roxabi/llmCLI" target="_blank" rel="noopener">github.com/Roxabi/llmCLI &rarr;</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

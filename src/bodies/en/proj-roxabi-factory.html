@@ -1,0 +1,126 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">AGENT ENGINE · SELF-HOSTED</p>
+    <h1>roxabi-factory</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">The agent engine that runs the Roxabi bots — a hexagonal core, hub-and-spoke over a NATS message bus, isolated per-scope agent pools, and a fleet of capability workers. It runs 24/7 on hardware you own and connects your chat platforms to AI agents you control. No cloud lock-in, no subscription, your data stays on your machines.</p>
+    <div class="doc-hero-tags"><span class="tag">Python</span><span class="tag">NATS</span><span class="tag">AGPL-3.0</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — What it is</a>
+      <a href="#sec-2">2 — Hub and spoke</a>
+      <a href="#sec-3">3 — Agents &amp; memory</a>
+      <a href="#sec-4">4 — A fleet of workers</a>
+      <a href="#sec-5">5 — Where it's going</a>
+      <a href="#sec-6">6 — Run it</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>What it is</h2>
+        <p>Most personal AI assistants are cloud-hosted: your data leaves your machine, your conversations sit on someone else's servers, and the service disappears the moment a company pivots. roxabi-factory inverts that. It is an agent engine you run yourself — a home server, an always-on box, anything — wiring your preferred chat platforms to AI agents you own end to end.</p>
+        <p>The shape is deliberate: a <strong>hexagonal core</strong> (ports &amp; adapters) so the domain never depends on any one platform, transport, or model; a <strong>hub-and-spoke topology</strong> so channels, agents, and workers are independent processes that only meet on a bus. Swap a model in TOML, add a channel as an adapter, plug in a worker over the wire — the core does not move.</p>
+        <div class="callout"><p>The durable contracts are the <strong>core and the bus</strong>, not the model or the platform. Everything outside the hexagon is an adapter you can replace.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Hub and spoke</h2>
+        <p>Channel adapters run as separate processes. They normalise an incoming message and publish it over NATS; the <strong>hub</strong> subscribes, routes each message to the right agent by a typed <code>RoutingKey(platform, bot_id, scope_id)</code>, and the agent's reply travels back out over the bus to the adapter that delivers it. Four independent processes in production — hub, Telegram, Discord, worker pool — one process with an embedded bus in development.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 300" role="img" aria-label="Telegram and Discord channel adapters publish inbound messages over a NATS bus to the central hub, which routes them to per-scope agent pools and publishes replies back out to the adapters." style="width:100%;height:auto">
+            <defs><marker id="rf-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker></defs>
+            <!-- channel adapters -->
+            <rect x="20" y="40" width="170" height="58" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="105" y="66" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">factory-telegram</text>
+            <text x="105" y="84" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">aiogram · polling/webhook</text>
+            <rect x="570" y="40" width="170" height="58" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="655" y="66" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">factory-discord</text>
+            <text x="655" y="84" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">discord.py · gateway</text>
+            <!-- hub -->
+            <rect x="290" y="32" width="180" height="74" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="380" y="62" text-anchor="middle" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">factory-hub</text>
+            <text x="380" y="80" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">typed RoutingKey</text>
+            <text x="380" y="94" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">(platform, bot, scope)</text>
+            <!-- bus -->
+            <rect x="20" y="150" width="720" height="40" rx="8" fill="var(--accent)"/>
+            <text x="380" y="175" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent-on)">NATS message bus</text>
+            <!-- agent pools -->
+            <rect x="290" y="228" width="180" height="56" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="380" y="252" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">agent pools</text>
+            <text x="380" y="270" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">one per conversation scope</text>
+            <!-- edges to bus -->
+            <line x1="105" y1="98" x2="105" y2="148" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#rf-arr)"/>
+            <line x1="655" y1="98" x2="655" y2="148" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#rf-arr)"/>
+            <line x1="380" y1="106" x2="380" y2="148" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#rf-arr)"/>
+            <line x1="380" y1="192" x2="380" y2="226" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#rf-arr)"/>
+            <text x="150" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-dim)">inbound</text>
+            <text x="610" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-dim)">outbound</text>
+          </svg>
+          <figcaption>Adapters publish inbound, the hub routes by typed key to a per-scope pool, replies travel back out — every hop is a NATS subject, so each box is an independent, replaceable process.</figcaption>
+        </figure>
+        <p>Routing is concurrent the way conversations are: sequential per scope (one <code>asyncio.Task</code> per chat, thread, or channel), parallel across scopes, with a bounded queue for backpressure. Multiple bots can share a platform, each bound to its own agent.</p>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Agents &amp; memory</h2>
+        <p>An agent is config-driven — persona, voice, model, and passthroughs live in a TOML seed, then in a SQLite store once initialised. Each conversation scope gets its own <strong>isolated pool</strong>, so two chats never share state. Model selection can route by complexity, sending the cheap turns to a small model and the hard ones to a large one.</p>
+        <p>Memory is layered, not a single transcript:</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Level</th><th>What it holds</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Working</strong></td><td>The live turn window, compacted as it fills.</td></tr>
+              <tr><td><strong>Session</strong></td><td>The current conversation.</td></tr>
+              <tr><td><strong>Episodic</strong></td><td>Past conversations, recalled on reference.</td></tr>
+              <tr><td><strong>Semantic</strong></td><td>Durable facts — SQLite FTS5 + embeddings.</td></tr>
+              <tr><td><strong>Procedural</strong></td><td>Learned how-to: the moves that worked.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Session commands close the loop between conversation and knowledge — <code>/vault-add</code>, <code>/explain</code>, <code>/summarize</code>, <code>/search</code> each scrape a source, run it through the model, and write the result back to the vault. A trust level per adapter (owner, trusted, public, blocked) and a prompt-injection guard gate what any given sender can reach.</p>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>A fleet of workers</h2>
+        <p>Capabilities the engine doesn't compile in arrive as <strong>workers</strong> on the bus. A worker is a long-running service that exposes one or more tools; it registers by heartbeat, and to the agent's reasoning loop a remote tool and a built-in look identical — same shape, same result type, the transport invisible underneath.</p>
+        <p>That is exactly how <a href="/projects/voicecli/">voiceCLI</a> plugs in: it runs as a voice worker exposing <code>voice.tts</code> and <code>voice.stt</code>, so the model loads once on a GPU box and any agent in the factory can speak or listen by publishing a request — no GPU on the calling machine. Image generation, LLM routing, and more capability satellites attach the same way.</p>
+        <div class="callout"><p>A worker is a service that exposes tools — not a bundle of tools. One worker, many tools; the bus makes a remote call indistinguishable from a built-in.</p></div>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Where it's going</h2>
+        <p>The substrate — the bus, the typed contracts, the worker pool, the scheduler — already runs in production. The next layer is <strong>jobs</strong>: turning activity into content, posting it, and running the loop around it, human-gated until reach is measured. Value before framework; primitives, not a general machine standing in front of its first unit of work.</p>
+        <p>The full reasoning — why a worker is not a tool, the five layers of tool, the order of the build — is written up on its own.</p>
+        <ul class="feature-list">
+          <li><strong>The roadmap &amp; the choices</strong> &middot; <a href="/documentation/factory-roadmap/">The Roxabi Factory &rarr;</a></li>
+        </ul>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>Run it</h2>
+        <p>Requirements: Python 3.12 and the <a href="https://docs.astral.sh/uv/" rel="noopener">uv</a> package manager. In development a single command runs every process in one with an embedded NATS server; in production the hub, the channel adapters, and the worker pool each run as their own container.</p>
+        <div class="formula-box"><pre><code>uv sync              # install
+factory start        # dev: all processes + embedded NATS, one process
+factory agent init   # seed an agent from its TOML into the store</code></pre></div>
+        <p>The core, the adapters, the transport SDK, and the contract schemas are all in the open.</p>
+        <ul class="feature-list">
+          <li><strong>The repo</strong> &middot; <a href="https://github.com/Roxabi/roxabi-factory" target="_blank" rel="noopener">github.com/Roxabi/roxabi-factory &rarr;</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

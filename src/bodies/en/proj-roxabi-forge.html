@@ -1,0 +1,91 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">CLAUDE CODE PLUGIN · VISUAL ARTIFACTS</p>
+    <h1>roxabi-forge</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">A Claude Code plugin that turns "explain this" into a picture you can ship. Eight skills produce self-contained HTML artifacts — diagrams, galleries, decks, guides, presentations — brand-aware, <code>file://</code>-safe, and deployable to a URL in one command. No Figma, no slide tool, no leaving the terminal.</p>
+    <div class="doc-hero-tags"><span class="tag">Claude Code</span><span class="tag">HTML</span><span class="tag">AGPL-3.0</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — What it is</a>
+      <a href="#sec-2">2 — Eight skills</a>
+      <a href="#sec-3">3 — Self-contained by design</a>
+      <a href="#sec-4">4 — Ship it to a URL</a>
+      <a href="#sec-5">5 — Run it</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>What it is</h2>
+        <p>Language models write a lot of words. Sometimes you need a <strong>picture</strong>: an architecture diagram, a side-by-side comparison, a pitch deck, a tabbed guide, a one-pager that lives at a URL. roxabi-forge turns "explain this" into a self-contained HTML artifact you can scroll, share, and ship — triggered from a skill, written to a file, no other tool in the loop.</p>
+        <p>It is a sibling to <a href="/projects/roxabi-plugins/">roxabi-plugins</a>: where <code>dev-core</code> drives the dev lifecycle, forge drives the <em>visual</em> output. A brand-aware, manifest-indexed HTML pipeline for Claude Code users who want publication-grade visuals without leaving the terminal.</p>
+        <div class="callout"><p>The artifact is one file. No build step, no server, no external assets — open it anywhere, including straight off disk.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Eight skills</h2>
+        <p>Each skill is a trigger phrase that produces one kind of artifact. Pick the shape that fits the thing you're explaining.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Skill</th><th>Produces</th></tr></thead>
+            <tbody>
+              <tr><td><code>forge-chart</code></td><td>A single-file native diagram — hub-and-spoke, gantt, ER, sequence, data charts.</td></tr>
+              <tr><td><code>forge-slides</code></td><td>A magazine-quality scroll-snap deck, keyboard- and touch-navigated.</td></tr>
+              <tr><td><code>forge-presentation</code></td><td>A long-form scroll presentation — hero, numbered sections, reveals.</td></tr>
+              <tr><td><code>forge-guide</code></td><td>A split-file multi-tab document — user guide, architecture, recap.</td></tr>
+              <tr><td><code>forge-gallery</code></td><td>A manifest-indexed image or audio gallery — pivot, filter, lightbox.</td></tr>
+              <tr><td><code>forge-epic</code></td><td>An issue-linked analysis — scope, dependency graph, acceptance criteria.</td></tr>
+              <tr><td><code>forge-md</code></td><td>Renders existing Markdown to themed HTML — single-file or tabbed.</td></tr>
+              <tr><td><code>forge-init</code></td><td>Initializes the runtime under <code>~/.roxabi/forge/</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Self-contained by design</h2>
+        <p>Three properties hold across every skill. They are what make a forge artifact something you can hand to anyone, anywhere.</p>
+        <ul class="feature-list">
+          <li><strong>Brand-aware</strong> — outputs carry the Roxabi design tokens by default; consistent type, colour, and spacing without restyling each one.</li>
+          <li><strong>Self-contained</strong> — CSS, scripts, and data inline into one file. Nothing to host, nothing to break later.</li>
+          <li><strong>file://-safe</strong> — every artifact opens straight off disk in a browser, no server required to preview it.</li>
+        </ul>
+        <p>Outputs land in <code>~/.roxabi/forge/&lt;project&gt;/visuals/</code>, indexed by a manifest so the gallery and the runtime can find and group them.</p>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Ship it to a URL</h2>
+        <p>An artifact that opens off disk also publishes unchanged. One command pushes the <code>visuals/</code> tree to Cloudflare Pages — the same file you previewed becomes a link you can send. The Roxabi instance lives at <a href="https://forge.roxabi.com" rel="noopener">forge.roxabi.com</a>.</p>
+        <div class="formula-box"><pre><code>make forge deploy     # push visuals/ → Cloudflare Pages</code></pre></div>
+        <p>Because the output is static and self-contained, there is no runtime to operate — the deploy is a file copy, and the URL is just where the file now lives.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Run it</h2>
+        <p>Forge installs as a Claude Code plugin from its marketplace. Add it, install, initialize the runtime once, then trigger a skill by describing what you want.</p>
+        <div class="formula-box"><pre><code>claude plugin marketplace add Roxabi/roxabi-forge
+claude plugin install forge
+"init forge"                              # one-time runtime setup
+"draw the architecture of this repo"      # → forge-chart
+"create deck from #42"                    # → forge-slides</code></pre></div>
+        <p>The skills, templates, and runtime are all in the open.</p>
+        <ul class="feature-list">
+          <li><strong>The repo</strong> &middot; <a href="https://github.com/Roxabi/roxabi-forge" target="_blank" rel="noopener">github.com/Roxabi/roxabi-forge &rarr;</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

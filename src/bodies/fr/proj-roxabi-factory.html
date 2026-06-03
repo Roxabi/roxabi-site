@@ -1,0 +1,126 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">MOTEUR D'AGENTS · AUTO-HÉBERGÉ</p>
+    <h1>roxabi-factory</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Le moteur d'agents qui fait tourner les bots Roxabi — un cœur hexagonal, hub-and-spoke sur un bus de messages NATS, des pools d'agents isolés par scope, et une flotte de workers de capacité. Il tourne 24/7 sur un matériel que tu possèdes et relie tes plateformes de chat à des agents IA que tu maîtrises. Aucun verrouillage cloud, aucun abonnement, tes données restent sur tes machines.</p>
+    <div class="doc-hero-tags"><span class="tag">Python</span><span class="tag">NATS</span><span class="tag">AGPL-3.0</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — Ce que c'est</a>
+      <a href="#sec-2">2 — Hub and spoke</a>
+      <a href="#sec-3">3 — Agents &amp; mémoire</a>
+      <a href="#sec-4">4 — Une flotte de workers</a>
+      <a href="#sec-5">5 — Où ça va</a>
+      <a href="#sec-6">6 — Lance-le</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Ce que c'est</h2>
+        <p>La plupart des assistants IA personnels sont hébergés dans le cloud : tes données quittent ta machine, tes conversations dorment sur les serveurs d'un autre, et le service disparaît dès qu'une entreprise pivote. roxabi-factory inverse ça. C'est un moteur d'agents que tu exécutes toi-même — un serveur maison, une machine toujours allumée, n'importe quoi — qui câble tes plateformes de chat préférées à des agents IA que tu possèdes de bout en bout.</p>
+        <p>La forme est délibérée : un <strong>cœur hexagonal</strong> (ports &amp; adaptateurs) pour que le domaine ne dépende jamais d'une plateforme, d'un transport ou d'un modèle ; une <strong>topologie hub-and-spoke</strong> pour que canaux, agents et workers soient des processus indépendants qui ne se rencontrent que sur un bus. Change de modèle en TOML, ajoute un canal comme adaptateur, branche un worker sur le fil — le cœur ne bouge pas.</p>
+        <div class="callout"><p>Les contrats durables, ce sont le <strong>cœur et le bus</strong>, pas le modèle ni la plateforme. Tout ce qui est hors de l'hexagone est un adaptateur remplaçable.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Hub and spoke</h2>
+        <p>Les adaptateurs de canaux tournent comme des processus séparés. Ils normalisent un message entrant et le publient sur NATS ; le <strong>hub</strong> souscrit, route chaque message vers le bon agent via une <code>RoutingKey(platform, bot_id, scope_id)</code> typée, et la réponse de l'agent repart sur le bus vers l'adaptateur qui la délivre. Quatre processus indépendants en production — hub, Telegram, Discord, pool de workers — un seul processus avec bus embarqué en développement.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 300" role="img" aria-label="Les adaptateurs Telegram et Discord publient les messages entrants sur un bus NATS vers le hub central, qui les route vers des pools d'agents par scope et republie les réponses vers les adaptateurs." style="width:100%;height:auto">
+            <defs><marker id="rf-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker></defs>
+            <!-- channel adapters -->
+            <rect x="20" y="40" width="170" height="58" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="105" y="66" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">factory-telegram</text>
+            <text x="105" y="84" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">aiogram · polling/webhook</text>
+            <rect x="570" y="40" width="170" height="58" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="655" y="66" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">factory-discord</text>
+            <text x="655" y="84" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">discord.py · gateway</text>
+            <!-- hub -->
+            <rect x="290" y="32" width="180" height="74" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="380" y="62" text-anchor="middle" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">factory-hub</text>
+            <text x="380" y="80" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">RoutingKey typée</text>
+            <text x="380" y="94" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">(platform, bot, scope)</text>
+            <!-- bus -->
+            <rect x="20" y="150" width="720" height="40" rx="8" fill="var(--accent)"/>
+            <text x="380" y="175" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent-on)">bus de messages NATS</text>
+            <!-- agent pools -->
+            <rect x="290" y="228" width="180" height="56" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="380" y="252" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">pools d'agents</text>
+            <text x="380" y="270" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">un par scope de conversation</text>
+            <!-- edges to bus -->
+            <line x1="105" y1="98" x2="105" y2="148" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#rf-arr)"/>
+            <line x1="655" y1="98" x2="655" y2="148" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#rf-arr)"/>
+            <line x1="380" y1="106" x2="380" y2="148" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#rf-arr)"/>
+            <line x1="380" y1="192" x2="380" y2="226" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#rf-arr)"/>
+            <text x="150" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-dim)">entrant</text>
+            <text x="610" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-dim)">sortant</text>
+          </svg>
+          <figcaption>Les adaptateurs publient l'entrant, le hub route par clé typée vers un pool par scope, les réponses repartent — chaque saut est un sujet NATS, donc chaque boîte est un processus indépendant et remplaçable.</figcaption>
+        </figure>
+        <p>Le routage est concurrent à l'image des conversations : séquentiel par scope (une <code>asyncio.Task</code> par chat, thread ou canal), parallèle entre scopes, avec une file bornée pour la contre-pression. Plusieurs bots peuvent partager une plateforme, chacun lié à son propre agent.</p>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Agents &amp; mémoire</h2>
+        <p>Un agent est piloté par config — persona, voix, modèle et passthroughs vivent dans un seed TOML, puis dans un store SQLite une fois initialisé. Chaque scope de conversation reçoit son propre <strong>pool isolé</strong>, deux chats ne partagent donc jamais d'état. La sélection de modèle peut router selon la complexité, envoyant les tours simples à un petit modèle et les durs à un grand.</p>
+        <p>La mémoire est en couches, pas une transcription unique :</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Niveau</th><th>Ce qu'il garde</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Working</strong></td><td>La fenêtre de tours en cours, compactée à mesure qu'elle se remplit.</td></tr>
+              <tr><td><strong>Session</strong></td><td>La conversation courante.</td></tr>
+              <tr><td><strong>Épisodique</strong></td><td>Les conversations passées, rappelées à la référence.</td></tr>
+              <tr><td><strong>Sémantique</strong></td><td>Les faits durables — SQLite FTS5 + embeddings.</td></tr>
+              <tr><td><strong>Procédurale</strong></td><td>Le savoir-faire appris : les gestes qui ont marché.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Les commandes de session bouclent la boucle entre conversation et connaissance — <code>/vault-add</code>, <code>/explain</code>, <code>/summarize</code>, <code>/search</code> récupèrent une source, la passent au modèle et réécrivent le résultat dans le vault. Un niveau de confiance par adaptateur (owner, trusted, public, blocked) et un garde anti-injection contrôlent ce que chaque expéditeur peut atteindre.</p>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Une flotte de workers</h2>
+        <p>Les capacités que le moteur ne compile pas en dur arrivent comme des <strong>workers</strong> sur le bus. Un worker est un service longue durée qui expose un ou plusieurs outils ; il s'enregistre par heartbeat, et pour la boucle de raisonnement de l'agent un outil distant et un outil intégré sont identiques — même forme, même type de résultat, le transport invisible en dessous.</p>
+        <p>C'est exactement ainsi que <a href="/fr/projects/voicecli/">voiceCLI</a> se branche : il tourne comme worker voix exposant <code>voice.tts</code> et <code>voice.stt</code>, le modèle se charge donc une fois sur une machine GPU et n'importe quel agent de la factory peut parler ou écouter en publiant une requête — sans GPU sur la machine appelante. Génération d'images, routage LLM et d'autres satellites de capacité s'attachent de la même manière.</p>
+        <div class="callout"><p>Un worker est un service qui expose des outils — pas un paquet d'outils. Un worker, plusieurs outils ; le bus rend un appel distant indiscernable d'un appel intégré.</p></div>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Où ça va</h2>
+        <p>Le substrat — le bus, les contrats typés, le pool de workers, le scheduler — tourne déjà en production. La couche suivante, ce sont les <strong>jobs</strong> : transformer l'activité en contenu, le publier, et faire tourner la boucle autour, sous garde humaine jusqu'à ce que la portée soit mesurée. La valeur avant le framework ; des primitives, pas une machine générale plantée devant sa première unité de travail.</p>
+        <p>Le raisonnement complet — pourquoi un worker n'est pas un outil, les cinq couches d'outil, l'ordre de construction — est détaillé à part.</p>
+        <ul class="feature-list">
+          <li><strong>La roadmap &amp; les choix</strong> &middot; <a href="/fr/documentation/factory-roadmap/">La Roxabi Factory &rarr;</a></li>
+        </ul>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>Lance-le</h2>
+        <p>Prérequis : Python 3.12 et le gestionnaire de paquets <a href="https://docs.astral.sh/uv/" rel="noopener">uv</a>. En développement, une seule commande lance chaque processus dans un seul, avec un serveur NATS embarqué ; en production, le hub, les adaptateurs de canaux et le pool de workers tournent chacun dans leur propre conteneur.</p>
+        <div class="formula-box"><pre><code>uv sync              # installation
+factory start        # dev : tous les processus + NATS embarqué, un seul process
+factory agent init   # seed un agent depuis son TOML vers le store</code></pre></div>
+        <p>Le cœur, les adaptateurs, le SDK de transport et les schémas de contrats sont tous en accès ouvert.</p>
+        <ul class="feature-list">
+          <li><strong>Le repo</strong> &middot; <a href="https://github.com/Roxabi/roxabi-factory" target="_blank" rel="noopener">github.com/Roxabi/roxabi-factory &rarr;</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

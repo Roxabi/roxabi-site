@@ -10,10 +10,10 @@
 <section>
   <div class="wrap">
     <div class="grid grid-2">
-      <a class="card proj-card" href="https://github.com/Roxabi/roxabi-factory" rel="noopener" data-reveal>
+      <a class="card proj-card" href="/fr/projects/roxabi-factory/" data-reveal>
         <div class="top"><h3>roxabi-factory</h3><span class="tag">En construction</span></div>
-        <p>Une usine d'agents et de workers. Les outils s'y branchent via NATS, CLI, skills ou API — auto-hébergeable, forke ce qu'il te faut.</p>
-        <p class="portfolio-note" style="margin-top:var(--s-md)">Voir sur GitHub <span class="arrow">→</span></p>
+        <p>Un moteur d'agents auto-hébergeable. Hub-and-spoke sur un bus NATS, pools d'agents par scope, et une flotte de workers qui se branchent sur le fil.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">Comment marche roxabi-factory <span class="arrow">→</span></p>
       </a>
       <a class="card proj-card" href="/fr/projects/roxabi-plugins/" data-reveal>
         <div class="top"><h3>roxabi-plugins</h3><span class="tag">Open source</span></div>
@@ -25,12 +25,26 @@
         <p>Une CLI pour la synthèse et la transcription vocales en local. Un script Markdown pilote chaque moteur — Qwen3-TTS, Chatterbox, Whisper — avec un satellite NATS pour la voix multi-hôtes.</p>
         <p class="portfolio-note" style="margin-top:var(--s-md)">Comment marche voiceCLI <span class="arrow">→</span></p>
       </a>
+      <a class="card proj-card" href="/fr/projects/llmcli/" data-reveal>
+        <div class="top"><h3>llmCLI</h3><span class="tag">Open source</span></div>
+        <p>Sers des LLM en local sur ton GPU. <code>llama.cpp</code> + GGUF derrière un endpoint compatible OpenAI, hot-swap depuis un catalogue TOML, un proxy LiteLLM pour tout le LAN.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">Comment marche llmCLI <span class="arrow">→</span></p>
+      </a>
+      <a class="card proj-card" href="/fr/projects/imagecli/" data-reveal>
+        <div class="top"><h3>imageCLI</h3><span class="tag">Open source</span></div>
+        <p>Une CLI pour la génération d'images en local. FLUX.2, FLUX.1 (+ verrou PuLID) et SD3.5 derrière une commande — quantization et VRAM gérées, un satellite NATS pour le rendu multi-hôtes.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">Comment marche imageCLI <span class="arrow">→</span></p>
+      </a>
+      <a class="card proj-card" href="/fr/projects/roxabi-forge/" data-reveal>
+        <div class="top"><h3>roxabi-forge</h3><span class="tag">Open source</span></div>
+        <p>Un plugin Claude Code qui transforme « explique-moi ça » en HTML autonome — diagrammes, galeries, decks, guides. Huit skills, déploiement en une commande.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">Comment marche roxabi-forge <span class="arrow">→</span></p>
+      </a>
       <div class="card proj-card roadmap" data-reveal>
         <div class="top"><h3>Bientôt disponibles</h3><span class="tag">En ouverture</span></div>
         <ul class="roadmap-list">
-          <li><span class="mono">llmCLI</span><span class="mono-note">routage LLM</span></li>
-          <li><span class="mono">imageCLI</span><span class="mono-note">génération d'images</span></li>
           <li><span class="mono">cortex</span><span class="mono-note">mémoire</span></li>
+          <li><span class="mono">vault</span><span class="mono-note">connaissance</span></li>
         </ul>
       </div>
     </div>

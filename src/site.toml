@@ -217,6 +217,122 @@ repo          = "https://github.com/Roxabi/voiceCLI"
   software_desc = "CLI locale unifiée pour la synthèse et la transcription vocale — moteurs Qwen3-TTS, Chatterbox, Faster Whisper et Kyutai derrière un seul script Markdown, avec un satellite NATS pour la voix multi-hôtes."
 
 [[page]]
+id            = "proj-roxabi-factory"
+path          = "projects/roxabi-factory/"
+body          = "proj-roxabi-factory"
+og_type       = "article"
+footer        = "full"
+shader        = false
+active        = "projects"
+jsonld        = "breadcrumb+software"   # breadcrumb + SoftwareSourceCode (generalized)
+ancestors     = ["home", "projects"]
+changefreq    = "monthly"
+priority      = "0.6"
+software_name = "roxabi-factory"
+repo          = "https://github.com/Roxabi/roxabi-factory"
+  [page.en]
+  title         = "roxabi-factory — Roxabi"
+  desc          = "roxabi-factory is a self-hostable agent engine — a hexagonal core, hub-and-spoke over a NATS bus, isolated per-scope agent pools, and a fleet of capability workers. Runs 24/7 on your own hardware. No cloud lock-in."
+  og_title      = "roxabi-factory — Roxabi"
+  og_desc       = "A self-hostable agent engine: hub-and-spoke over NATS, per-scope agent pools, five-level memory, and a worker fleet that plugs in over the bus. Your hardware, your data."
+  crumb         = "roxabi-factory"
+  software_desc = "Self-hostable AI agent engine — hexagonal core, hub-and-spoke over a NATS message bus, isolated per-scope agent pools, five-level memory, and a fleet of capability workers."
+  [page.fr]
+  title         = "roxabi-factory — Roxabi"
+  desc          = "roxabi-factory est un moteur d'agents auto-hébergeable — un cœur hexagonal, hub-and-spoke sur un bus NATS, des pools d'agents isolés par scope, et une flotte de workers de capacité. Tourne 24/7 sur ton propre matériel. Aucun verrouillage cloud."
+  og_title      = "roxabi-factory — Roxabi"
+  og_desc       = "Un moteur d'agents auto-hébergeable : hub-and-spoke sur NATS, pools d'agents par scope, mémoire à cinq niveaux, et une flotte de workers qui se branchent sur le bus. Ton matériel, tes données."
+  crumb         = "roxabi-factory"
+  software_desc = "Moteur d'agents IA auto-hébergeable — cœur hexagonal, hub-and-spoke sur un bus de messages NATS, pools d'agents isolés par scope, mémoire à cinq niveaux et une flotte de workers de capacité."
+
+[[page]]
+id            = "proj-llmcli"
+path          = "projects/llmcli/"
+body          = "proj-llmcli"
+og_type       = "article"
+footer        = "full"
+shader        = false
+active        = "projects"
+jsonld        = "breadcrumb+software"
+ancestors     = ["home", "projects"]
+changefreq    = "monthly"
+priority      = "0.6"
+software_name = "llmCLI"
+repo          = "https://github.com/Roxabi/llmCLI"
+  [page.en]
+  title         = "llmCLI — Roxabi"
+  desc          = "llmCLI serves local LLMs on your own GPU — llama.cpp + GGUF backends behind an OpenAI-compatible HTTP endpoint, hot-swappable from a TOML catalog, with a LiteLLM proxy any tool on your LAN can call. No cloud keys."
+  og_title      = "llmCLI — Roxabi"
+  og_desc       = "Serve local LLMs on your own GPU: llama.cpp + GGUF behind an OpenAI-compatible endpoint, hot-swap from a TOML catalog, one LiteLLM proxy for the whole LAN."
+  crumb         = "llmCLI"
+  software_desc = "Local LLM serving CLI — llama.cpp + GGUF backends behind an OpenAI-compatible HTTP endpoint, hot-swappable from a TOML catalog, with a shared LiteLLM proxy and a NATS inference worker."
+  [page.fr]
+  title         = "llmCLI — Roxabi"
+  desc          = "llmCLI sert des LLM en local sur ton propre GPU — moteurs llama.cpp + GGUF derrière un endpoint HTTP compatible OpenAI, hot-swappables depuis un catalogue TOML, avec un proxy LiteLLM que tout outil du LAN peut appeler. Aucune clé cloud."
+  og_title      = "llmCLI — Roxabi"
+  og_desc       = "Sers des LLM en local sur ton GPU : llama.cpp + GGUF derrière un endpoint compatible OpenAI, hot-swap depuis un catalogue TOML, un proxy LiteLLM pour tout le LAN."
+  crumb         = "llmCLI"
+  software_desc = "CLI de service LLM local — moteurs llama.cpp + GGUF derrière un endpoint HTTP compatible OpenAI, hot-swappables depuis un catalogue TOML, avec un proxy LiteLLM partagé et un worker d'inférence NATS."
+
+[[page]]
+id            = "proj-imagecli"
+path          = "projects/imagecli/"
+body          = "proj-imagecli"
+og_type       = "article"
+footer        = "full"
+shader        = false
+active        = "projects"
+jsonld        = "breadcrumb+software"
+ancestors     = ["home", "projects"]
+changefreq    = "monthly"
+priority      = "0.6"
+software_name = "imageCLI"
+repo          = "https://github.com/Roxabi/imageCLI"
+  [page.en]
+  title         = "imageCLI — Roxabi"
+  desc          = "imageCLI is one local CLI for image generation — FLUX.2, FLUX.1 (+ PuLID face lock) and SD3.5 backends via HuggingFace Diffusers, with quantization and VRAM management handled for you. Point it at a prompt, swap engines with one flag. No API costs."
+  og_title      = "imageCLI — Roxabi"
+  og_desc       = "One CLI for local image generation: FLUX.2, FLUX.1 (+ PuLID) and SD3.5 behind one command, quantization and VRAM handled, a NATS satellite for cross-host rendering."
+  crumb         = "imageCLI"
+  software_desc = "Unified local CLI for image generation — FLUX.2, FLUX.1 (+ PuLID face lock) and SD3.5 backends via HuggingFace Diffusers, with quantization, VRAM management and a NATS satellite for cross-host rendering."
+  [page.fr]
+  title         = "imageCLI — Roxabi"
+  desc          = "imageCLI est une CLI locale unique pour la génération d'images — moteurs FLUX.2, FLUX.1 (+ verrou de visage PuLID) et SD3.5 via HuggingFace Diffusers, quantization et gestion VRAM prises en charge. Pointe-la sur un prompt, change de moteur d'un flag. Aucun coût d'API."
+  og_title      = "imageCLI — Roxabi"
+  og_desc       = "Une CLI pour la génération d'images en local : FLUX.2, FLUX.1 (+ PuLID) et SD3.5 derrière une commande, quantization et VRAM gérées, un satellite NATS pour le rendu multi-hôtes."
+  crumb         = "imageCLI"
+  software_desc = "CLI locale unifiée pour la génération d'images — moteurs FLUX.2, FLUX.1 (+ verrou de visage PuLID) et SD3.5 via HuggingFace Diffusers, avec quantization, gestion VRAM et un satellite NATS pour le rendu multi-hôtes."
+
+[[page]]
+id            = "proj-roxabi-forge"
+path          = "projects/roxabi-forge/"
+body          = "proj-roxabi-forge"
+og_type       = "article"
+footer        = "full"
+shader        = false
+active        = "projects"
+jsonld        = "breadcrumb+software"
+ancestors     = ["home", "projects"]
+changefreq    = "monthly"
+priority      = "0.6"
+software_name = "roxabi-forge"
+repo          = "https://github.com/Roxabi/roxabi-forge"
+  [page.en]
+  title         = "roxabi-forge — Roxabi"
+  desc          = "roxabi-forge is a Claude Code plugin that turns 'explain this' into a self-contained HTML artifact — diagrams, galleries, decks, guides, presentations. Eight skills, brand-aware, file://-safe, one-command deploy to Cloudflare Pages."
+  og_title      = "roxabi-forge — Roxabi"
+  og_desc       = "A Claude Code plugin that turns 'explain this' into publication-grade HTML — diagrams, galleries, decks, guides. Eight skills, self-contained, one-command deploy."
+  crumb         = "roxabi-forge"
+  software_desc = "Claude Code plugin for HTML visual artifacts — diagrams, galleries, decks, guides and presentations through eight skills, producing brand-aware self-contained files with one-command Cloudflare Pages deploy."
+  [page.fr]
+  title         = "roxabi-forge — Roxabi"
+  desc          = "roxabi-forge est un plugin Claude Code qui transforme « explique-moi ça » en artefact HTML autonome — diagrammes, galeries, decks, guides, présentations. Huit skills, charte intégrée, compatible file://, déploiement Cloudflare Pages en une commande."
+  og_title      = "roxabi-forge — Roxabi"
+  og_desc       = "Un plugin Claude Code qui transforme « explique-moi ça » en HTML de qualité publication — diagrammes, galeries, decks, guides. Huit skills, autonome, déploiement en une commande."
+  crumb         = "roxabi-forge"
+  software_desc = "Plugin Claude Code pour artefacts visuels HTML — diagrammes, galeries, decks, guides et présentations via huit skills, produisant des fichiers autonomes à la charte Roxabi, déployables sur Cloudflare Pages en une commande."
+
+[[page]]
 id          = "documentation"
 path        = "documentation/"
 body        = "documentation"

@@ -1,0 +1,89 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">GÉNÉRATION D'IMAGES · LOCAL D'ABORD</p>
+    <h1>imageCLI</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Une seule CLI pour la génération d'images, entièrement sur ton propre GPU. Les moteurs FLUX.2, FLUX.1 (avec verrou de visage PuLID) et SD3.5 se tiennent derrière une commande unique via HuggingFace Diffusers — quantization, gestion VRAM et vérifications préalables prises en charge. Pointe-la sur un prompt, change de moteur d'un flag. Aucun coût d'API, aucune limite de débit.</p>
+    <div class="doc-hero-tags"><span class="tag">Python</span><span class="tag">CUDA</span><span class="tag">AGPL-3.0</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — Ce que c'est</a>
+      <a href="#sec-2">2 — Une commande, tous les moteurs</a>
+      <a href="#sec-3">3 — D'un prompt à une image</a>
+      <a href="#sec-4">4 — Multi-hôtes via NATS</a>
+      <a href="#sec-5">5 — Lance-le</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Ce que c'est</h2>
+        <p>Générer des images en local, c'est aucun coût d'API, aucune limite de débit, et un contrôle total sur les prompts et les sorties. Mais câbler HuggingFace Diffusers — quantization, budget VRAM, vérifications préalables, libération mémoire après — c'est le même boilerplate à chaque fois. imageCLI réduit tout ça à une commande. Donne-lui un prompt texte ou un fichier Markdown et obtiens une image ; change de backend avec <code>-e</code> ; traite un dossier entier en lot ; ou importe-la comme bibliothèque Python.</p>
+        <p>C'est le frère « pixels » de la voix de voiceCLI et des tokens de llmCLI — local d'abord, résident sur GPU, la même forme opérationnelle.</p>
+        <div class="callout"><p>Le contrat durable, c'est le <strong>prompt</strong>, pas le moteur. Écris-le une fois ; passe de FLUX.2 à SD3.5 d'un seul flag.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Une commande, tous les moteurs</h2>
+        <p>Une petite flotte de backends, chacun réglé pour un compromis différent entre vitesse, VRAM et fidélité — et chacun n'est qu'une valeur de <code>-e</code>. Les variantes PuLID ajoutent un verrou d'identité de visage à partir d'une image de référence.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Moteur</th><th>Idéal pour</th><th>VRAM</th></tr></thead>
+            <tbody>
+              <tr><td><code>flux2-klein</code></td><td>Le défaut rapide — FP8 quanto, le chemin le plus rapide.</td><td>~8&nbsp;Go</td></tr>
+              <tr><td><code>flux1-dev</code></td><td>Qualité maximale, prompts plus longs.</td><td>~10&nbsp;Go</td></tr>
+              <tr><td><code>flux1-schnell</code></td><td>Le plus rapide, quatre étapes, libre (Apache&nbsp;2.0).</td><td>~10&nbsp;Go</td></tr>
+              <tr><td><code>pulid-flux1-dev</code></td><td>Verrou d'identité de visage depuis une image de référence.</td><td>~10&nbsp;Go</td></tr>
+              <tr><td><code>sd35</code></td><td>Sans CFG, photos réalistes.</td><td>~14&nbsp;Go</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Les variantes NVFP4 visent les cartes Blackwell pour un cran de vitesse supplémentaire. La matrice complète — neuf moteurs avec étapes, vitesse et notes de quantization — vit dans le README du repo.</p>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>D'un prompt à une image</h2>
+        <p>Un prompt — texte brut ou fichier <code>.md</code> avec frontmatter — est dispatché vers le moteur choisi. Le moteur charge son modèle à la demande au premier appel, lance les vérifications VRAM et RAM préalables, génère, sauvegarde l'image, puis libère le GPU. Rien ne reste résident plus longtemps qu'il ne faut.</p>
+        <ul class="feature-list">
+          <li><strong>Dispatch</strong> — route le prompt (ou chaque fichier d'un lot) vers son moteur.</li>
+          <li><strong>Préflight</strong> — charge le modèle à la demande, vérifie VRAM/RAM avant de s'engager.</li>
+          <li><strong>Génération</strong> — exécute les étapes de diffusion à la résolution configurée.</li>
+          <li><strong>Sauvegarde &amp; libération</strong> — écrit l'image, relâche la mémoire GPU.</li>
+        </ul>
+        <p><code>imagecli batch</code> applique le même flux à chaque prompt d'un dossier ; <code>imagecli info</code> vérifie l'installation et la détection GPU avant que tu n'y consacres un téléchargement de modèle.</p>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Multi-hôtes via NATS</h2>
+        <p>Le GPU et l'appelant n'ont pas à être la même machine. imageCLI embarque un <strong>satellite NATS</strong> : le modèle se charge une fois sur un serveur GPU, et une requête depuis n'importe où sur le bus renvoie une image générée — PUT vers un blob store multi-hôtes, pour qu'une machine sans GPU ne touche jamais les poids.</p>
+        <p>C'est ainsi qu'imageCLI se branche sur <a href="/fr/projects/roxabi-factory/">roxabi-factory</a> : il s'enregistre comme worker image exposant <code>image.generate</code>, et n'importe quel agent de la factory rend une image en publiant une requête — le transport invisible pour la boucle de raisonnement du modèle.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Lance-le</h2>
+        <p>Prérequis : Python 3.12, un GPU CUDA (16&nbsp;Go recommandés ; 10&nbsp;Go pour les moteurs fp8), et le gestionnaire de paquets <a href="https://docs.astral.sh/uv/" rel="noopener">uv</a>. Les grosses deps moteur sont optionnelles : tu n'installes que ce que tu utilises. Les modèles se téléchargent automatiquement à la première utilisation.</p>
+        <div class="formula-box"><pre><code>uv tool install .                      # installation (index cu128 depuis pyproject)
+imagecli info                          # vérifie installation + GPU
+imagecli generate "a cat in space"     # génère depuis n'importe où
+imagecli generate prompt.md -e flux1-dev
+imagecli batch images/prompts_in/      # traite un dossier en lot</code></pre></div>
+        <p>Moteurs, dispatcher et satellite NATS sont tous en accès ouvert.</p>
+        <ul class="feature-list">
+          <li><strong>Le repo</strong> &middot; <a href="https://github.com/Roxabi/imageCLI" target="_blank" rel="noopener">github.com/Roxabi/imageCLI &rarr;</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>
