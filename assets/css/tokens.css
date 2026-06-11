@@ -10,7 +10,7 @@
   --accent-on: #0d1117;
   --text: #f0ede6;
   --text-muted: #9ca3af;
-  --text-dim: #6b7280;
+  --text-dim: #7d8895;   /* was #6b7280 (3.6:1 on surface, AA fail) → 4.8:1 */
   --border: #21262d;
   --border-hi: #30363d;
 
@@ -18,7 +18,7 @@
   --code-bg: #0d1117;
   --code-text: #f0ede6;
   --code-keyword: #f0b429;
-  --code-muted: #6b7280;
+  --code-muted: #7d8895;  /* same AA fix as --text-dim (code comments are small text) */
   --code-string: #9ecbff;
 
   /* Radius */
@@ -46,12 +46,12 @@
   --bg: #f8f7f4;
   --panel: #f0ede8;
   --surface: #f0ede8;
-  --accent: #d97706;
-  --accent-hover: #b45309;
+  --accent: #b45309;       /* was #d97706 (2.97:1 on bg AND under --accent-on, double AA fail) → 4.69:1 both */
+  --accent-hover: #92400e; /* darker step now that accent took the old hover value (6.6:1) */
   --accent-on: #f8f7f4;
   --text: #1c1917;
   --text-muted: #57534e;
-  --text-dim: #78716c;
+  --text-dim: #6b6560;     /* was #78716c (4.48:1, AA fail by a hair) → 5.36:1 bg / 4.92:1 panel */
   --border: #d6cfc8;
   --border-hi: #c4bbb2;
   /* code surface intentionally NOT overridden — stays dark */
