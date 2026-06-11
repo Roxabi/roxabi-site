@@ -721,3 +721,29 @@ priority    = "0.6"
   crumb      = "Roadmap Factory"
   card_title = "La Roxabi Factory"
   card_desc  = "Un moteur d'agents étendu d'une couche jobs — les choix d'architecture (worker vs outil, cinq couches d'outils, domaines par nature) et l'ordre de construction."
+
+[[page]]
+id          = "not-found"
+path        = "404.html"
+body        = "404"
+og_type     = "website"
+footer      = "min"
+shader      = false
+active      = ""
+jsonld      = "breadcrumb"
+ancestors   = ["home"]
+sitemap     = false
+changefreq  = "yearly"
+priority    = "0.1"
+  [page.en]
+  title    = "Page not found — Roxabi"
+  desc     = "The page you requested does not exist on roxabi.dev."
+  og_title = "Page not found — Roxabi"
+  og_desc  = "The page you requested does not exist on roxabi.dev."
+  crumb    = "Not found"
+  [page.fr]
+  title    = "Page introuvable — Roxabi"
+  desc     = "La page que vous avez demandée n'existe pas sur roxabi.dev."
+  og_title = "Page introuvable — Roxabi"
+  og_desc  = "La page que vous avez demandée n'existe pas sur roxabi.dev."
+  crumb    = "Introuvable"

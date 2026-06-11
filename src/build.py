@@ -361,6 +361,8 @@ def build_sitemap() -> None:
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
             '        xmlns:xhtml="http://www.w3.org/1999/xhtml">', ""]
     for p in PAGES:
+        if not p.get("sitemap", True):
+            continue
         alts = "\n".join(
             f'    <xhtml:link rel="alternate" hreflang="{hl}" href="{base + href(p["path"], lg)}"/>'
             for hl, lg in (("en", "en"), ("fr", "fr"), ("x-default", "en")))
