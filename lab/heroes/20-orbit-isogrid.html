@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero 20 — Orbit on iso ground · Roxabi lab</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="./_base.css">
+<style>
+  /* ── Layout ─────────────────────────────────────────────── */
+  .hero-grid { display: grid; gap: var(--s-2xl); align-items: center; }
+  @media (min-width: 820px) { .hero-grid { grid-template-columns: .92fr 1.08fr; } }
+  .sub { color: var(--accent); font-weight: 600; }
+  .hero h1 { margin-block: var(--s-lg) 0; }
+  .hero .lead { font-size: 1.18rem; color: var(--text-muted); max-width: 44ch; margin-top: var(--s-lg); }
+  .cta { display: flex; gap: var(--s-md); margin-top: var(--s-xl); flex-wrap: wrap; }
+
+  /* ── Scene container ─────────────────────────────────────── */
+  #scene-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    margin-inline: auto;
+  }
+  #scene-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+
+  /* ── Satellite DOM chips (JS-positioned) ─────────────────── */
+  .sat {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    will-change: left, top, transform;
+    pointer-events: none;
+  }
+  .sat .sd {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 7px var(--accent);
+    flex: none;
+  }
+  .sat .sl {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    color: var(--text);
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    border: 1px solid var(--border-hi);
+    border-radius: var(--r-full);
+    padding: 2px 8px;
+  }
+</style>
+</head>
+<body>
+<a class="lab-back" href="./index.html">← gallery</a>
+<span class="lab-tag">20 · orbit on iso ground</span>
+<header class="lab-nav">
+  <a class="brand" href="#"><img src="/assets/logo/foundation-block.svg" width="26" height="26" alt=""><span>Roxabi</span></a>
+  <nav class="lab-nav-links"><a href="#">Projects</a><a href="#">Constitution</a></nav>
+  <a class="btn btn-ghost btn-sm" href="#">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+
+      <!-- ── Copy ── -->
+      <div class="hero-copy">
+        <span class="badge"><span class="dot"></span>AGPL-3.0 · Open by architecture</span>
+        <h1>One person. Team-scale output.</h1>
+        <p class="lead">
+          <span class="sub">Pre-wired. Open. Yours.</span><br>
+          An agent &amp; worker factory. Open-source tools plug in over NATS, CLI, skills, or API.
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#">Explore the projects →</a>
+          <a class="btn btn-ghost" href="#">GitHub</a>
+        </div>
+      </div>
+
+      <!-- ── Visual ── -->
+      <div class="hero-visual">
+        <div id="scene-wrap"
+             role="img"
+             aria-label="The roxabi-factory core sitting on an isometric grid floor, with llmCLI, voiceCLI, imageCLI, cortex, intel, idna orbiting above it">
+          <!-- SVG: iso grid + core block; satellites are DOM overlays -->
+          <svg id="scene-svg" viewBox="0 0 520 460" aria-hidden="true"></svg>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── Config ───────────────────────────────────────────────── */
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* SVG viewport */
+  var VW = 520, VH = 460;
+
+  /* Iso grid: origin at bottom-centre of scene, tile half-sizes */
+  var GCX = 260, GCY = 300;
+  var TW = 28, TH = 14;   /* half-tile: (TW,0) = right, (0,TH) = forward */
+
+  /* Core cube sits at grid (0,0); centre point for orbital math */
+  var CORE_X = GCX;
+  var CORE_Y = GCY - 28;  /* cube top-face apex is 28px above grid origin */
+
+  /* Orbital ellipses are iso-flattened: rx stays, ry = rx * iso_flatten.
+     Rings are also lightly tilted around the vertical to give depth variety. */
+  var rings = [
+    /* rx, ry (after flatten applied in code), tiltDeg, angularSpeed rad/s */
+    { rx: 180, ryRatio: 0.38, tilt:  -10, sp:  0.14 },
+    { rx: 140, ryRatio: 0.44, tilt:   18, sp: -0.18 },
+    { rx: 165, ryRatio: 0.32, tilt:    4, sp:  0.11 }
+  ];
+
+  /* Satellites: ring index, start angle (degrees), label */
+  var satDefs = [
+    { r: 0, a:   0, l: 'llmCLI'   },
+    { r: 0, a: 180, l: 'cortex'   },
+    { r: 1, a:  90, l: 'voiceCLI' },
+    { r: 1, a: 270, l: 'intel'    },
+    { r: 2, a:  40, l: 'imageCLI' },
+    { r: 2, a: 220, l: 'idna'     }
+  ];
+
+  var DEG = Math.PI / 180;
+
+  /* ── Build SVG (grid + core block) ───────────────────────── */
+  var svg = document.getElementById('scene-svg');
+  var NS = 'http://www.w3.org/2000/svg';
+
+  function el(tag, attrs, children) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (children) n.innerHTML = children;
+    return n;
+  }
+
+  /* ── defs: gradients + bloom filter ── */
+  var defs = el('defs', {}, [
+    '<radialGradient id="g20fbCore" cx="50%" cy="50%" r="50%">',
+      '<stop offset="0%"   stop-color="#fde68a"/>',
+      '<stop offset="35%"  stop-color="#fbbf24"/>',
+      '<stop offset="100%" stop-color="#f0b429" stop-opacity="0.25"/>',
+    '</radialGradient>',
+    '<radialGradient id="g20groundGlow" cx="50%" cy="50%" r="50%">',
+      '<stop offset="0%"   stop-color="#f0b429" stop-opacity="0.28"/>',
+      '<stop offset="100%" stop-color="#f0b429" stop-opacity="0"/>',
+    '</radialGradient>',
+    '<radialGradient id="g20coreHalo" cx="50%" cy="50%" r="50%">',
+      '<stop offset="0%"   stop-color="#f0b429" stop-opacity="0.32"/>',
+      '<stop offset="70%"  stop-color="#f0b429" stop-opacity="0"/>',
+    '</radialGradient>',
+    '<filter id="g20bloom" x="-80%" y="-80%" width="260%" height="260%">',
+      '<feGaussianBlur stdDeviation="2.4" result="b"/>',
+      '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>',
+    '</filter>',
+    '<filter id="g20ringBlur" x="-20%" y="-20%" width="140%" height="140%">',
+      '<feGaussianBlur stdDeviation="0.6"/>',
+    '</filter>'
+  ].join(''));
+  svg.appendChild(defs);
+
+  /* ── Iso projection helper ── */
+  function iso(gx, gy) {
+    return [GCX + (gx - gy) * TW, GCY + (gx + gy) * TH];
+  }
+
+  /* ── Iso grid ── */
+  var gridG = el('g', { 'aria-hidden': 'true' });
+  for (var g = -7; g <= 7; g++) {
+    var a1 = iso(g, -7), a2 = iso(g, 7);
+    var b1 = iso(-7, g), b2 = iso(7, g);
+    var isAxis = (g === 0);
+    var lineAttrs = {
+      x1: a1[0], y1: a1[1], x2: a2[0], y2: a2[1],
+      stroke: isAxis ? '#f0b429' : 'var(--border)',
+      'stroke-width': isAxis ? 1 : 0.8,
+      'stroke-opacity': isAxis ? 0.22 : 0.55
+    };
+    gridG.appendChild(el('line', lineAttrs));
+    var lineAttrs2 = {
+      x1: b1[0], y1: b1[1], x2: b2[0], y2: b2[1],
+      stroke: isAxis ? '#f0b429' : 'var(--border)',
+      'stroke-width': isAxis ? 1 : 0.8,
+      'stroke-opacity': isAxis ? 0.22 : 0.55
+    };
+    gridG.appendChild(el('line', lineAttrs2));
+  }
+  svg.appendChild(gridG);
+
+  /* ── Ambient ground glow beneath the core ── */
+  var groundGlow = el('ellipse', {
+    cx: GCX, cy: GCY,
+    rx: 78, ry: 30,
+    fill: 'url(#g20groundGlow)'
+  });
+  svg.appendChild(groundGlow);
+
+  /* ── Back orbital ring arcs (drawn behind core) ──
+       We'll draw full ellipse rings split into front/back halves.
+       Back half: drawn here below core; front half drawn after core. */
+
+  /* Precompute ring ellipse params (applying ry ratio + tilt) */
+  var ringParams = rings.map(function (r) {
+    return {
+      rx: r.rx,
+      ry: r.rx * r.ryRatio,
+      tilt: r.tilt,
+      sp: r.sp
+    };
+  });
+
+  /* Helper: SVG ellipse arc from angle a1→a2 (degrees, going through mid) */
+  function ellipsePoint(rp, angDeg) {
+    var a = angDeg * DEG;
+    var lx = rp.rx * Math.cos(a);
+    var ly = rp.ry * Math.sin(a);
+    var cr = Math.cos(rp.tilt * DEG), sr = Math.sin(rp.tilt * DEG);
+    return [
+      CORE_X + lx * cr - ly * sr,
+      CORE_Y + lx * sr + ly * cr
+    ];
+  }
+
+  /* Draw back half of each ring (angles 0→180, i.e. top of ellipse = behind) */
+  var backRingsG = el('g', { 'aria-hidden': 'true' });
+  ringParams.forEach(function (rp, i) {
+    /* Back arc: angle 0° to 180° in ellipse space (these y-values are negative,
+       meaning above the centre → visually behind the core) */
+    var steps = 60;
+    var pts = [];
+    for (var s = 0; s <= steps; s++) {
+      var ang = (s / steps) * 180;  /* 0→180 */
+      var p = ellipsePoint(rp, ang);
+      pts.push(p[0].toFixed(2) + ',' + p[1].toFixed(2));
+    }
+    var d = 'M' + pts[0] + ' L' + pts.slice(1).join(' L');
+    backRingsG.appendChild(el('path', {
+      d: d,
+      fill: 'none',
+      stroke: '#f0b429',
+      'stroke-width': 1.1,
+      'stroke-opacity': 0.13,
+      'stroke-linecap': 'round'
+    }));
+  });
+  svg.appendChild(backRingsG);
+
+  /* ── Core foundation block ── */
+  /* The core iso-cube; centred at (CORE_X, CORE_Y).
+     32×32 internal coords, translated so its apex (point 32,12) hits the scene centre. */
+  var coreScale = 1.8;
+  var coreOX = CORE_X - 32 * coreScale;
+  var coreOY = CORE_Y - 32 * coreScale;
+
+  function makeCoreBlock() {
+    var g = el('g', { id: 'g20core', transform: 'translate(' + CORE_X.toFixed(1) + ',' + CORE_Y.toFixed(1) + ') scale(' + coreScale + ') translate(-32,-32)' });
+
+    /* Halo */
+    g.appendChild(el('ellipse', { cx: 32, cy: 34, rx: 30, ry: 20, fill: 'url(#g20coreHalo)' }));
+
+    /* Cube faces */
+    var left = el('polygon', { points: '12,22 32,32 32,52 12,42', fill: '#0f1318' });
+    var right = el('polygon', { points: '52,22 52,42 32,52 32,32', fill: '#141a22' });
+    var top = el('polygon', { points: '32,12 52,22 32,32 12,22', fill: '#192030' });
+    g.appendChild(left); g.appendChild(right); g.appendChild(top);
+
+    /* Glowing amber top facet (logo faithful) */
+    g.appendChild(el('ellipse', { cx: 32, cy: 22, rx: 9, ry: 5, fill: 'url(#g20fbCore)', filter: 'url(#g20bloom)', opacity: 0.92 }));
+    g.appendChild(el('polygon', { points: '32,16 44,22 32,28 20,22', fill: 'url(#g20fbCore)', stroke: '#fbbf24', 'stroke-width': 0.8, filter: 'url(#g20bloom)' }));
+
+    /* Amber edge outline */
+    g.appendChild(el('path', { d: 'M32,12 52,22 52,42 32,52 12,42 12,22Z', fill: 'none', stroke: '#f0b429', 'stroke-width': 1.6, 'stroke-opacity': 1, 'stroke-linejoin': 'round' }));
+
+    return g;
+  }
+
+  var coreEl = makeCoreBlock();
+  svg.appendChild(coreEl);
+
+  /* ── Front orbital ring arcs (drawn in front of core) ── */
+  var frontRingsG = el('g', { 'aria-hidden': 'true' });
+  ringParams.forEach(function (rp) {
+    var steps = 60;
+    var pts = [];
+    for (var s = 0; s <= steps; s++) {
+      var ang = 180 + (s / steps) * 180;  /* 180→360 = front half */
+      var p = ellipsePoint(rp, ang);
+      pts.push(p[0].toFixed(2) + ',' + p[1].toFixed(2));
+    }
+    var d = 'M' + pts[0] + ' L' + pts.slice(1).join(' L');
+    frontRingsG.appendChild(el('path', {
+      d: d,
+      fill: 'none',
+      stroke: '#f0b429',
+      'stroke-width': 1.1,
+      'stroke-opacity': 0.22,
+      'stroke-linecap': 'round'
+    }));
+  });
+  svg.appendChild(frontRingsG);
+
+  /* ── Satellite DOM chips ── */
+  var wrap = document.getElementById('scene-wrap');
+  var svgEl = document.getElementById('scene-svg');
+
+  /* Map SVG coords → %-of-wrapper coords.
+     The SVG has a fixed viewBox (VW×VH); the actual rendered size tracks via getBoundingClientRect.
+     We'll compute % positions so they scale with the SVG. */
+  var sats = satDefs.map(function (d) {
+    var chipEl = document.createElement('span');
+    chipEl.className = 'sat';
+    chipEl.innerHTML = '<span class="sd"></span><span class="sl">' + d.l + '</span>';
+    chipEl.style.zIndex = 10;
+    wrap.appendChild(chipEl);
+    return {
+      el: chipEl,
+      ring: ringParams[d.r],
+      ang: d.a * DEG
+    };
+  });
+
+  /* Place a satellite chip given its current angle.
+     SVG → DOM: convert (svgX, svgY) → percentage of wrapper size. */
+  function placeSat(s) {
+    var rp = s.ring;
+    var lx = rp.rx * Math.cos(s.ang);
+    var ly = rp.ry * Math.sin(s.ang);
+    var cr = Math.cos(rp.tilt * DEG), sr = Math.sin(rp.tilt * DEG);
+    var svgX = CORE_X + lx * cr - ly * sr;
+    var svgY = CORE_Y + lx * sr + ly * cr;
+
+    /* Depth: sin(angle) in raw ellipse space tells front/back.
+       sin > 0 → front (lower half of ellipse = in front of core).
+       We use raw ellipse sin for the depth cue, not the rotated position. */
+    var rawSin = Math.sin(s.ang);   /* -1 (back) … +1 (front) */
+    var t = (rawSin + 1) / 2;       /* 0..1 */
+
+    var scale = 0.60 + 0.52 * t;
+    var opacity = 0.42 + 0.58 * t;
+    var zIndex = rawSin >= 0 ? 20 : 5;
+
+    s.el.style.left  = (svgX / VW * 100).toFixed(3) + '%';
+    s.el.style.top   = (svgY / VH * 100).toFixed(3) + '%';
+    s.el.style.transform  = 'translate(-50%,-50%) scale(' + scale.toFixed(3) + ')';
+    s.el.style.opacity    = opacity.toFixed(3);
+    s.el.style.zIndex     = zIndex;
+  }
+
+  /* Initial static placement */
+  sats.forEach(placeSat);
+
+  /* ── Core float animation (SVG-native, guarded) ── */
+  if (!reduce) {
+    var coreBaseTransform = coreEl.getAttribute('transform');
+    var runningCore = true, rafCore = 0;
+    function frameCore(t) {
+      if (!runningCore) return;
+      var dy = Math.sin(t / 1100) * 4.5;
+      coreEl.setAttribute('transform', coreBaseTransform + ' translate(0,' + dy.toFixed(3) + ')');
+      rafCore = requestAnimationFrame(frameCore);
+    }
+    rafCore = requestAnimationFrame(frameCore);
+
+    /* ── Satellite orbit animation ── */
+    var last = 0, runningSat = true, rafSat = 0;
+    function frameSat(ts) {
+      if (!runningSat) return;
+      if (!last) last = ts;
+      var dt = Math.min((ts - last) / 1000, 0.05);
+      last = ts;
+      sats.forEach(function (s) {
+        s.ang += s.ring.sp * dt;
+        placeSat(s);
+      });
+      rafSat = requestAnimationFrame(frameSat);
+    }
+    rafSat = requestAnimationFrame(frameSat);
+
+    /* Pause on hidden tab */
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        runningCore = false; cancelAnimationFrame(rafCore);
+        runningSat  = false; cancelAnimationFrame(rafSat);
+      } else {
+        runningCore = true; last = 0;
+        rafCore = requestAnimationFrame(frameCore);
+        runningSat = true;
+        rafSat  = requestAnimationFrame(frameSat);
+      }
+    });
+  }
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">COGNITION AGENT</p>
+    <h1>Réflexes Dérivés</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Un réflexe dérivé n'est pas une règle — c'est la séquence d'actions qui émerge inévitablement quand un agent tient simultanément les bonnes croyances atomiques.</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sommaire">
+      <span class="t">Sommaire</span>
+      <a href="#sec-1">1 — Croyances, Atomes et le Pipe</a>
+      <a href="#sec-2">2 — Maximes : Débogage et Opérations</a>
+      <a href="#sec-3">3 — Maximes : Sécurité, Concurrence et Agents de Correction</a>
+      <a href="#sec-4">4 — Maximes : Refactoring, Tests et Dépendances</a>
+      <a href="#sec-5">5 — La Méta-Maxime</a>
+      <a href="#sec-6">6 — La Grammaire de la Dérivation</a>
+      <a href="#sec-7">7 — Ce que ça Démontre</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Croyances, Atomes et le Pipe</h2>
+        <p>Une croyance exprimée en une seule phrase en langue naturelle est un <strong>paquet</strong>. Elle compresse environ six croyances atomiques distinctes — des propositions qui doivent être dépaquetées individuellement en notation d'algèbre des ensembles : relations entre ensembles et logique des prédicats. Ce dépaquetage n'est pas une interprétation ; c'est un développement déterministe de ce que la phrase affirme déjà.</p>
+        <p>Un <strong>réflexe</strong> n'est pas une croyance. C'est la séquence d'actions qui est forcée d'exister quand toutes les croyances atomiques sont tenues simultanément. Il est <em>dérivé</em> par composition — jamais écrit comme règle séparée, jamais maintenu comme un gate explicite. L'opérateur pipe <code>→</code> est fonctionnel : la sortie de l'étape <em>n</em> est la seule entrée de l'étape <em>n+1</em>. Aucune variable globale ne traverse les frontières d'étape.</p>
+        <p>Le modèle des niveaux logiques de Dilts situe les croyances au niveau 4 (Croyances/Valeurs). Les réflexes vivent aux niveaux 2–3 (Comportement / Capacité). Le niveau supérieur gouverne le niveau inférieur : une croyance correctement formulée au niveau 4 rend le réflexe au niveau 2 automatique. C'est le principe <em>inné &gt; déclenché</em> — un réflexe émergent n'a besoin d'aucune condition de déclenchement écrite séparément.</p>
+        <p>Les anti-croyances — propositions de la forme <code>X ∉ Y</code> — n'exigent aucune prohibition explicite. Si <code>Corr_valides ⊆ Archi</code> et <code>Patch ∉ Archi</code>, alors <code>Patch ∉ Corr_valides</code> est <em>déduit</em> par contenance ensembliste. L'exclusion est logiquement impliquée, pas manuellement appliquée. C'est pourquoi la correction au niveau des croyances est plus robuste que la correction au niveau des gates : on peut contourner un gate ; on ne peut pas contourner une déduction.</p>
+        <div class="callout" style="border-left:3px solid var(--accent);padding:var(--s-md) var(--s-lg);background:var(--surface);border-radius:0 var(--r-lg) var(--r-lg) 0;margin-top:var(--s-lg)">
+          <p><strong>Chiffres clés :</strong> ≈6 croyances atomiques par croyance en langue naturelle · la dérivation mappe le niveau 4 → niveaux 2–3 · 0 gate séparé à écrire dès lors que les croyances sont bien formulées.</p>
+        </div>
+        <figure class="doc-figure" style="margin-top:var(--s-xl)">
+          <svg viewBox="0 0 720 320" role="img" aria-label="Composition de croyances en réflexe dérivé versus le court-circuit naïf" style="width:100%;height:auto">
+            <defs>
+              <marker id="arr-fr" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto">
+                <polygon points="0 0, 8 3.5, 0 7" fill="var(--accent)"/>
+              </marker>
+              <marker id="arr-red-fr" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto">
+                <polygon points="0 0, 8 3.5, 0 7" fill="var(--text-muted)"/>
+              </marker>
+            </defs>
+            <rect width="720" height="320" fill="var(--surface)" rx="10"/>
+            <text x="20" y="30" font-family="var(--font-mono)" font-size="11" fill="var(--accent)" letter-spacing="0.12em" text-anchor="start">CROYANCES ATOMIQUES — NIVEAU 4</text>
+            <rect x="20" y="44" width="210" height="36" rx="6" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="30" y="67" font-family="var(--font-mono)" font-size="12" fill="var(--text)">C₁ : obs(P) ⊊ P</text>
+            <rect x="20" y="90" width="210" height="36" rx="6" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="30" y="113" font-family="var(--font-mono)" font-size="12" fill="var(--text)">C₂ : obs(P) ⊆ Sym(P)</text>
+            <rect x="20" y="136" width="210" height="36" rx="6" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="30" y="159" font-family="var(--font-mono)" font-size="12" fill="var(--text)">C₃ : |Sym(P)| ≥ 1</text>
+            <rect x="20" y="182" width="210" height="36" rx="6" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <text x="30" y="205" font-family="var(--font-mono)" font-size="12" fill="var(--text)">C₄ : ∃ RC(P) : Sym ⊆ effets</text>
+            <line x1="240" y1="140" x2="310" y2="140" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#arr-fr)"/>
+            <text x="253" y="133" font-family="var(--font-mono)" font-size="10" fill="var(--accent)">compose</text>
+            <text x="320" y="30" font-family="var(--font-mono)" font-size="11" fill="var(--accent)" letter-spacing="0.12em">RÉFLEXE DÉRIVÉ R — NIVEAUX 2–3</text>
+            <rect x="320" y="44" width="88" height="36" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="364" y="67" font-family="var(--font-mono)" font-size="11" fill="var(--text)" text-anchor="middle">obs(P)</text>
+            <line x1="408" y1="62" x2="428" y2="62" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arr-fr)"/>
+            <rect x="432" y="44" width="88" height="36" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="476" y="67" font-family="var(--font-mono)" font-size="11" fill="var(--text)" text-anchor="middle">Sym(P)</text>
+            <line x1="520" y1="62" x2="540" y2="62" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arr-fr)"/>
+            <rect x="544" y="44" width="88" height="36" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="588" y="67" font-family="var(--font-mono)" font-size="11" fill="var(--text)" text-anchor="middle">RC(P)</text>
+            <line x1="632" y1="62" x2="650" y2="62" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#arr-fr)"/>
+            <rect x="654" y="44" width="62" height="36" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="685" y="67" font-family="var(--font-mono)" font-size="11" fill="var(--text)" text-anchor="middle">Corr(P)</text>
+            <line x1="320" y1="120" x2="700" y2="120" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"/>
+            <text x="320" y="148" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)" letter-spacing="0.08em">RÉFLEXE NAÏF ✗</text>
+            <rect x="320" y="158" width="88" height="36" rx="6" fill="var(--panel)" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="5 3"/>
+            <text x="364" y="181" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)" text-anchor="middle">obs(P)</text>
+            <line x1="408" y1="176" x2="478" y2="176" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arr-red-fr)"/>
+            <rect x="482" y="158" width="130" height="36" rx="6" fill="var(--panel)" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="5 3"/>
+            <text x="547" y="181" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)" text-anchor="middle">patch(obs(P))</text>
+            <line x1="320" y1="158" x2="620" y2="200" stroke="var(--text-muted)" stroke-width="1.5" opacity="0.5"/>
+            <line x1="620" y1="158" x2="320" y2="200" stroke="var(--text-muted)" stroke-width="1.5" opacity="0.5"/>
+            <text x="320" y="228" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">court-circuite C₁…C₄ — corrige le symptôme, pas la cause</text>
+          </svg>
+          <figcaption>Les croyances atomiques au niveau 4 se composent en réflexe dérivé. Le court-circuit naïf saute les étapes intermédiaires et corrige directement le symptôme observé.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Maximes : Débogage et Opérations</h2>
+        <p>Trois maximes d'ingénierie pour les domaines ops et débogage. Chacune est accompagnée de sa décomposition formelle pour que la dérivation soit visible, pas simplement affirmée.</p>
+
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-id">R₁</span>
+            <span class="maxim-name">« Tout problème est un symptôme »</span>
+            <span class="maxim-domain">root-cause</span>
+          </div>
+          <p class="maxim-sub">Soit</p>
+          <ul class="maxim-list">
+            <li><code>P</code> <span class="g">le problème</span></li>
+            <li><code>obs(P)</code> <span class="g">ce qui est observé</span></li>
+            <li><code>Sym(P)</code> <span class="g">ensemble des symptômes</span></li>
+            <li><code>RC(P)</code> <span class="g">cause(s) racine(s)</span></li>
+            <li><code>Corr</code> <span class="g">partitionné en</span> <code>Patch</code> <span class="g">et</span> <code>Archi</code>, <span class="g">où</span> <code>Patch ∩ Archi = ∅</code></li>
+          </ul>
+          <p class="maxim-sub">Croyances atomiques</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>obs(P) ⊊ P</code> <span class="g">l'observation est strictement plus petite que le problème entier</span></li>
+            <li><span class="c">C₂</span> <code>obs(P) ⊆ Sym(P)</code></li>
+            <li><span class="c">C₃</span> <code>|Sym(P)| ≥ 1</code> <span class="g">souvent &gt; 1</span></li>
+            <li><span class="c">C₄</span> <code>∃ RC(P) tel que Sym(P) ⊆ effets(RC(P))</code></li>
+            <li class="anti"><span class="c">C̄₅</span> <code>Patch ∉ Corr_valides</code> <span class="g">anti-croyance</span></li>
+            <li><span class="c">C₆</span> <code>Corr_valides ⊆ Archi</code></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>obs(P) → enumerer(Sym(P)) → find(RC(P)) → architect(Corr(P))</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>obs(P) → patch(obs(P))</code> — voir un symptôme et le patcher est un contournement, pas une correction.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Un code de sortie rapporte ; il ne juge pas »</span>
+            <span class="maxim-domain">ops / CI</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>G</code> <span class="g">gate ou scanner</span></li>
+            <li><code>exit(G) ≡ ranOK</code> <span class="g">exit 0 signifie « s'est exécuté sans crash », pas « rien trouvé »</span></li>
+            <li><code>verdict(G) ⊥ exit(G)</code> <span class="g">le verdict est orthogonal au code de sortie</span></li>
+            <li class="anti"><code>found(G) ≠ ∅ ⇏ exit(G)=broken</code> <span class="g">anti-croyance</span></li>
+            <li><code>verdict(G) ∈ report(G)</code></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>run(G) → exit := ranOK → write(verdict→report) → gate lit le rapport</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>found ≠ ∅ → exit ≠ 0 → set -e court-circuite le pipeline</code> — le CI n'atteint jamais le rapport, les findings sont perdus.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Ne diagnostique pas un hang depuis une courte observation »</span>
+            <span class="maxim-domain">débogage</span>
+          </div>
+          <p class="maxim-sub">Soit</p>
+          <ul class="maxim-list">
+            <li><code>H</code> <span class="g">hypothèse de hang</span></li>
+            <li><code>w</code> <span class="g">fenêtre d'observation</span></li>
+            <li><code>D</code> <span class="g">durée attendue de la tâche</span></li>
+          </ul>
+          <p class="maxim-sub">Croyances atomiques</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>obs(w) avec w ≪ D ⊄ preuve(H)</code> <span class="g">une fenêtre trop courte ne constitue pas une preuve</span></li>
+            <li><span class="c">C₂</span> <code>silence(w) ⊆ {hang, travail-en-cours}</code> <span class="g">le silence est ambigu</span></li>
+            <li><span class="c">C₃</span> <code>|causes(silence)| &gt; 1</code> <span class="g">futex_wait + zéro IO ≠ deadlock</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>suspect(hang) → poser w := D → mesurer(w) → conclure</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>obs(1s) → conclure(hang)</code> — une seconde d'absence de sortie n'est pas un hang.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Maximes : Sécurité, Concurrence et Agents de Correction</h2>
+
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Toute entrée est hostile jusqu'à preuve du contraire »</span>
+            <span class="maxim-domain">sécurité</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>I</code> <span class="g">entrée</span></li>
+            <li><code>trust(I) = ⊥</code> <span class="g">par défaut</span></li>
+            <li><code>valid(I) ⇒ trust(I)</code> <span class="g">seule une validation explicite élève la confiance</span></li>
+            <li class="anti"><code>I ∉ trusted ⇒ I ∉ {query, exec, render}</code> <span class="g">anti-croyance</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>receive(I) → validate → sanitize → use</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>receive(I) → use(I)</code> — traiter l'arrivée comme une autorisation.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Vérifie la source canonique après un push »</span>
+            <span class="maxim-domain">concurrence</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>S</code> <span class="g">état partagé</span></li>
+            <li><code>report(success) ⊊ vérité(S)</code> <span class="g">le rapport de succès est un sous-ensemble propre de la vérité terrain</span></li>
+            <li><code>∃ mutateurs concurrents</code> <span class="g">S peut dériver entre le push et la prochaine lecture — d'autres sessions, un auto-merge ou la CI peuvent muter S en cours de tâche</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>push → relire(canonical(S)) → asserter → continuer</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>push → faire confiance au rapport → continuer</code> — agir sur un snapshot possiblement déjà périmé.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Vérifie que la cible existe avant d'appliquer un correctif »</span>
+            <span class="maxim-domain">agents de correction</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>T</code> <span class="g">fichier cible</span></li>
+            <li><code>F</code> <span class="g">correctif</span></li>
+            <li><span class="g">l'existence de</span> <code>T</code> <span class="g">est une précondition pour</span> <code>apply(F)</code></li>
+            <li class="anti"><code>¬exists(T) ⇒ apply(F)</code> <span class="g">est invalide — corriger une cible absente revient à annuler silencieusement une décision stratégique</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>receive(F) → asserter exists(T) → sinon escalader → apply(F)</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>receive(F) → apply(F)</code> — recréer un fichier délibérément supprimé.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Maximes : Refactoring, Tests et Dépendances</h2>
+
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Une abstraction mérite son nom à trois usages »</span>
+            <span class="maxim-domain">refactoring</span>
+          </div>
+          <p class="maxim-sub">Soit</p>
+          <ul class="maxim-list">
+            <li><code>A</code> <span class="g">abstraction</span></li>
+            <li><code>uses(A)</code> <span class="g">ensemble des sites d'usage</span></li>
+          </ul>
+          <p class="maxim-sub">Croyances atomiques</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>|uses(A)| ≥ 3 ⇒ A justifiée</code> <span class="g">trois usages indépendants valident que l'abstraction a une frontière stable</span></li>
+            <li class="anti"><span class="c">C̄₂</span> <code>|uses(A)| &lt; 3 ⇒ A ∉ justifiée</code> <span class="g">le coût de couplage dépasse le bénéfice en deçà de trois usages</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>pattern répété → count(uses) → si ≥ 3 abstraire → sinon dupliquer</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>pattern vu 2× → abstraire immédiatement</code> — couplage prématuré avant que la frontière soit connue.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Tout code non testé est présumé cassé »</span>
+            <span class="maxim-domain">tests</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>C</code> <span class="g">code</span></li>
+            <li><code>¬tested(C) ⇒ correct(C) inconnu</code></li>
+            <li class="anti"><code>« ça compile » ∉ preuve(correct)</code> <span class="g">anti-croyance</span></li>
+            <li><code>|paths(C)| &gt; 1</code> <span class="g">dans toute fonction non triviale</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>write(C) → enumerer(paths) → couvrir → vert</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>write(C) → livrer</code> — la compilation n'est pas la correction.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Toute dépendance est une dette »</span>
+            <span class="maxim-domain">dépendances</span>
+          </div>
+          <p class="maxim-sub">Croyances</p>
+          <ul class="maxim-list">
+            <li><code>D</code> <span class="g">dépendance</span></li>
+            <li><code>coût(D) = {surface d'attaque, mises à jour obligatoires, exposition CVE, graphe transitif}</code></li>
+            <li><span class="g">ajouter</span> <code>D</code> <span class="g">sans condition incrémente cette dette</span></li>
+            <li class="anti"><span class="g">« c'est gratuit » est faux pour toute clôture transitive non vide</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>besoin → chercher(stdlib) → sinon évaluer coût(D) → épingler → justifier</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>besoin → installer immédiatement</code> — traiter la commodité comme un coût nul.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>La Méta-Maxime : Corriger au Bon Niveau Logique</h2>
+        <div class="maxim">
+          <div class="maxim-head">
+            <span class="maxim-name">« Corriger au même niveau logique, c'est tourner en boucle »</span>
+            <span class="maxim-domain">méta</span>
+          </div>
+          <p class="maxim-sub">Soit</p>
+          <ul class="maxim-list">
+            <li><code>L</code> <span class="g">niveau logique courant</span></li>
+            <li><code>fix@L</code> <span class="g">correction appliquée au niveau L</span></li>
+          </ul>
+          <p class="maxim-sub">Croyances atomiques</p>
+          <ul class="maxim-list">
+            <li><span class="c">C₁</span> <code>problème récurrent @L ⇒ cause probable @L+1</code> <span class="g">la récurrence à un niveau pointe vers une faute structurelle au niveau supérieur</span></li>
+            <li class="anti"><span class="c">C̄₂</span> <code>fix@L sur une cause @L+1 = palliatif</code> <span class="g">le symptôme revient car la cause est intacte</span></li>
+          </ul>
+          <div class="reflex">
+            <div class="reflex-row derived">
+              <span class="r-tag">✓ DÉRIVÉ</span>
+              <span class="r-body"><code>récurrence@L → monter(L+1) → fix@L+1</code></span>
+            </div>
+            <div class="reflex-row naive">
+              <span class="r-tag">✗ NAÏF</span>
+              <span class="r-body"><code>récurrence@L → re-fix@L</code> — une saga de cinquante commits sur trente-six heures, tous au niveau tactique, ne ferme jamais une dette structurelle. La boucle continue jusqu'à ce que quelqu'un monte d'un niveau.</span>
+            </div>
+          </div>
+        </div>
+        <p>C'est le principe de clôture du cadre. Il s'applique à chacune des autres maximes. Quand un réflexe continue d'échouer, la faute n'est pas dans le réflexe — elle est dans les croyances au niveau 4. La bonne action est de reformuler la croyance un niveau au-dessus, puis de re-dériver le réflexe. Le réflexe est en aval ; la croyance est la racine.</p>
+        <div class="callout" style="border-left:3px solid var(--accent);padding:var(--s-md) var(--s-lg);background:var(--surface);border-radius:0 var(--r-lg) var(--r-lg) 0;margin-top:var(--s-lg)">
+          <p>Quand un réflexe déraille de façon répétée : ne pas déboguer le réflexe. Auditer les croyances. Trouver l'atome manquant, imprécis ou au mauvais niveau. Le reformuler. Le réflexe correct suit. <code>récurrence@L → monter(L+1) → fix@L+1</code>.</p>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>La Grammaire de la Dérivation</h2>
+        <p>La dérivation est mécanique, pas interprétative. Chaque forme logique d'une croyance atomique se traduit en un type d'étape précis dans le réflexe. La table est la grammaire.</p>
+
+        <figure class="doc-figure" style="margin-top:var(--s-lg)">
+          <svg viewBox="0 0 680 310" role="img" aria-label="Table de grammaire : forme logique vers type d'étape dans le réflexe dérivé" style="width:100%;height:auto">
+            <rect width="680" height="310" fill="var(--surface)" rx="10"/>
+            <rect x="12" y="12" width="4" height="286" fill="var(--accent)" rx="2"/>
+            <!-- Header -->
+            <rect x="20" y="14" width="656" height="36" fill="var(--panel)" rx="6"/>
+            <text x="40" y="37" font-family="var(--font-mono)" font-size="12" fill="var(--accent)" font-weight="bold">FORME</text>
+            <text x="200" y="37" font-family="var(--font-mono)" font-size="12" fill="var(--accent)" font-weight="bold">LECTURE</text>
+            <text x="400" y="37" font-family="var(--font-mono)" font-size="12" fill="var(--accent)" font-weight="bold">DEVIENT DANS LE RÉFLEXE</text>
+            <!-- Row 1 -->
+            <line x1="20" y1="54" x2="676" y2="54" stroke="var(--border)" stroke-width="1"/>
+            <text x="40" y="76" font-family="var(--font-mono)" font-size="12" fill="var(--text)">X ⊆ Y</text>
+            <text x="200" y="76" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">tout X est Y</text>
+            <text x="400" y="76" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">un filtre / garde</text>
+            <!-- Row 2 -->
+            <line x1="20" y1="88" x2="676" y2="88" stroke="var(--border)" stroke-width="1"/>
+            <rect x="20" y="88" width="656" height="34" fill="var(--panel)" rx="0"/>
+            <text x="40" y="110" font-family="var(--font-mono)" font-size="12" fill="var(--text)">X ⊊ Y</text>
+            <text x="200" y="110" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">X est une partie propre de Y</text>
+            <text x="400" y="110" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">élargir avant d'agir</text>
+            <!-- Row 3 -->
+            <line x1="20" y1="122" x2="676" y2="122" stroke="var(--border)" stroke-width="1"/>
+            <text x="40" y="144" font-family="var(--font-mono)" font-size="12" fill="var(--text)">X ∉ Y</text>
+            <text x="200" y="144" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">anti-croyance / exclusion</text>
+            <text x="400" y="144" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">refus / escalade</text>
+            <!-- Row 4 -->
+            <line x1="20" y1="156" x2="676" y2="156" stroke="var(--border)" stroke-width="1"/>
+            <rect x="20" y="156" width="656" height="34" fill="var(--panel)" rx="0"/>
+            <text x="40" y="178" font-family="var(--font-mono)" font-size="12" fill="var(--text)">∃ x : P(x)</text>
+            <text x="200" y="178" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">existentiel</text>
+            <text x="400" y="178" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">chercher jusqu'à trouver</text>
+            <!-- Row 5 -->
+            <line x1="20" y1="190" x2="676" y2="190" stroke="var(--border)" stroke-width="1"/>
+            <text x="40" y="212" font-family="var(--font-mono)" font-size="12" fill="var(--text)">∀ x : P(x)</text>
+            <text x="200" y="212" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">universel</text>
+            <text x="400" y="212" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">couvrir tout</text>
+            <!-- Row 6 -->
+            <line x1="20" y1="224" x2="676" y2="224" stroke="var(--border)" stroke-width="1"/>
+            <rect x="20" y="224" width="656" height="34" fill="var(--panel)" rx="0"/>
+            <text x="40" y="246" font-family="var(--font-mono)" font-size="12" fill="var(--text)">|X| &gt; 1</text>
+            <text x="200" y="246" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">cardinalité ≥ 2</text>
+            <text x="400" y="246" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">énumérer, pas seulement le premier</text>
+            <line x1="20" y1="258" x2="676" y2="258" stroke="var(--border)" stroke-width="1"/>
+            <!-- Column separators -->
+            <line x1="186" y1="14" x2="186" y2="258" stroke="var(--border)" stroke-width="1"/>
+            <line x1="386" y1="14" x2="386" y2="258" stroke="var(--border)" stroke-width="1"/>
+          </svg>
+          <figcaption>Chaque forme logique dans l'ensemble de croyances se traduit mécaniquement en un type d'étape. La grammaire élimine toute ambiguïté dans la dérivation.</figcaption>
+        </figure>
+
+        <p style="margin-top:var(--s-lg)">L'algorithme de dérivation en quatre étapes applique cette grammaire à tout ensemble de croyances :</p>
+        <ol style="margin-top:var(--s-md);padding-left:var(--s-lg);display:flex;flex-direction:column;gap:var(--s-sm)">
+          <li><strong>Ordonner</strong> les croyances atomiques par dépendance de données — <code>obs(·)</code> d'abord, <code>act(·)</code> en dernier. La séquence se lit de l'observation vers l'action.</li>
+          <li><strong>Traduire</strong> chaque croyance en étape selon la grammaire ci-dessus : <code>⊆/⊊</code> → transformation · anti (<code>∉</code>) → garde · <code>∃/∀</code> → recherche ou couverture · <code>|·| &gt; 1</code> → boucle d'énumération.</li>
+          <li><strong>Chaîner</strong> les étapes avec <code>→</code>. La sortie d'une étape est l'entrée de la suivante. Pas de variable globale.</li>
+          <li><strong>Nommer</strong> le réflexe naïf — le court-circuit direct <code>obs → act</code> — pour rendre l'écart visible et la dérive consciente.</li>
+        </ol>
+
+        <figure class="doc-figure" style="margin-top:var(--s-xl)">
+          <svg viewBox="0 0 560 340" role="img" aria-label="L'algorithme de dérivation en quatre étapes sous forme de flux vertical" style="width:100%;height:auto">
+            <defs>
+              <marker id="arr2-fr" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto">
+                <polygon points="0 0, 8 3.5, 0 7" fill="var(--accent)"/>
+              </marker>
+            </defs>
+            <rect width="560" height="340" fill="var(--surface)" rx="10"/>
+            <line x1="60" y1="40" x2="60" y2="300" stroke="var(--accent)" stroke-width="2"/>
+            <!-- Step 1 -->
+            <circle cx="60" cy="52" r="18" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="60" y="57" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" text-anchor="middle" font-weight="bold">1</text>
+            <rect x="90" y="36" width="440" height="36" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="106" y="59" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Ordonner par dépendance — obs(·) d'abord, act(·) en dernier</text>
+            <!-- Step 2 -->
+            <circle cx="60" cy="132" r="18" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="60" y="137" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" text-anchor="middle" font-weight="bold">2</text>
+            <rect x="90" y="116" width="440" height="36" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="106" y="135" font-family="var(--font-mono)" font-size="10" fill="var(--text)">Traduire forme → type (⊆→filtre, ∉→garde, ∃→recherche, |·|&gt;1→boucle)</text>
+            <!-- Step 3 -->
+            <circle cx="60" cy="212" r="18" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="60" y="217" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" text-anchor="middle" font-weight="bold">3</text>
+            <rect x="90" y="196" width="440" height="36" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="106" y="219" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Chaîner avec → (pipe fonctionnel — pas de variable globale)</text>
+            <!-- Step 4 -->
+            <circle cx="60" cy="292" r="18" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="60" y="297" font-family="var(--font-mono)" font-size="13" fill="var(--accent)" text-anchor="middle" font-weight="bold">4</text>
+            <rect x="90" y="276" width="440" height="36" rx="6" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="106" y="294" font-family="var(--font-mono)" font-size="11" fill="var(--text)">Nommer le réflexe naïf — obs → act direct — pour rendre la dérive visible</text>
+            <!-- Naive box annotation -->
+            <rect x="394" y="318" width="140" height="24" rx="4" fill="var(--surface)" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="464" y="334" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)" text-anchor="middle">NAÏF ✗  obs→act</text>
+            <line x1="400" y1="312" x2="430" y2="318" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="3 2"/>
+          </svg>
+          <figcaption>Quatre étapes déterministes transforment tout ensemble de croyances bien formulées en réflexe dérivé. L'étape 4 — nommer le court-circuit naïf — rend l'écart d'ingénierie lisible.</figcaption>
+        </figure>
+
+        <p style="margin-top:var(--s-lg)">Ancrage taxonomique : ce modèle alimente directement la taxonomie d'entités du Cortex — <strong>Belief | Value | Principle | Sentiment</strong>. Les croyances vivent au niveau 4 et sont stockées comme entités de premier rang. Les réflexes vivent aux niveaux 2–3 et ne sont <em>jamais stockés comme entités indépendantes</em> — ils sont dérivés à la demande depuis le graphe de croyances. Confondre les deux est l'erreur de catégorie originelle que ce cadre existe pour prévenir.</p>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>Ce que ça Démontre</h2>
+        <p>Cinq résultats issus de l'analyse de neuf maximes d'ingénierie couvrant six domaines :</p>
+        <ol style="margin-top:var(--s-md);padding-left:var(--s-lg);display:flex;flex-direction:column;gap:var(--s-md)">
+          <li><strong>Une croyance en langue naturelle ≈ 6 croyances atomiques.</strong> Le langage parlé compresse un contenu sémantique qui doit être explicitement dépaquété avant de pouvoir dériver un réflexe correct. La compression n'est pas un défaut — c'est la raison pour laquelle la dérivation est nécessaire.</li>
+          <li><strong>La décomposition fait émerger les anti-croyances automatiquement.</strong> Les propositions de la forme <code>X ∉ Y</code> ne s'écrivent pas comme des interdictions ; elles découlent de la contenance ensembliste. L'exclusion est logiquement entaillée, pas manuellement gardée — ce qui la rend robuste face à la suppression des gardes.</li>
+          <li><strong>Le réflexe émerge des croyances par composition.</strong> Aucun gate séparé, aucune règle séparée, aucune condition de déclenchement séparée n'a besoin d'être écrite. Le pipe est le réflexe. <em>Inné &gt; déclenché.</em></li>
+          <li><strong>Des croyances correctes au niveau 4 sont plus robustes que des gardes aux niveaux 2–3.</strong> Un gate peut être contourné. Une déduction ne peut pas l'être. Formuler correctement la croyance est l'investissement amont qui élimine le patchage aval.</li>
+          <li><strong>Les réflexes ne sont jamais stockés comme entités indépendantes.</strong> Dans la taxonomie Cortex, les réflexes sont dérivés à la demande depuis le graphe de croyances. Stocker un réflexe indépendamment le découplerait de ses croyances, le rendant invérifiable et non maintenable.</li>
+        </ol>
+        <div class="callout" style="border-left:3px solid var(--accent);padding:var(--s-md) var(--s-lg);background:var(--surface);border-radius:0 var(--r-lg) var(--r-lg) 0;margin-top:var(--s-xl)">
+          <p>L'implication pratique : quand un réflexe déraille, ne pas déboguer le réflexe. Auditer les croyances. Trouver l'atome manquant, imprécis ou au mauvais niveau. Le reformuler. Le réflexe correct suit.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

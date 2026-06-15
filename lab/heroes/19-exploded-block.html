@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero 19 — Exploded layered block · Roxabi lab</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="./_base.css">
+<style>
+/* ── Hero layout ─────────────────────────────────────────── */
+.hero { padding-block: var(--s-2xl); }
+.hero .wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: var(--s-2xl);
+  min-height: calc(100svh - 60px);
+}
+
+/* ── Copy column ─────────────────────────────────────────── */
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-lg);
+  position: relative;
+  z-index: 3;
+}
+.hero-copy h1 { color: var(--text); }
+.hero-sub {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: .01em;
+  line-height: 1.3;
+}
+.hero-lead {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  max-width: 38ch;
+}
+.hero-ctas {
+  display: flex;
+  gap: var(--s-md);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── Visual column ───────────────────────────────────────── */
+.hero-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: calc(-1 * var(--s-lg));
+}
+
+/* Ambient spotlight behind the block */
+.hero-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-spotlight::before {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  translate: -50% -50%;
+  width: 560px; height: 560px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    rgba(240,180,41,.14) 0%,
+    rgba(240,180,41,.07) 30%,
+    rgba(240,180,41,.02) 55%,
+    transparent 70%
+  );
+}
+
+/* SVG wrapper */
+.hero-block {
+  position: relative;
+  z-index: 2;
+  width: min(440px, 92vw);
+}
+.hero-block svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* ── Label strip (right side) ────────────────────────────── */
+/*   Handled entirely inside SVG via foreignObject + text */
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 820px) {
+  .hero .wrap {
+    grid-template-columns: 1fr;
+    gap: var(--s-xl);
+    min-height: unset;
+    padding-block: var(--s-2xl);
+  }
+  .hero-copy  { order: 1; }
+  .hero-visual {
+    order: 0;
+    margin-right: 0;
+    justify-content: center;
+  }
+  .hero-block { width: min(340px, 88vw); }
+  .hero-lead  { max-width: none; }
+}
+</style>
+</head>
+<body>
+<a class="lab-back" href="./index.html">← gallery</a>
+<span class="lab-tag">19 · exploded block</span>
+<header class="lab-nav">
+  <a class="brand" href="#"><img src="/assets/logo/foundation-block.svg" width="26" height="26" alt=""><span>Roxabi</span></a>
+  <nav class="lab-nav-links"><a href="#">Projects</a><a href="#">Constitution</a></nav>
+  <a class="btn btn-ghost btn-sm" href="#">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <div class="wrap">
+
+      <!-- Copy -->
+      <div class="hero-copy">
+        <div>
+          <span class="badge"><span class="dot"></span>AGPL-3.0 · Open by architecture</span>
+        </div>
+        <h1>One person.<br>Team-scale output.</h1>
+        <p class="hero-sub">Pre-wired. Open. Yours.</p>
+        <p class="hero-lead">An agent &amp; worker factory. Open-source tools plug in over NATS, CLI, skills, or API.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#">Explore the projects →</a>
+          <a class="btn btn-ghost" href="#">GitHub</a>
+        </div>
+      </div>
+
+      <!-- Visual: exploded iso slabs -->
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-spotlight"></div>
+        <div class="hero-block">
+          <!--
+            Iso projection 2:1 (30° dimetric).
+            Viewbox: 480 × 480.  Scene centre X = 240.
+            Block iso unit: each slab is a 140-wide rhombus top face (left W=70, right W=70)
+            and a 14-unit tall extruded front+right side.
+
+            Slab geometry (top face, 2:1 iso rhombus, W half = 70, D half = 35):
+              top-apex:  cx,   cy
+              right:     cx+70, cy+35
+              bottom:    cx,   cy+70
+              left:      cx-70, cy+35
+            Front face (left quad):
+              top-left: cx-70, cy+35 → cx, cy+70
+              bottom-left: cx-70, cy+35+h → cx, cy+70+h
+            Right face (right quad):
+              top-right: cx, cy+70 → cx+70, cy+35
+              bottom-right: cx, cy+70+h → cx+70, cy+35+h
+
+            4 layers, bottom→top, 14px extrusion each, GAP=22 between slabs.
+            Layer Y tops (top-apex Y):
+              slab 0 (operating): y0 = 300
+              slab 1 (routing):   y1 = 300 - 70 - 22 = 208
+              slab 2 (agents):    y2 = 208 - 70 - 22 = 116
+              slab 3 (workers):   y3 = 116 - 70 - 22 =  24
+          -->
+          <svg id="exploded" viewBox="0 0 480 480"
+               xmlns="http://www.w3.org/2000/svg"
+               role="img"
+               aria-label="Architecture diagram: four isometric layers — operating layer, routing and NATS, agents, workers — separated and labelled">
+            <defs>
+              <!-- Amber edge glow -->
+              <filter id="edgeGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="2.2" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <!-- Aperture bloom (top layer only) -->
+              <filter id="apertureBloom" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur stdDeviation="4.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="smallBloom" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <!-- Aperture gradient -->
+              <radialGradient id="apertureGrad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"  stop-color="#fff8d6"/>
+                <stop offset="25%" stop-color="#fde68a"/>
+                <stop offset="60%" stop-color="#f0b429"/>
+                <stop offset="100%" stop-color="#f0b429" stop-opacity="0"/>
+              </radialGradient>
+              <!-- Top face gradient per layer (light slate) -->
+              <linearGradient id="topGrad0" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1c2431"/>
+                <stop offset="100%" stop-color="#18202c"/>
+              </linearGradient>
+              <linearGradient id="topGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1e2636"/>
+                <stop offset="100%" stop-color="#192131"/>
+              </linearGradient>
+              <linearGradient id="topGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1f2838"/>
+                <stop offset="100%" stop-color="#1a2233"/>
+              </linearGradient>
+              <linearGradient id="topGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#202a3c"/>
+                <stop offset="100%" stop-color="#1b2436"/>
+              </linearGradient>
+              <!-- Ambient warm halo behind entire stack -->
+              <radialGradient id="ambientHalo" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#f0b429" stop-opacity="0.1"/>
+                <stop offset="100%" stop-color="#f0b429" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+
+            <!-- Ambient halo circle behind slabs -->
+            <ellipse cx="240" cy="230" rx="190" ry="130" fill="url(#ambientHalo)"/>
+
+            <!-- ── Slab group: assembled/separated by JS on load ── -->
+            <g id="slabs">
+
+              <!--
+                Each slab: <g id="slab-N" data-rest="0">
+                  Resting offsetY per layer (animation settles layers down):
+                    slab-3 (workers, top):    starts -18 → 0
+                    slab-2 (agents):          starts -12 → 0
+                    slab-1 (routing):         starts  -7 → 0
+                    slab-0 (operating, base): starts  -3 → 0
+                JS animates translateY from data-start to 0, staggered 80ms.
+              -->
+
+              <!-- ══ SLAB 0 — Operating layer ══ -->
+              <!-- Top-apex at (240, 300). W=70, H_top=70, extrude=14 -->
+              <g id="slab-0" data-start="-3">
+                <!-- Left face: dark -->
+                <polygon points="240,370 170,335 170,349 240,384" fill="#11161d"/>
+                <!-- Right face: mid -->
+                <polygon points="240,370 310,335 310,349 240,384" fill="#171e27"/>
+                <!-- Top face -->
+                <polygon points="240,300 310,335 240,370 170,335" fill="url(#topGrad0)"/>
+                <!-- Amber edges (full outline) -->
+                <polygon points="240,300 310,335 240,370 170,335"
+                  fill="none" stroke="#f0b429" stroke-width="1.5" stroke-linejoin="round"
+                  filter="url(#edgeGlow)" opacity="0.7"/>
+                <!-- Bottom edge of extrusion -->
+                <line x1="170" y1="349" x2="240" y2="384" stroke="#f0b429" stroke-width="1.2" opacity="0.5" filter="url(#edgeGlow)"/>
+                <line x1="310" y1="349" x2="240" y2="384" stroke="#f0b429" stroke-width="1.2" opacity="0.5" filter="url(#edgeGlow)"/>
+                <line x1="170" y1="349" x2="310" y2="349" stroke="#f0b429" stroke-width="0" opacity="0"/>
+                <!-- Vertical amber edges at front corners -->
+                <line x1="170" y1="335" x2="170" y2="349" stroke="#f0b429" stroke-width="1.2" opacity="0.55" filter="url(#edgeGlow)"/>
+                <line x1="310" y1="335" x2="310" y2="349" stroke="#f0b429" stroke-width="1.2" opacity="0.55" filter="url(#edgeGlow)"/>
+                <line x1="240" y1="370" x2="240" y2="384" stroke="#f0b429" stroke-width="1.2" opacity="0.5" filter="url(#edgeGlow)"/>
+              </g>
+
+              <!-- ══ SLAB 1 — Routing · NATS ══ -->
+              <!-- Top-apex at (240, 208) -->
+              <g id="slab-1" data-start="-7">
+                <polygon points="240,278 170,243 170,257 240,292" fill="#11161d"/>
+                <polygon points="240,278 310,243 310,257 240,292" fill="#171e27"/>
+                <polygon points="240,208 310,243 240,278 170,243" fill="url(#topGrad1)"/>
+                <polygon points="240,208 310,243 240,278 170,243"
+                  fill="none" stroke="#f0b429" stroke-width="1.5" stroke-linejoin="round"
+                  filter="url(#edgeGlow)" opacity="0.75"/>
+                <line x1="170" y1="243" x2="170" y2="257" stroke="#f0b429" stroke-width="1.2" opacity="0.6" filter="url(#edgeGlow)"/>
+                <line x1="310" y1="243" x2="310" y2="257" stroke="#f0b429" stroke-width="1.2" opacity="0.6" filter="url(#edgeGlow)"/>
+                <line x1="240" y1="278" x2="240" y2="292" stroke="#f0b429" stroke-width="1.2" opacity="0.55" filter="url(#edgeGlow)"/>
+                <line x1="170" y1="257" x2="240" y2="292" stroke="#f0b429" stroke-width="1.2" opacity="0.5" filter="url(#edgeGlow)"/>
+                <line x1="310" y1="257" x2="240" y2="292" stroke="#f0b429" stroke-width="1.2" opacity="0.5" filter="url(#edgeGlow)"/>
+              </g>
+
+              <!-- ══ SLAB 2 — Agents ══ -->
+              <!-- Top-apex at (240, 116) -->
+              <g id="slab-2" data-start="-12">
+                <polygon points="240,186 170,151 170,165 240,200" fill="#11161d"/>
+                <polygon points="240,186 310,151 310,165 240,200" fill="#171e27"/>
+                <polygon points="240,116 310,151 240,186 170,151" fill="url(#topGrad2)"/>
+                <polygon points="240,116 310,151 240,186 170,151"
+                  fill="none" stroke="#f0b429" stroke-width="1.6" stroke-linejoin="round"
+                  filter="url(#edgeGlow)" opacity="0.82"/>
+                <line x1="170" y1="151" x2="170" y2="165" stroke="#f0b429" stroke-width="1.3" opacity="0.65" filter="url(#edgeGlow)"/>
+                <line x1="310" y1="151" x2="310" y2="165" stroke="#f0b429" stroke-width="1.3" opacity="0.65" filter="url(#edgeGlow)"/>
+                <line x1="240" y1="186" x2="240" y2="200" stroke="#f0b429" stroke-width="1.3" opacity="0.6" filter="url(#edgeGlow)"/>
+                <line x1="170" y1="165" x2="240" y2="200" stroke="#f0b429" stroke-width="1.2" opacity="0.52" filter="url(#edgeGlow)"/>
+                <line x1="310" y1="165" x2="240" y2="200" stroke="#f0b429" stroke-width="1.2" opacity="0.52" filter="url(#edgeGlow)"/>
+              </g>
+
+              <!-- ══ SLAB 3 — Workers (TOP, amber aperture) ══ -->
+              <!-- Top-apex at (240, 24) -->
+              <g id="slab-3" data-start="-18">
+                <polygon points="240,94 170,59 170,73 240,108" fill="#11161d"/>
+                <polygon points="240,94 310,59 310,73 240,108" fill="#171e27"/>
+                <polygon points="240,24 310,59 240,94 170,59" fill="url(#topGrad3)"/>
+                <!-- Amber edge outline (brightest — this is the top) -->
+                <polygon points="240,24 310,59 240,94 170,59"
+                  fill="none" stroke="#f0b429" stroke-width="2" stroke-linejoin="round"
+                  filter="url(#edgeGlow)" opacity="1"/>
+                <line x1="170" y1="59" x2="170" y2="73" stroke="#f0b429" stroke-width="1.5" opacity="0.8" filter="url(#edgeGlow)"/>
+                <line x1="310" y1="59" x2="310" y2="73" stroke="#f0b429" stroke-width="1.5" opacity="0.8" filter="url(#edgeGlow)"/>
+                <line x1="240" y1="94" x2="240" y2="108" stroke="#f0b429" stroke-width="1.5" opacity="0.75" filter="url(#edgeGlow)"/>
+                <line x1="170" y1="73" x2="240" y2="108" stroke="#f0b429" stroke-width="1.3" opacity="0.65" filter="url(#edgeGlow)"/>
+                <line x1="310" y1="73" x2="240" y2="108" stroke="#f0b429" stroke-width="1.3" opacity="0.65" filter="url(#edgeGlow)"/>
+                <!-- Glowing aperture: ambient halo + diamond inset (top face inset rhombus) -->
+                <!-- Center of top face: cx=240, cy=(24+94)/2=59 -->
+                <ellipse cx="240" cy="59" rx="28" ry="14"
+                  fill="url(#apertureGrad)" filter="url(#apertureBloom)" opacity="0.75"/>
+                <polygon points="240,44 268,59 240,74 212,59"
+                  fill="url(#apertureGrad)" stroke="#fbbf24" stroke-width="1.2"
+                  filter="url(#smallBloom)" opacity="0.95"/>
+                <!-- Corner accent dots on top layer -->
+                <circle cx="240" cy="24"  r="2.8" fill="#f0b429" opacity="0.65" filter="url(#smallBloom)"/>
+                <circle cx="310" cy="59"  r="2.2" fill="#f0b429" opacity="0.4"  filter="url(#smallBloom)"/>
+                <circle cx="170" cy="59"  r="2.2" fill="#f0b429" opacity="0.4"  filter="url(#smallBloom)"/>
+              </g>
+
+            </g><!-- /slabs -->
+
+            <!-- ── Leader lines + labels (right side) ─────────────────── -->
+            <!--
+              Leader lines connect center-right of each top face to a label column at x=350.
+              Right vertex of each top face (the "right" corner of the rhombus):
+                slab-0: (310, 335)   → label at (355, 338)
+                slab-1: (310, 243)   → label at (355, 246)
+                slab-2: (310, 151)   → label at (355, 154)
+                slab-3: (310,  59)   → label at (355,  62)
+              Vertical label rail at x=352, dots at x=349.
+            -->
+            <g id="labels" font-family="'JetBrains Mono', 'Fira Mono', 'Courier New', monospace" font-size="11.5" fill="#94a3b8" aria-hidden="true">
+
+              <!-- Vertical rail -->
+              <line x1="350" y1="62" x2="350" y2="338"
+                stroke="#f0b429" stroke-width="0.8" opacity="0.22"/>
+
+              <!-- slab-3: workers -->
+              <line x1="310" y1="59" x2="349" y2="62"
+                stroke="#f0b429" stroke-width="0.9" opacity="0.55" stroke-dasharray="3 4"/>
+              <circle cx="349" cy="62" r="2.2" fill="#f0b429" opacity="0.8"/>
+              <text x="356" y="66" fill="#f0b429" font-size="11" letter-spacing="0.03em">workers</text>
+
+              <!-- slab-2: agents -->
+              <line x1="310" y1="151" x2="349" y2="154"
+                stroke="#f0b429" stroke-width="0.9" opacity="0.45" stroke-dasharray="3 4"/>
+              <circle cx="349" cy="154" r="2.2" fill="#94a3b8" opacity="0.6"/>
+              <text x="356" y="158" fill="#94a3b8" font-size="11" letter-spacing="0.03em">agents</text>
+
+              <!-- slab-1: routing -->
+              <line x1="310" y1="243" x2="349" y2="246"
+                stroke="#f0b429" stroke-width="0.9" opacity="0.38" stroke-dasharray="3 4"/>
+              <circle cx="349" cy="246" r="2.2" fill="#94a3b8" opacity="0.5"/>
+              <text x="356" y="250" fill="#94a3b8" font-size="11" letter-spacing="0.03em">routing · NATS</text>
+
+              <!-- slab-0: operating -->
+              <line x1="310" y1="335" x2="349" y2="338"
+                stroke="#f0b429" stroke-width="0.9" opacity="0.30" stroke-dasharray="3 4"/>
+              <circle cx="349" cy="338" r="2.2" fill="#94a3b8" opacity="0.4"/>
+              <text x="356" y="342" fill="#94a3b8" font-size="11" letter-spacing="0.03em">operating layer</text>
+
+            </g>
+
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+<script>
+/* ── Exploded-block assembly animation ──────────────────────────────────
+   On load each slab starts at its data-start offsetY (negative = above rest)
+   and eases down to Y=0 (resting position), staggered bottom→top.
+   Guarded by prefers-reduced-motion: slabs are rendered in final position
+   (translateY(0)) and no JS animation runs.
+   Also adds a slow gentle float on slab-3 (top layer / workers).
+*/
+(function () {
+  'use strict';
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var slabs = [
+    document.getElementById('slab-0'),
+    document.getElementById('slab-1'),
+    document.getElementById('slab-2'),
+    document.getElementById('slab-3'),
+  ];
+
+  // Stagger delay in ms, bottom layer first (already at rest, quickest settle)
+  var STAGGER = 80;
+  var DURATION = 520; // ms per slab ease
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  if (reduce) {
+    // Static: all slabs at rest (translateY 0) — already in final SVG position
+    return;
+  }
+
+  // Set initial positions
+  slabs.forEach(function (slab) {
+    var start = parseFloat(slab.getAttribute('data-start') || '0');
+    slab.setAttribute('transform', 'translate(0,' + start + ')');
+  });
+
+  // Animate each slab settling into place
+  slabs.forEach(function (slab, i) {
+    var start = parseFloat(slab.getAttribute('data-start') || '0');
+    var delay = i * STAGGER; // bottom layer first, least delay
+    var t0 = null;
+
+    function tick(ts) {
+      if (t0 === null) t0 = ts;
+      var elapsed = ts - t0;
+      if (elapsed >= DURATION) {
+        slab.setAttribute('transform', 'translate(0,0)');
+        // After settling, add a subtle float to slab-3 (workers/top)
+        if (i === 3) startFloat(slab);
+        return;
+      }
+      var progress = easeOutCubic(elapsed / DURATION);
+      var y = start * (1 - progress);
+      slab.setAttribute('transform', 'translate(0,' + y.toFixed(3) + ')');
+      requestAnimationFrame(tick);
+    }
+
+    setTimeout(function () {
+      requestAnimationFrame(tick);
+    }, delay);
+  });
+
+  // Gentle float on the top layer only (workers)
+  function startFloat(slab) {
+    var amplitude = 3.5; // px
+    var period = 5200;   // ms
+    var running = true;
+
+    function floatTick(ts) {
+      if (!running) return;
+      var dy = Math.sin((ts / period) * Math.PI * 2) * amplitude;
+      slab.setAttribute('transform', 'translate(0,' + dy.toFixed(3) + ')');
+      requestAnimationFrame(floatTick);
+    }
+
+    document.addEventListener('visibilitychange', function () {
+      running = !document.hidden;
+      if (running) requestAnimationFrame(floatTick);
+    });
+
+    requestAnimationFrame(floatTick);
+  }
+
+  // Also respond to reduced-motion toggle at runtime
+  window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', function (e) {
+    if (e.matches) {
+      slabs.forEach(function (slab) {
+        slab.setAttribute('transform', 'translate(0,0)');
+      });
+    }
+  });
+})();
+</script>
+</body>
+</html>

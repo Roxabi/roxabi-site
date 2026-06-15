@@ -1,0 +1,197 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">ROADMAP &amp; CHOICES</p>
+    <h1>The Roxabi Factory</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">An agent engine extended with a jobs layer — the choices that shape it, and the order we build them in.</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — An Engine, Extended</a>
+      <a href="#sec-2">2 — Value Before Framework</a>
+      <a href="#sec-3">3 — A Worker Is Not a Tool</a>
+      <a href="#sec-4">4 — Five Layers of Tool</a>
+      <a href="#sec-5">5 — Domains by Nature</a>
+      <a href="#sec-6">6 — The Roadmap</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>An Engine, Extended</h2>
+        <p>The Factory is not a new system. It is the agent engine that already runs the Roxabi bots — a hexagonal core (ports &amp; adapters), a hub-and-spoke topology, a registry of agents, and a pool of workers dispatched over a message bus — extended with one new layer: <strong>jobs</strong>. That layer turns activity into content, posts it, and runs the loop around it.</p>
+        <p>The consequence is liberating. The core left to build is <em>smaller</em> than the first brain-dump suggested: the worker pool, the bus, the typed contracts, the scheduler — all already run in production. The rule of scope follows directly — <strong>every new capability is an adapter on the hexagon, never a new core.</strong></p>
+        <div class="callout"><p>The engine already exists. The Factory is a jobs layer on top of it — an extension, not a rewrite.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Value Before Framework</h2>
+        <p>The naive plan builds the framework first: a generic core, then modules, then publishing, then routines. That is the classic trap — a general machine standing in front of its first unit of value. We invert it.</p>
+        <p>First a thin vertical slice, human-gated end to end: one signal of <em>what was done</em> → the worker generates one post → a human approves → it publishes. It reuses the bus and the worker pool; the harness is minimal; there is no framework yet. Then we measure reach. <strong>Only then</strong> do we generalise the harness and the watcher — and only over the pieces the slice proved necessary.</p>
+        <div class="callout"><p>Human-in-the-loop is the default until reach — and reputation risk across two brands — is measured. A gate, not an afterthought.</p></div>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>A Worker Is Not a Tool</h2>
+        <p>The single most clarifying decision in the design. The words &laquo;&nbsp;tool&nbsp;&raquo; and &laquo;&nbsp;worker&nbsp;&raquo; had drifted across four parallel design spaces; this is the line that resolves them.</p>
+        <p>Two roles, kept apart. A <strong>provider</strong> is the service that <em>backs</em> a tool — and when it is a self-hosted process we run on the bus with a heartbeat, it is a <strong>satellite</strong>. One provider exposes many tools: the image satellite exposes <code>image.generate</code>, <code>image.list_engines</code>, <code>image.cancel</code>. A <strong>worker</strong> is the other end — a compute instance that <em>consumes</em> tools to run a job. A worker is not a tool, and not a provider; it is what does the work.</p>
+        <p>And a worker does not improvise. It runs a <strong>workerEngine</strong> — a coded pipeline, a deterministic sequence — that calls three kinds of step: the <strong>harness</strong> (one pure agentic turn, where the model decides and its in-turn tools fire, with no workflow logic of its own), the tools, and plain internal code. The harness is a <em>callee</em> of the engine, not a flavour of it — agency where you want a decision, code where you want a guarantee.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>Provider</strong> — the service that backs a tool. Transport-agnostic; one provider, many tools.</li>
+          <li><strong>Satellite</strong> — a provider deployed as a self-hosted process on the bus, with a heartbeat. Every satellite is a provider; not every provider is a satellite.</li>
+          <li><strong>Worker</strong> — a compute instance that consumes tools to run a job. Not a tool, not a provider.</li>
+          <li><strong>workerEngine</strong> — the coded pipeline a worker runs; orchestrates harness, tools, and internal code.</li>
+          <li><strong>Harness</strong> — one pure agentic turn; the model decides. A step the engine calls, never the pipeline itself.</li>
+        </ul>
+        <p>To the model's reasoning loop, a remote <code>image.generate</code> and a built-in <code>bash</code> look identical — same shape, same result type. The transport difference is invisible.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 360" role="img" aria-label="A provider — a satellite when self-hosted on the bus — exposes several tools, registered once and consumed identically by the harness and the workers, alongside built-in tools — the transport difference is invisible to the model." style="width:100%;height:auto">
+            <defs><marker id="ft1-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker></defs>
+            <!-- Worker -->
+            <rect x="20" y="30" width="250" height="212" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="145" y="58" text-anchor="middle" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">Image Satellite</text>
+            <text x="145" y="74" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">a provider · heartbeat · one identity</text>
+            <rect x="44" y="92" width="202" height="36" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.3"/>
+            <text x="145" y="115" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">image.generate</text>
+            <rect x="44" y="136" width="202" height="36" rx="6" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.2"/>
+            <text x="145" y="159" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">image.list_engines</text>
+            <rect x="44" y="180" width="202" height="36" rx="6" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.2"/>
+            <text x="145" y="203" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">image.cancel</text>
+            <text x="145" y="232" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--text-dim)">1 provider → N tools</text>
+            <!-- Registry -->
+            <rect x="330" y="98" width="118" height="60" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="389" y="124" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Registry</text>
+            <text x="389" y="142" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">heartbeat-discovered</text>
+            <line x1="270" y1="128" x2="328" y2="128" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft1-arr)"/>
+            <!-- Consumers -->
+            <rect x="520" y="44" width="220" height="58" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="630" y="70" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Harness</text>
+            <text x="630" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">pure agentic turn</text>
+            <rect x="520" y="156" width="220" height="58" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="630" y="182" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Worker</text>
+            <text x="630" y="200" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">runs a workerEngine</text>
+            <path d="M448,118 C484,104 490,80 518,74" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft1-arr)"/>
+            <path d="M448,140 C484,156 490,178 518,184" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft1-arr)"/>
+            <text x="486" y="132" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-dim)">consume</text>
+            <!-- Equivalence strip -->
+            <rect x="20" y="296" width="720" height="46" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="380" y="318" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">to the model:&#160;&#160;<tspan font-weight="700">bash</tspan> (built-in)&#160;&#160;&#8801;&#160;&#160;<tspan font-weight="700">image.generate</tspan> (remote)</text>
+            <text x="380" y="334" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-dim)">transport is invisible — one shape, one result type</text>
+          </svg>
+          <figcaption>A provider exposes tools — a satellite when it is self-hosted on the bus. Registered once, every tool is consumed identically by the harness and the workers — a remote call and a built-in are indistinguishable to the model.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Five Layers of Tool</h2>
+        <p>Not every tool is atomic. The model has five layers, from a single primitive call up to a recursive sub-agent — and one pipeline dispatches them all.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>L0a — Built-in.</strong> Compiled into the engine; in-process; always available. <code>bash</code>, file read/write, web fetch.</li>
+          <li><strong>L0b — Remote.</strong> A capability satellite on the bus, discovered by heartbeat. <code>image.generate</code>, <code>voice.tts</code>.</li>
+          <li><strong>L1 — Macro.</strong> A deterministic chain of primitives, with no second model in the loop.</li>
+          <li><strong>L2 — Skill.</strong> An instruction-layer composite — a document that guides the model through a domain sequence.</li>
+          <li><strong>L3 — Sub-agent.</strong> A nested, isolated agent call that returns a summary upward.</li>
+        </ul>
+        <p>The decisive choice is a <strong>uniform dispatcher</strong>: one access-control gate, one result type, the transport varying underneath. Not a branched pipeline where built-ins and remote tools each grow their own rules — the discipline of one path is what keeps the engine readable in an afternoon.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 720 430" role="img" aria-label="The five tool layers stacked from built-in atomic at the base to recursive sub-agent at the top, all reached through a single uniform dispatcher." style="width:100%;height:auto">
+            <defs><marker id="ft2-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker></defs>
+            <text x="26" y="215" text-anchor="middle" font-family="var(--font-mono)" font-size="11" letter-spacing="0.15em" fill="var(--text-dim)" transform="rotate(-90 26 215)">COMPOSITION ↑</text>
+            <rect x="120" y="24" width="470" height="62" rx="8" fill="var(--accent)"/>
+            <text x="142" y="50" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--accent-on)">L3 — Sub-agent</text>
+            <text x="142" y="70" font-family="var(--font-mono)" font-size="10" fill="var(--accent-on)">nested isolated agent · returns a summary upward</text>
+            <rect x="120" y="100" width="470" height="62" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"/>
+            <text x="142" y="126" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">L2 — Skill</text>
+            <text x="142" y="146" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">instruction-layer composite · guides the model</text>
+            <rect x="120" y="176" width="470" height="62" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"/>
+            <text x="142" y="202" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">L1 — Macro</text>
+            <text x="142" y="222" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">deterministic chain · no second model</text>
+            <rect x="120" y="252" width="470" height="62" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.4"/>
+            <text x="142" y="278" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">L0b — Remote atomic</text>
+            <text x="142" y="298" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">satellite on the bus · heartbeat-discovered</text>
+            <rect x="120" y="328" width="470" height="62" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.4"/>
+            <text x="142" y="354" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">L0a — Built-in atomic</text>
+            <text x="142" y="374" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">compiled in-process · always available</text>
+            <line x1="624" y1="390" x2="624" y2="34" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft2-arr)"/>
+            <text x="642" y="215" text-anchor="middle" font-family="var(--font-mono)" font-size="10" letter-spacing="0.1em" fill="var(--text-muted)" transform="rotate(90 642 215)">UNIFORM DISPATCH</text>
+          </svg>
+          <figcaption>Five layers, one dispatcher. From a built-in primitive to a recursive sub-agent, every tool passes the same access-control gate and returns the same result type — only the transport changes.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Domains by Nature</h2>
+        <p>The typed contracts that travel the bus had been listed flat, mixing two natures in one drawer. We separate them.</p>
+        <p>A domain is <strong>tool-nature</strong> when its only reason to exist is to expose a capability the model invokes — voice, image, and the capability satellites to come. Everything else is <strong>plumbing</strong>: the engine's own inference transport, the job bus, persistence, security, observability, delivery.</p>
+        <p>The sharp edge is a single rule:</p>
+        <div class="formula-box"><pre><code>tool-surface  ≠  tool-nature
+
+  github plumbing      exposes a built-in tool   → stays plumbing
+  inference substrate  exposes a generate call   → stays plumbing</code></pre></div>
+        <p>A plumbing domain may incidentally <em>expose</em> a tool without <em>becoming</em> tool-nature. Surfacing a tool does not promote the wire domain. That rule is what keeps the separation honest instead of letting everything drift into &laquo;&nbsp;tool&nbsp;&raquo;.</p>
+        <p>A second rule draws the line <em>inside</em> &laquo;&nbsp;provider&nbsp;&raquo; — because not every provider runs on the bus:</p>
+        <div class="formula-box"><pre><code>provider  ⊋  satellite
+
+  self-hosted process on the bus    →  satellite  (heartbeats — voice, image, our Postiz adapter)
+  a cloud API / one-shot CLI we call →  provider   (no heartbeat — X, GitHub, a bash tool)</code></pre></div>
+        <p>A provider is a <strong>satellite</strong> only when it is something we run on the bus that heartbeats; a cloud API we merely call, or a one-shot command-line tool, is a provider without a satellite's footprint. And one trap to avoid: a self-hosted <strong>backing service</strong> — a whole app like our Postiz fork (web, database, Redis) — is infrastructure, like Postgres. A running container is not a heartbeat; the heartbeat comes from <em>our</em> adapter in front of it. Backing service, provider, tool: three layers, never collapsed into one.</p>
+        <p>The payoff is an addressable plane. Tool-nature subjects carry a <code>tool.</code> marker — <code>…tool.voice.tts…</code> — so the consumer side subscribes to the entire tool plane at once, and discovers what is available through one registry.</p>
+        <div class="callout"><p>Isolation is the point. Once &laquo;&nbsp;the tools&nbsp;&raquo; are a plane, the harness and the workers address and discover them as one.</p></div>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>The Roadmap</h2>
+        <p>Where this goes, in order — substrate first, value next, framework last.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>Substrate</strong> — in production: the bus, the typed contracts, the worker pool, the scheduler.</li>
+          <li><strong>Thin slice</strong> — one signal → one post → approve → publish; measure reach. The keystone.</li>
+          <li><strong>Generalise</strong> — the harness and the job-watcher, over what the slice proved necessary.</li>
+          <li><strong>Tools</strong> — the shared registry, the tool SDK, the satellites migrated onto the five-layer model.</li>
+          <li><strong>Harness &amp; workers</strong> — the pure agentic harness and a fleet of workers running workerEngines, both consuming the tool plane.</li>
+        </ul>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 250" role="img" aria-label="The roadmap as five sequential stages: Substrate in production, then the thin Slice as the current keystone, then Generalise, Tools, and Harness plus Workers." style="width:100%;height:auto">
+            <defs><marker id="ft3-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker></defs>
+            <rect x="16" y="74" width="132" height="64" rx="8" fill="var(--accent)"/>
+            <text x="82" y="102" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent-on)">Substrate</text>
+            <text x="82" y="120" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent-on)">in production</text>
+            <rect x="172" y="74" width="132" height="64" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="238" y="102" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Slice</text>
+            <text x="238" y="120" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">next · keystone</text>
+            <rect x="328" y="74" width="132" height="64" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="394" y="102" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Generalise</text>
+            <text x="394" y="120" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">harness · watcher</text>
+            <rect x="484" y="74" width="132" height="64" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="550" y="102" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Tools</text>
+            <text x="550" y="120" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">registry · SDK</text>
+            <rect x="640" y="74" width="104" height="64" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="692" y="98" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Harness</text>
+            <text x="692" y="114" text-anchor="middle" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="var(--text)">+ Workers</text>
+            <line x1="148" y1="106" x2="170" y2="106" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft3-arr)"/>
+            <line x1="304" y1="106" x2="326" y2="106" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft3-arr)"/>
+            <line x1="460" y1="106" x2="482" y2="106" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft3-arr)"/>
+            <line x1="616" y1="106" x2="638" y2="106" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft3-arr)"/>
+            <rect x="16" y="184" width="728" height="46" rx="8" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.2"/>
+            <text x="380" y="206" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">Tool-system architecture: designed &amp; locked.</text>
+            <text x="380" y="222" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">Implementation is sequenced after the in-flight bus-subject migration — design now, build clean after.</text>
+          </svg>
+          <figcaption>Substrate in production; the thin slice is the keystone that gates everything after it. The tool architecture is settled — its build is sequenced behind one in-flight migration so two reorganisations never collide.</figcaption>
+        </figure>
+        <div class="callout"><p>The design is settled; the build is sequenced, not rushed. Primitives, not a framework.</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

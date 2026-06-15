@@ -1,0 +1,93 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">La Constitution</p>
+    <h1>Constitution de Roxabi</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Pas un manifeste. Une description de la façon dont le système fonctionne vraiment — et des principes que nous ne céderons pas.</p>
+    <p class="meta">Version 1.0 · ouverte à l'amendement · l'historique git fait foi</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sommaire">
+      <span class="t">Préambule</span>
+      <a href="#foundation">I — Le Socle</a>
+      <a href="#open-architecture">II — Ouvert par Architecture</a>
+      <a href="#sovereignty">III — Souveraineté</a>
+      <a href="#builders">IV — Pour les Builders</a>
+      <a href="#commons">V — Le Commun</a>
+      <a href="#laws">Les Lois</a>
+      <a href="#epilogue">Épilogue</a>
+    </nav>
+
+    <div class="const-body">
+      <div class="preamble prose">
+        <p>Il y a des choses qu'une équipe de dix ingénieurs peut construire et qu'une personne seule ne peut pas. Pas par manque de compétence — par manque de temps. L'équipe avait quelqu'un sur la couche d'orchestration. Quelqu'un qui possédait l'état. Toi, non.</p>
+        <p style="margin-top:var(--s-md)">Roxabi existe pour supprimer ce désavantage structurel. Les fondations dont tout système agentique a besoin — routage, état, orchestration, reprise — sont les mêmes pour tous. Elles doivent donc être partagées, possédées et forkables. Ce document consigne les principes qui découlent de ce choix.</p>
+      </div>
+
+      <div class="titre" id="foundation">
+        <span class="label">Titre I</span>
+        <h2>Le Socle</h2>
+        <div class="article"><h3><span class="a-num">Art. 0</span>La couche d'exploitation</h3><p>Roxabi est la part de la stack qui ne change pas d'un projet à l'autre. On ne réécrit pas un système d'exploitation pour écrire un programme ; on construit dessus. Roxabi est cette couche pour les systèmes agentiques — et le travail intéressant commence par-dessus, dès le premier jour.</p></div>
+        <div class="article"><h3><span class="a-num">Art. 1</span>Des primitives, pas un framework</h3><p>Roxabi publie des primitives — routage, état, orchestration, harnesses, connecteurs. Chacune fonctionne seule. Aucune n'impose d'opinion sur ton architecture. Un framework te dit comment construire ; une primitive te tend une pièce et s'efface.</p></div>
+        <div class="article"><h3><span class="a-num">Art. 2</span>La composition est structurelle</h3><p>Chaque module est conçu pour s'étendre proprement. Ajoute un harness, il se câble dans le routage déjà présent. Les modules s'appuient sur les modules ; le graphe de dépendances grandit, et sa valeur grandit avec lui. C'est de la composition au sens des intérêts composés — une propriété de l'architecture, pas un slogan.</p></div>
+      </div>
+
+      <div class="titre" id="open-architecture">
+        <span class="label">Titre II</span>
+        <h2>Ouvert par Architecture</h2>
+        <div class="article"><h3><span class="a-num">Art. 3</span>Ouvert par conception, pas par badge</h3><p>L'open source comme licence est un fait juridique. Ouvert par architecture est un choix de conception : chaque couche est inspectable, chaque composant remplaçable, et rien ne dépend de la présence continue de Roxabi. AGPL-3.0. Source complète. Aucune « édition communautaire » amputée de ses parties utiles.</p></div>
+        <div class="article"><h3><span class="a-num">Art. 4</span>Rien n'appelle la maison</h3><p>Aucune télémétrie par défaut. Aucune API vendeur qui route tes agents par nos serveurs. La couche modèle est une interface enfichable — aucun fournisseur d'IA particulier n'est requis ni mentionné. Ce que tu exécutes est ce que tu peux lire.</p></div>
+        <div class="article"><h3><span class="a-num">Art. 5</span>Aucune couche cachée</h3><p>Aucune fonction verrouillée entre toi et ce qui marche vraiment. Aucun palier entreprise. Aucun astérisque. Si une capacité existe, elle est dans la source que tu as clonée.</p></div>
+      </div>
+
+      <div class="titre" id="sovereignty">
+        <span class="label">Titre III</span>
+        <h2>Souveraineté</h2>
+        <div class="article"><h3><span class="a-num">Art. 6</span>La stack est à toi</h3><p>Dès que tu lances <code>git clone</code>, la stack est à toi : forkable, auto-hébergeable sur toute infrastructure que tu contrôles. Elle n'a besoin ni de notre permission, ni de nos serveurs, ni de notre existence continue pour fonctionner.</p></div>
+        <div class="article"><h3><span class="a-num">Art. 7</span>La sortie de secours est l'option par défaut</h3><p>Chaque dépendance fermée est un impôt futur — un e-mail de tarif qui ruine un mois, un avis de fermeture avec trente jours pour migrer. Roxabi est l'inverse par construction : il n'y a rien dont être exclu, parce qu'il n'y a rien de verrouillé.</p></div>
+      </div>
+
+      <div class="titre" id="builders">
+        <span class="label">Titre IV</span>
+        <h2>Pour les Builders</h2>
+        <div class="article"><h3><span class="a-num">Art. 8</span>Pour celui qui livre</h3><p>Roxabi est pour le développeur solo et la petite équipe qui avance vite — celui qui construit parce qu'il le doit, et qui préfère forker et étendre plutôt qu'acheter un siège et attendre une demande de fonctionnalité.</p></div>
+        <div class="article"><h3><span class="a-num">Art. 9</span>Honnête sur le périmètre</h3><p>Ce n'est pas pour les entreprises avec des équipes plateforme dédiées, et nous ne prétendrons pas le contraire. Un outil pour tout le monde n'est pour personne. Le builder qui en a vraiment besoin doit s'y reconnaître.</p></div>
+      </div>
+
+      <div class="titre" id="commons">
+        <span class="label">Titre V</span>
+        <h2>Le Commun</h2>
+        <div class="article"><h3><span class="a-num">Art. 10</span>Construit sur ce qui précède</h3><p>Les fondations sont publiées parce que l'infrastructure partagée se compose. Tu bénéficies de ce qui t'a précédé ; d'autres bénéficient de ce que tu ajoutes. Ici, contribuer est une méthode de construction, pas une idéologie.</p></div>
+        <div class="article"><h3><span class="a-num">Art. 11</span>Roxabi étend l'open source</h3><p>« Roxabi étend l'open source. L'open source étend Roxabi. » C'est une description de la façon dont le graphe de dépendances fonctionne réellement — pas un slogan. Quand un contributeur ajoute au commun, le builder suivant part d'une position que le contributeur n'avait pas.</p></div>
+      </div>
+
+      <div class="titre" id="laws">
+        <span class="label">Les Lois</span>
+        <h2>Sept choses que nous ne céderons pas</h2>
+        <ol class="laws" style="margin-top:var(--s-lg)">
+          <li>La licence est AGPL-3.0 et reste copyleft. Pas de relicence des parties utiles.</li>
+          <li>Aucune télémétrie sans consentement explicite et opt-in.</li>
+          <li>Chaque couche reste inspectable et remplaçable.</li>
+          <li>La couche modèle reste neutre vis-à-vis des vendeurs et enfichable.</li>
+          <li>Une affirmation est livrée avec son mécanisme ou sa preuve, jamais seule.</li>
+          <li>Les primitives restent autonomes — utilisables sans adopter toute la stack.</li>
+          <li>Le README est l'onboarding. Aucun appel commercial requis.</li>
+        </ol>
+      </div>
+
+      <div class="titre" id="epilogue">
+        <span class="label">Épilogue</span>
+        <h2>Inachevée par conception</h2>
+        <p style="margin-top:var(--s-md);max-width:var(--maxw-prose)">Ce document est ouvert à l'amendement, et l'historique git en est la mémoire. Les fondations grandissent avec ceux qui les utilisent. Si tu trouves ici quelque chose que le code contredit, c'est le code qui fait foi — ouvre une issue, et ce texte sera corrigé.</p>
+        <div class="hero-cta" style="margin-top:var(--s-xl);justify-content:flex-start">
+          <a class="btn btn-primary" href="/fr/projects/">Explorer les projets →</a>
+          <a class="btn btn-ghost" href="https://github.com/Roxabi" rel="noopener">Lire le code source →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>

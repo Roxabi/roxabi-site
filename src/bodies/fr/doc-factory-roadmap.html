@@ -1,0 +1,193 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">ROADMAP &amp; CHOIX</p>
+    <h1>La Roxabi Factory</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Un moteur d'agents étendu d'une couche jobs — les choix qui le façonnent, et l'ordre dans lequel on les construit.</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — Un moteur, étendu</a>
+      <a href="#sec-2">2 — La valeur avant le framework</a>
+      <a href="#sec-3">3 — Un worker n'est pas un outil</a>
+      <a href="#sec-4">4 — Cinq couches d'outils</a>
+      <a href="#sec-5">5 — Des domaines par nature</a>
+      <a href="#sec-6">6 — La roadmap</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Un moteur, étendu</h2>
+        <p>La Factory n'est pas un nouveau système. C'est le moteur d'agents qui anime déjà les bots Roxabi — un cœur hexagonal (ports &amp; adapters), une topologie hub-and-spoke, un registre d'agents et un pool de workers distribués sur un bus de messages — étendu d'une seule couche nouvelle : les <strong>jobs</strong>. Cette couche transforme l'activité en contenu, le publie, et fait tourner la boucle autour.</p>
+        <p>La conséquence est libératrice. Le cœur qu'il reste à bâtir est <em>plus petit</em> que ne le suggérait le premier brain-dump : le pool de workers, le bus, les contrats typés, le scheduler — tout tourne déjà en production. La règle de cadrage en découle directement — <strong>toute nouvelle capacité est un adapter sur l'hexagone, jamais un nouveau cœur.</strong></p>
+        <div class="callout"><p>Le moteur existe déjà. La Factory est une couche jobs par-dessus — une extension, pas une réécriture.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>La valeur avant le framework</h2>
+        <p>Le plan naïf construit d'abord le framework : un cœur générique, puis les modules, puis la publication, puis les routines. C'est le piège classique — une machine générale plantée devant sa première unité de valeur. On l'inverse.</p>
+        <p>D'abord une tranche verticale fine, sous contrôle humain de bout en bout : un signal de <em>ce qui a été fait</em> → le worker génère un post → un humain approuve → ça publie. Elle réutilise le bus et le pool de workers ; le harness est minimal ; pas encore de framework. Ensuite on mesure le reach. <strong>Alors seulement</strong> on généralise le harness et le watcher — et uniquement sur les briques que la tranche a prouvées nécessaires.</p>
+        <div class="callout"><p>Le contrôle humain (HITL) est le défaut tant que le reach — et le risque réputationnel sur deux marques — n'est pas mesuré. Une porte, pas une arrière-pensée.</p></div>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Un worker n'est pas un outil</h2>
+        <p>La décision la plus clarifiante du design. Les mots &laquo;&nbsp;outil&nbsp;&raquo; et &laquo;&nbsp;worker&nbsp;&raquo; avaient dérivé à travers quatre espaces de design parallèles ; voici la ligne qui les résout.</p>
+        <p>Deux rôles, tenus séparés. Un <strong>provider</strong> est le service qui <em>porte</em> un outil — et quand c'est un processus auto-hébergé qu'on fait tourner sur le bus avec un heartbeat, c'est un <strong>satellite</strong>. Un provider expose plusieurs outils : le satellite image expose <code>image.generate</code>, <code>image.list_engines</code>, <code>image.cancel</code>. Un <strong>worker</strong> est l'autre bout — une instance de calcul qui <em>consomme</em> des outils pour exécuter un job. Un worker n'est pas un outil, ni un provider ; c'est ce qui fait le travail.</p>
+        <p>Et un worker n'improvise pas. Il fait tourner un <strong>workerEngine</strong> — un pipeline codé, une séquence déterministe — qui appelle trois sortes d'étapes : le <strong>harness</strong> (un tour agentique pur, où le modèle décide et où ses outils du tour s'exécutent, sans aucune logique de workflow propre), les outils, et du code interne simple. Le harness est un <em>appelé</em> du moteur, pas une de ses saveurs — de l'agentique là où l'on veut une décision, du code là où l'on veut une garantie.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>Provider</strong> — le service qui porte un outil. Indépendant du transport ; un provider, plusieurs outils.</li>
+          <li><strong>Satellite</strong> — un provider déployé en processus auto-hébergé sur le bus, avec un heartbeat. Tout satellite est un provider ; tout provider n'est pas un satellite.</li>
+          <li><strong>Worker</strong> — une instance de calcul qui consomme des outils pour exécuter un job. Ni outil, ni provider.</li>
+          <li><strong>workerEngine</strong> — le pipeline codé que fait tourner un worker ; orchestre harness, outils et code interne.</li>
+          <li><strong>Harness</strong> — un tour agentique pur ; le modèle décide. Une étape que le moteur appelle, jamais le pipeline lui-même.</li>
+        </ul>
+        <p>Pour la boucle de raisonnement du modèle, un <code>image.generate</code> distant et un <code>bash</code> intégré sont identiques — même forme, même type de résultat. La différence de transport est invisible.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 360" role="img" aria-label="Un provider — un satellite quand il est auto-hébergé sur le bus — expose plusieurs outils, enregistrés une fois et consommés à l'identique par le harness et les workers, aux côtés d'outils intégrés — la différence de transport est invisible pour le modèle." style="width:100%;height:auto">
+            <defs><marker id="ft1-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker></defs>
+            <rect x="20" y="30" width="250" height="212" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="145" y="58" text-anchor="middle" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">Satellite Image</text>
+            <text x="145" y="74" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">un provider · heartbeat · une identité</text>
+            <rect x="44" y="92" width="202" height="36" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.3"/>
+            <text x="145" y="115" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">image.generate</text>
+            <rect x="44" y="136" width="202" height="36" rx="6" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.2"/>
+            <text x="145" y="159" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">image.list_engines</text>
+            <rect x="44" y="180" width="202" height="36" rx="6" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.2"/>
+            <text x="145" y="203" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">image.cancel</text>
+            <text x="145" y="232" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--text-dim)">1 provider → N outils</text>
+            <rect x="330" y="98" width="118" height="60" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="389" y="124" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Registre</text>
+            <text x="389" y="142" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">découvert par heartbeat</text>
+            <line x1="270" y1="128" x2="328" y2="128" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft1-arr)"/>
+            <rect x="520" y="44" width="220" height="58" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="630" y="70" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Harness</text>
+            <text x="630" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">tour agentique pur</text>
+            <rect x="520" y="156" width="220" height="58" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="630" y="182" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Worker</text>
+            <text x="630" y="200" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">fait tourner un workerEngine</text>
+            <path d="M448,118 C484,104 490,80 518,74" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft1-arr)"/>
+            <path d="M448,140 C484,156 490,178 518,184" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft1-arr)"/>
+            <text x="486" y="132" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-dim)">consomment</text>
+            <rect x="20" y="296" width="720" height="46" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="380" y="318" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">pour le modèle :&#160;&#160;<tspan font-weight="700">bash</tspan> (intégré)&#160;&#160;&#8801;&#160;&#160;<tspan font-weight="700">image.generate</tspan> (distant)</text>
+            <text x="380" y="334" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-dim)">le transport est invisible — une forme, un type de résultat</text>
+          </svg>
+          <figcaption>Un provider expose des outils — un satellite quand il est auto-hébergé sur le bus. Enregistré une fois, chaque outil est consommé à l'identique par le harness et les workers — un appel distant et un intégré sont indiscernables pour le modèle.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Cinq couches d'outils</h2>
+        <p>Tous les outils ne sont pas atomiques. Le modèle compte cinq couches, d'un appel primitif unique jusqu'au sous-agent récursif — et un seul pipeline les distribue toutes.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>L0a — Intégré.</strong> Compilé dans le moteur ; en-processus ; toujours disponible. <code>bash</code>, lecture/écriture de fichier, web fetch.</li>
+          <li><strong>L0b — Distant.</strong> Un satellite de capacité sur le bus, découvert par heartbeat. <code>image.generate</code>, <code>voice.tts</code>.</li>
+          <li><strong>L1 — Macro.</strong> Une chaîne déterministe de primitives, sans second modèle dans la boucle.</li>
+          <li><strong>L2 — Skill.</strong> Un composite de couche-instruction — un document qui guide le modèle à travers une séquence métier.</li>
+          <li><strong>L3 — Sous-agent.</strong> Un appel d'agent imbriqué et isolé qui remonte un résumé.</li>
+        </ul>
+        <p>Le choix décisif est un <strong>dispatcher uniforme</strong> : une seule porte de contrôle d'accès, un seul type de résultat, le transport variant en dessous. Pas un pipeline ramifié où intégrés et distants font chacun croître leurs propres règles — la discipline d'un chemin unique est ce qui garde le moteur lisible en un après-midi.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 720 430" role="img" aria-label="Les cinq couches d'outils empilées, de l'atomique intégré à la base jusqu'au sous-agent récursif au sommet, toutes atteintes par un dispatcher uniforme unique." style="width:100%;height:auto">
+            <defs><marker id="ft2-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker></defs>
+            <text x="26" y="215" text-anchor="middle" font-family="var(--font-mono)" font-size="11" letter-spacing="0.15em" fill="var(--text-dim)" transform="rotate(-90 26 215)">COMPOSITION ↑</text>
+            <rect x="120" y="24" width="470" height="62" rx="8" fill="var(--accent)"/>
+            <text x="142" y="50" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--accent-on)">L3 — Sous-agent</text>
+            <text x="142" y="70" font-family="var(--font-mono)" font-size="10" fill="var(--accent-on)">agent imbriqué isolé · remonte un résumé</text>
+            <rect x="120" y="100" width="470" height="62" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"/>
+            <text x="142" y="126" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">L2 — Skill</text>
+            <text x="142" y="146" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">composite couche-instruction · guide le modèle</text>
+            <rect x="120" y="176" width="470" height="62" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"/>
+            <text x="142" y="202" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">L1 — Macro</text>
+            <text x="142" y="222" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">chaîne déterministe · pas de second modèle</text>
+            <rect x="120" y="252" width="470" height="62" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.4"/>
+            <text x="142" y="278" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">L0b — Atomique distant</text>
+            <text x="142" y="298" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">satellite sur le bus · découvert par heartbeat</text>
+            <rect x="120" y="328" width="470" height="62" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.4"/>
+            <text x="142" y="354" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">L0a — Atomique intégré</text>
+            <text x="142" y="374" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">compilé en-processus · toujours disponible</text>
+            <line x1="624" y1="390" x2="624" y2="34" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft2-arr)"/>
+            <text x="642" y="215" text-anchor="middle" font-family="var(--font-mono)" font-size="10" letter-spacing="0.1em" fill="var(--text-muted)" transform="rotate(90 642 215)">DISPATCH UNIFORME</text>
+          </svg>
+          <figcaption>Cinq couches, un dispatcher. D'une primitive intégrée à un sous-agent récursif, chaque outil franchit la même porte de contrôle d'accès et renvoie le même type de résultat — seul le transport change.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Des domaines par nature</h2>
+        <p>Les contrats typés qui circulent sur le bus étaient listés à plat, mélangeant deux natures dans un même tiroir. On les sépare.</p>
+        <p>Un domaine est de <strong>nature outil</strong> quand sa seule raison d'être est d'exposer une capacité que le modèle invoque — voix, image, et les satellites de capacité à venir. Tout le reste est de la <strong>plomberie</strong> : le transport d'inférence du moteur lui-même, le bus de jobs, la persistance, la sécurité, l'observabilité, la livraison.</p>
+        <p>Le tranchant tient en une règle :</p>
+        <div class="formula-box"><pre><code>surface d'outil  ≠  nature d'outil
+
+  plomberie github      expose un outil intégré   → reste plomberie
+  substrat d'inférence  expose un appel generate  → reste plomberie</code></pre></div>
+        <p>Un domaine de plomberie peut <em>exposer</em> un outil sans <em>devenir</em> de nature outil. Exposer un outil ne promeut pas le domaine wire. C'est cette règle qui garde la séparation honnête, au lieu de laisser tout dériver vers &laquo;&nbsp;outil&nbsp;&raquo;.</p>
+        <p>Une seconde règle trace la ligne <em>à l'intérieur</em> de &laquo;&nbsp;provider&nbsp;&raquo; — car tout provider ne tourne pas sur le bus :</p>
+        <div class="formula-box"><pre><code>provider  ⊋  satellite
+
+  processus auto-hébergé sur le bus    →  satellite  (heartbeat — voix, image, notre adapter Postiz)
+  une API cloud / un CLI one-shot      →  provider   (pas de heartbeat — X, GitHub, un outil bash)</code></pre></div>
+        <p>Un provider n'est un <strong>satellite</strong> que lorsqu'il est quelque chose qu'on fait tourner sur le bus et qui émet un heartbeat ; une API cloud qu'on ne fait qu'appeler, ou un outil en ligne de commande one-shot, est un provider sans l'empreinte d'un satellite. Et un piège à éviter : un <strong>backing service</strong> auto-hébergé — une application entière comme notre fork Postiz (web, base de données, Redis) — est de l'infrastructure, comme Postgres. Un conteneur qui tourne n'est pas un heartbeat ; le heartbeat vient de <em>notre</em> adapter placé devant. Backing service, provider, outil : trois couches, jamais confondues.</p>
+        <p>Le gain, c'est un plan adressable. Les sujets de nature outil portent un marqueur <code>tool.</code> — <code>…tool.voice.tts…</code> — pour que le côté consommateur s'abonne au plan d'outils entier d'un coup, et découvre ce qui est disponible via un registre unique.</p>
+        <div class="callout"><p>L'isolation est le but. Dès que &laquo;&nbsp;les outils&nbsp;&raquo; forment un plan, le harness et les workers les adressent et les découvrent comme un tout.</p></div>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>La roadmap</h2>
+        <p>Où cela va, dans l'ordre — le substrat d'abord, la valeur ensuite, le framework en dernier.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>Substrat</strong> — en production : le bus, les contrats typés, le pool de workers, le scheduler.</li>
+          <li><strong>Tranche fine</strong> — un signal → un post → approbation → publication ; mesurer le reach. La clé de voûte.</li>
+          <li><strong>Généraliser</strong> — le harness et le job-watcher, sur ce que la tranche a prouvé nécessaire.</li>
+          <li><strong>Outils</strong> — le registre partagé, le SDK d'outils, les satellites migrés sur le modèle à cinq couches.</li>
+          <li><strong>Harness &amp; workers</strong> — le harness agentique pur et une flotte de workers faisant tourner des workerEngines, consommant tous deux le plan d'outils.</li>
+        </ul>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 250" role="img" aria-label="La roadmap en cinq étapes séquentielles : Substrat en production, puis la Tranche fine comme clé de voûte actuelle, puis Généraliser, Outils, et Harness plus Workers." style="width:100%;height:auto">
+            <defs><marker id="ft3-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker></defs>
+            <rect x="16" y="74" width="132" height="64" rx="8" fill="var(--accent)"/>
+            <text x="82" y="102" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent-on)">Substrat</text>
+            <text x="82" y="120" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent-on)">en production</text>
+            <rect x="172" y="74" width="132" height="64" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="238" y="102" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Slice</text>
+            <text x="238" y="120" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">prochaine · clé de voûte</text>
+            <rect x="328" y="74" width="132" height="64" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="394" y="102" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Généraliser</text>
+            <text x="394" y="120" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">harness · watcher</text>
+            <rect x="484" y="74" width="132" height="64" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="550" y="102" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Outils</text>
+            <text x="550" y="120" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">registre · SDK</text>
+            <rect x="640" y="74" width="104" height="64" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="692" y="98" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Harness</text>
+            <text x="692" y="114" text-anchor="middle" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="var(--text)">+ Workers</text>
+            <line x1="148" y1="106" x2="170" y2="106" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft3-arr)"/>
+            <line x1="304" y1="106" x2="326" y2="106" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft3-arr)"/>
+            <line x1="460" y1="106" x2="482" y2="106" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft3-arr)"/>
+            <line x1="616" y1="106" x2="638" y2="106" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ft3-arr)"/>
+            <rect x="16" y="184" width="728" height="46" rx="8" fill="var(--surface)" stroke="var(--border-hi)" stroke-width="1.2"/>
+            <text x="380" y="206" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">Architecture du système d'outils : conçue &amp; verrouillée.</text>
+            <text x="380" y="222" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">L'implémentation est séquencée après la migration des sujets du bus en cours — concevoir maintenant, construire proprement ensuite.</text>
+          </svg>
+          <figcaption>Le substrat en production ; la tranche fine est la clé de voûte qui conditionne tout ce qui suit. L'architecture des outils est arrêtée — sa construction est séquencée derrière une migration en cours pour que deux réorganisations n'entrent jamais en collision.</figcaption>
+        </figure>
+        <div class="callout"><p>Le design est arrêté ; la construction est séquencée, pas précipitée. Des primitives, pas un framework.</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

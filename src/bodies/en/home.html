@@ -1,0 +1,111 @@
+<main>
+
+<section class="hero">
+  <canvas id="hero-bg" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="hero-copy">
+    <span class="badge" data-reveal><span class="dot"></span>AGPL-3.0 · Open by architecture</span>
+    <h1 data-reveal>One person.<br>Team-scale output.</h1>
+    <p class="lead" data-reveal>
+      <span class="sub">Pre-wired. Open. Yours.</span><br>
+      A factory for the AI era. Roxabi compounds agents, workers, tools and skills into one foundation — all open source, yours to fork.
+    </p>
+    <div class="hero-cta" data-reveal>
+      <a class="btn btn-primary" href="/projects/">Explore the projects →</a>
+      <a class="btn btn-ghost" href="https://github.com/Roxabi" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+    </div>
+    <svg id="iso" data-reveal class="rox-dia" viewBox="0 0 540 420" role="img" aria-label="Isometric blueprint: the roxabi-factory core surrounded by module blocks llmCLI, voiceCLI, imageCLI, cortex, intel, idna on a grid, with amber dataflow particles converging on the core"></svg>
+  </div>
+  <a href="#why" class="hero-scroll" aria-label="Scroll to content">
+    <span class="hero-scroll-label">Scroll</span>
+    <span class="hero-scroll-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15M5 12l7 7 7-7"/></svg></span>
+  </a>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <h2 data-reveal>Foundations, not boilerplate.</h2>
+    <div class="grid grid-pillars" style="margin-top:var(--s-xl)">
+      <div class="card pillar" data-reveal><p class="num">01</p><h3>The operating layer</h3><p>The part of the stack that doesn't change. Routing, state, orchestration, error recovery: the same for everyone. You start from there and build what's specific to you.</p></div>
+      <div class="card pillar" data-reveal><p class="num">02</p><h3>Open by architecture</h3><p>Open by design, not by badge. Every layer inspectable, every component replaceable. Fork it and it's yours. No telemetry. No vendor routing your agents through our servers.</p></div>
+      <div class="card pillar" data-reveal><p class="num">03</p><h3>Compounding foundations</h3><p>Each module builds on the last. Add a harness and it wires into the routing you already have. Every piece you add compounds. Every fork extends the foundation.</p></div>
+      <div class="card pillar" data-reveal><p class="num">04</p><h3>Built for builders</h3><p>For the person who builds because they have to. Solo developers and small teams that move fast. Not enterprises with dedicated platform teams.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <h2 data-reveal>Primitives you can fork today</h2>
+    <p class="lead" data-reveal style="max-width:620px;margin-top:var(--s-md)">Each one works standalone. Together they give a solo developer a full-stack foundation. A slice is below — the full portfolio is one click away.</p>
+    <div class="grid grid-2" style="margin-top:var(--s-xl)">
+      <a class="card proj-card" href="/projects/roxabi-factory/" data-reveal>
+        <div class="top"><h3>roxabi-factory</h3><span class="tag">In construction</span></div>
+        <p>A self-hostable agent engine. Hub-and-spoke over a NATS bus, per-scope agent pools, a worker fleet that plugs in over the wire.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">How it works <span class="arrow">→</span></p>
+      </a>
+      <a class="card proj-card" href="/projects/voicecli/" data-reveal>
+        <div class="top"><h3>voiceCLI</h3><span class="tag">Open source</span></div>
+        <p>One local CLI for speech — TTS and STT. A single Markdown script drives every engine, with a NATS satellite for cross-host voice.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">How it works <span class="arrow">→</span></p>
+      </a>
+      <a class="card proj-card" href="/projects/llmcli/" data-reveal>
+        <div class="top"><h3>llmCLI</h3><span class="tag">Open source</span></div>
+        <p>Serve local LLMs on your own GPU. <code>llama.cpp</code> + GGUF behind an OpenAI-compatible endpoint, one LiteLLM proxy for the whole LAN.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">How it works <span class="arrow">→</span></p>
+      </a>
+      <a class="card proj-card" href="/projects/imagecli/" data-reveal>
+        <div class="top"><h3>imageCLI</h3><span class="tag">Open source</span></div>
+        <p>One local CLI for image generation. FLUX.2, FLUX.1 (+ PuLID) and SD3.5 behind one command — quantization and VRAM handled for you.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">How it works <span class="arrow">→</span></p>
+      </a>
+      <a class="card proj-card" href="/projects/roxabi-plugins/" data-reveal>
+        <div class="top"><h3>roxabi-plugins</h3><span class="tag">Open source</span></div>
+        <p>Reusable Claude Code plugins. <code>dev-core</code> turns one command into the full dev lifecycle — frame, spec, plan, implement, review, ship.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">How it works <span class="arrow">→</span></p>
+      </a>
+      <a class="card proj-card" href="/projects/roxabi-boilerplate/" data-reveal>
+        <div class="top"><h3>roxabi-boilerplate</h3><span class="tag">Open source</span></div>
+        <p>A production-ready SaaS starter. Bun + TurboRepo monorepo with auth, multi-tenancy and RBAC wired — plus a built-in Claude agent team.</p>
+        <p class="portfolio-note" style="margin-top:var(--s-md)">How it works <span class="arrow">→</span></p>
+      </a>
+    </div>
+    <div class="hero-cta" data-reveal style="margin-top:var(--s-xl);justify-content:flex-start">
+      <a class="btn btn-ghost" href="/projects/">See all 7 primitives →</a>
+    </div>
+  </div>
+</section>
+
+<section id="open" style="border-top:1px solid var(--border)">
+  <div class="wrap">
+    <p class="section-label" data-reveal>Open by design</p>
+    <h2 data-reveal>The escape hatch is the default</h2>
+    <p class="lead" data-reveal style="max-width:640px;margin-top:var(--s-md)">Fork it. Run it on your own infrastructure. Nothing calls home. The entire stack is yours the moment you clone it. No subscription that could disappear, no pricing you don't control.</p>
+    <div class="stats" data-reveal style="margin-top:var(--s-xl)">
+      <div class="stat"><div class="n">AGPL</div><div class="l">Full source. No feature gates.</div></div>
+      <div class="stat"><div class="n">★ <span data-stars></span></div><div class="l">GitHub stars</div></div>
+      <div class="stat"><div class="n">0</div><div class="l">Telemetry by default</div></div>
+    </div>
+    <div class="hero-cta" data-reveal style="margin-top:var(--s-xl);justify-content:flex-start">
+      <a class="btn btn-ghost" href="/constitution/">Read the Constitution →</a>
+      <a class="btn btn-ghost" href="https://github.com/Roxabi" rel="noopener">Read the source →</a>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="wrap">
+    <h2 data-reveal>Build what used to take a team.</h2>
+    <p class="lead" data-reveal style="max-width:560px;margin-inline:auto">Get the foundations. Wire up your first agent system. Run what used to take a team, without being the bottleneck.</p>
+    <div class="hero-cta" data-reveal>
+      <a class="btn btn-primary" href="/projects/">Explore the projects →</a>
+      <a class="btn btn-ghost" href="https://github.com/Roxabi" rel="noopener">Star on GitHub</a>
+    </div>
+  </div>
+</section>
+
+</main>

@@ -1,0 +1,390 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">RETOUR D'EXPÉRIENCE</p>
+    <h1>Remédiation Autonome</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Un audit nocturne avec Kimi, un epic dérivé avec Opus, et un workflow qui a mené vingt-deux constats de l'issue à la PR fusionnée en une seule après-midi — sans aucune intervention humaine entre un constat et la branche. Voici comment le run s'est réellement déroulé.</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sommaire">
+      <span class="t">Sommaire</span>
+      <a href="#sec-1">1 — Deux runs, polarité inversée</a>
+      <a href="#sec-2">2 — De l'audit à l'epic</a>
+      <a href="#sec-3">3 — Le harnais</a>
+      <a href="#sec-4">4 — De la PR relue à la fusion</a>
+      <a href="#sec-5">5 — Ordonnancer par empreinte</a>
+      <a href="#sec-6">6 — Un seul contrat, dix-neuf agents</a>
+      <a href="#sec-7">7 — Ce qui a cassé, et pourquoi</a>
+      <a href="#sec-8">8 — Le coût, sans fard</a>
+      <a href="#sec-9">9 — La preuve que c'est passé</a>
+      <a href="#sec-10">10 — Ce qui se capitalise</a>
+      <a href="#sec-11">11 — Sources &amp; code</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Deux runs, polarité inversée</h2>
+        <p>Le 2 juin 2026, la factory d'agents de Roxabi a retourné sa propre machinerie multi-agents sur sa propre base de code. Un <a href="/fr/documentation/multi-agent-audit/">audit qualité</a> avait déjà balayé le dépôt — 69 agents sur 20 vagues, huit domaines, 3 291 fichiers — et distillé <strong>1 258 issues brutes en 22 constats actionnables</strong>. Voici le compte rendu de la suite : solder ces 22 constats, de bout en bout, sans aucune barrière humaine entre une issue et sa fusion.</p>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">22</span><span class="kpi-label">constats</span></div>
+          <div class="kpi-item"><span class="kpi-value">19/19</span><span class="kpi-label">PR fusionnées</span></div>
+          <div class="kpi-item"><span class="kpi-value">4 h 32 m</span><span class="kpi-label">temps réel</span></div>
+          <div class="kpi-item"><span class="kpi-value">0</span><span class="kpi-label">barrière humaine</span></div>
+        </div>
+        <p>L'audit et la remédiation sont la même forme, parcourue en sens inverse. L'audit était un fan-out en <strong>lecture</strong> : beaucoup d'agents qui observent, rien qui change. La remédiation était un fan-out en <strong>écriture</strong> suivi d'une fusion sérialisée : beaucoup d'agents qui modifient, une seule branche qui absorbe. Même machinerie, polarité inversée.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Phase</th><th>Temps réel</th><th>Échelle</th><th>Résultat</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Audit</strong> (précurseur)</td><td>2 h 20 m</td><td>69 agents · 20 vagues · 8 domaines</td><td>1 258 issues &rarr; 22 actionnables</td></tr>
+              <tr><td><strong>Remédiation</strong> (ce run)</td><td>4 h 32 m</td><td>19 feuilles · 4 vagues · auto-merge</td><td>22 constats livrés · 4 gates de dette CI</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>De l'audit à l'epic</h2>
+        <p>La remédiation n'est pas partie d'une intuition — elle est partie d'un plan, et ce plan a été construit par la machine la nuit précédente. Le mot &laquo;&nbsp;audit&nbsp;&raquo; recouvre ici deux instruments distincts, à ne pas confondre.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th></th><th>Scanner déterministe</th><th>Audit multi-agents profond</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Quoi</strong></td><td>une métrique de dette par marqueurs de suppression</td><td>un fan-out de lecture qualitatif</td></tr>
+              <tr><td><strong>Comment</strong></td><td><code>audit_quality_debt.py</code> · <code>make quality-debt-report</code></td><td>69 agents · 20 vagues · 8 domaines, piloté par Kimi</td></tr>
+              <tr><td><strong>Sortie</strong></td><td><code>quality-debt-report.json</code> (des comptes)</td><td>un manifest + 8 rapports de domaine &rarr; 1 258 issues</td></tr>
+              <tr><td><strong>Cadence</strong></td><td>chaque PR — CI informatif, ne bloque jamais</td><td>ponctuel, à la demande (de nuit)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Le scanner est le pouls permanent — peu coûteux, déterministe, toujours actif. L'audit profond, lui, est le diagnostic. Il a tourné de nuit, en fan-out de lecture seule — beaucoup d'agents qui lisent, aucun qui écrit — partitionnant 3 291 fichiers sur huit domaines d'analyse en vingt vagues, piloté par <strong>Kimi</strong> : un modèle peu coûteux à long contexte routé via le proxy LiteLLM, ce qui rend un balayage de 69 agents abordable à lancer pendant que l'on dort. Il a fait remonter 1 258 issues brutes, les a classées P0–P3, et les a synthétisées en un manifest committé et huit rapports de domaine. Cette moitié lecture a son propre compte rendu — le doc compagnon <a href="/fr/documentation/multi-agent-audit/">Audit Multi-Agents</a> — et sa méthode est un artefact réutilisable, le <a href="https://github.com/Roxabi/roxabi-plugins/blob/staging/playbooks/multi-agent-audit-playbook.md" rel="noopener">playbook d'audit</a>.</p>
+        <p>Un tas de 1 258 issues n'est pas un plan. <strong>Opus</strong> a donc pris les constats de plus haute sévérité — les issues <strong>P0</strong> et <strong>P1</strong> — et a fait le travail qui transforme des symptômes en plan : il a dérivé les <em>causes racines</em> qui les sous-tendent. Non pas &laquo;&nbsp;corriger ces deux cents lignes&nbsp;&raquo;, mais &laquo;&nbsp;voici la poignée de causes structurelles que ces lignes partagent&nbsp;&raquo;.</p>
+        <p>Ces causes racines sont devenues l'epic <strong>#1662</strong> — 22 constats actionnables. L'epic a été découpé en tâches feuilles, et les feuilles ont été reliées par des arêtes GitHub natives <strong><code>blocked_by</code></strong> en un graphe de dépendances : là où deux correctifs touchaient le même fichier, l'un était marqué bloqué par l'autre ; là où les empreintes étaient disjointes, aucune arête. Ce graphe <em>est</em> l'ordonnancement.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 128" role="img" aria-label="La chaîne de l'audit à l'exécution : un audit profond nocturne piloté par Kimi produit 1 258 issues, Opus dérive les causes racines à partir des constats P0 et P1, celles-ci deviennent l'epic #1662 avec 22 constats actionnables, les feuilles sont reliées en un graphe de dépendances blocked_by, et le workflow l'exécute une vague à la fois." style="width:100%;height:auto">
+            <defs>
+              <marker id="ch-arr-fr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <rect x="8" y="34" width="128" height="40" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="72" y="59" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Audit profond</text>
+            <text x="72" y="96" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">Kimi · 69 agents</text>
+            <text x="72" y="108" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">20 vagues · 8 domaines</text>
+            <rect x="158" y="34" width="128" height="40" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="222" y="59" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Cause racine</text>
+            <text x="222" y="96" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">Opus · à partir</text>
+            <text x="222" y="108" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">des constats P0 / P1</text>
+            <rect x="308" y="34" width="128" height="40" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="372" y="59" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">Epic #1662</text>
+            <text x="372" y="96" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">22 actionnables</text>
+            <text x="372" y="108" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">constats</text>
+            <rect x="458" y="34" width="128" height="40" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="522" y="59" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">blocked_by</text>
+            <text x="522" y="96" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">partagé &rArr; série</text>
+            <text x="522" y="108" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">disjoint &rArr; parallèle</text>
+            <rect x="608" y="34" width="128" height="40" rx="8" fill="var(--accent)"/>
+            <text x="672" y="59" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent-on)">Workflow</text>
+            <text x="672" y="96" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">une vague</text>
+            <text x="672" y="108" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">par invocation</text>
+            <line x1="136" y1="54" x2="158" y2="54" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ch-arr-fr)"/>
+            <line x1="286" y1="54" x2="308" y2="54" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ch-arr-fr)"/>
+            <line x1="436" y1="54" x2="458" y2="54" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ch-arr-fr)"/>
+            <line x1="586" y1="54" x2="608" y2="54" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ch-arr-fr)"/>
+          </svg>
+          <figcaption>De la lecture nocturne d'un modèle à un ordonnancement exécutable par la machine. Kimi audite, Opus remonte aux causes, l'epic se découpe, les arêtes <code>blocked_by</code> encodent l'ordre — et le workflow ne fait que parcourir le graphe.</figcaption>
+        </figure>
+        <div class="callout"><p>Le graphe de dépendances est le contrat entre planification et exécution. Les arêtes <code>blocked_by</code> de l'epic <em>sont</em> l'ordonnancement par vagues — le harnais les lit, il ne les invente pas.</p></div>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Le harnais</h2>
+        <p>L'ordonnancement est de la donnée ; le harnais est le moteur qui l'exécute. <a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/plans/epic-1662-wave.mjs" rel="noopener"><code>epic-1662-wave.mjs</code></a> est un <strong>script Workflow</strong> — un contrôle de flux JavaScript déterministe (boucles, fan-out, conditions) enveloppant des appels <code>agent()</code> pilotés par le modèle. Chaque invocation exécute exactement <strong>une vague de dépendances</strong> de feuilles et, délibérément, <strong>ne fusionne pas</strong> — la fusion est le travail de la boucle principale. C'est cette séparation qui permet aux dépendants de chaque vague de brancher depuis une base déjà fusionnée.</p>
+        <p>À l'intérieur, chaque feuille suit le même pipeline, adapté à sa taille.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 444" role="img" aria-label="Le pipeline par issue à l'intérieur du harnais : implémenter (les petites issues reçoivent un agent, les grosses sont planifiées, sous-implémentées en parallèle, puis intégrées), ouvrir une PR avec trace de décision, puis une boucle revue-validation-correctif de deux tours au plus, en reportant tout résiduel vers une issue sœur, avant de passer la main à la boucle principale qui fusionne." style="width:100%;height:auto">
+            <defs>
+              <marker id="hp-arr-fr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <rect x="150" y="20" width="460" height="80" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="380" y="44" text-anchor="middle" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">① Implémenter — adaptatif à la taille</text>
+            <text x="380" y="66" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">S → un agent d'impl (worktree isolé)</text>
+            <text x="380" y="86" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">F → PLAN ⇒ sous-impl ×N (fichiers disjoints) ⇒ INTEGRATE</text>
+            <line x1="380" y1="100" x2="380" y2="116" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#hp-arr-fr)"/>
+            <rect x="290" y="116" width="180" height="30" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="380" y="136" text-anchor="middle" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="var(--text)">PR · trace de décision</text>
+            <line x1="380" y1="146" x2="380" y2="162" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#hp-arr-fr)"/>
+            <rect x="150" y="162" width="460" height="46" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="380" y="182" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">② Revue · 5 lentilles en parallèle</text>
+            <text x="380" y="199" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">correctness · axial · sécurité · tests · règles</text>
+            <line x1="380" y1="208" x2="380" y2="226" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#hp-arr-fr)"/>
+            <text x="392" y="221" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-muted)">bloquant / majeur</text>
+            <rect x="150" y="226" width="460" height="46" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="380" y="246" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">③ Validation · 2 sceptiques / constat</text>
+            <text x="380" y="263" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">réfuter par défaut — ne survit que si confirmé</text>
+            <line x1="380" y1="272" x2="380" y2="290" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#hp-arr-fr)"/>
+            <text x="392" y="285" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-muted)">confirmé</text>
+            <rect x="150" y="290" width="460" height="46" rx="8" fill="var(--accent)"/>
+            <text x="380" y="310" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent-on)">④ Correctif · appliquer → re-gates → push</text>
+            <text x="380" y="327" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent-on)">deux tours au plus, puis report du résiduel</text>
+            <path d="M150,313 C112,313 112,185 150,185" fill="none" stroke="var(--accent)" stroke-width="1.4" marker-end="url(#hp-arr-fr)"/>
+            <text x="104" y="249" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)" transform="rotate(-90 104 249)">≤ 2 tours</text>
+            <line x1="610" y1="313" x2="646" y2="313" stroke="var(--accent)" stroke-width="1.4" marker-end="url(#hp-arr-fr)"/>
+            <rect x="648" y="293" width="104" height="40" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <text x="700" y="310" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">Report →</text>
+            <text x="700" y="323" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">issue sœur</text>
+            <line x1="380" y1="336" x2="380" y2="378" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#hp-arr-fr)"/>
+            <rect x="150" y="378" width="460" height="48" rx="8" fill="none" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="5,4"/>
+            <text x="380" y="398" text-anchor="middle" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="var(--text)">boucle principale (hors workflow)</text>
+            <text x="380" y="416" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">CI vert → +reviewed → auto-merge → vague suivante</text>
+          </svg>
+          <figcaption>Une feuille, de bout en bout. La boîte en pointillés est la seule partie hors du script workflow : le harnais produit une PR relue et s'arrête ; la boucle principale fusionne et le ré-invoque pour la vague suivante.</figcaption>
+        </figure>
+        <ul class="feature-list">
+          <li><strong>Implémenter.</strong> Une petite feuille reçoit un agent d'implémentation dans un worktree git isolé. Une grosse est d'abord découpée par un agent <code>PLAN</code> en groupes de fichiers <em>disjoints</em>, implémentés par des sous-agents parallèles (aucun ne touche le même fichier, donc la fusion est sans conflit par construction), puis recousue par un agent <code>INTEGRATE</code>. Dans les deux cas, ça se termine par une PR portant une trace de décision.</li>
+          <li><strong>Revue.</strong> Cinq lentilles relisent le diff en parallèle — exactitude, architecture axiale, sécurité, tests et conformité aux règles — chacune un agent spécialiste. Seuls les constats bloquants et majeurs avancent.</li>
+          <li><strong>Validation.</strong> Chaque constat qui avance affronte deux sceptiques, chacun invité à le <em>réfuter par défaut</em>. Un constat ne survit que s'il est confirmé — le bruit de revue plausible-mais-faux meurt ici.</li>
+          <li><strong>Correctif &amp; report.</strong> Un fixer applique les constats confirmés, relance les gates et pousse. La boucle tourne deux fois au plus ; tout ce qui reste non résolu est déposé en issue sœur reportée, bloquée par l'originale — le lot ne cale jamais sur un constat tenace.</li>
+        </ul>
+        <p>La forme tient en un écran — un panel de revue parallèle, puis un vote sceptique par constat :</p>
+        <div class="codeblock">
+          <div class="codeblock-header">epic-1662-wave.mjs · revue → validation</div>
+          <pre><code><span class="c">// 5 lentilles relisent le diff en parallèle — chacune un agent spécialiste</span>
+<span class="k">const</span> reviews = <span class="k">await</span> parallel(LENSES.map((L) =&gt; () =&gt;
+  agent(reviewPrompt(n, L, diff), { agentType: L.agent, schema: FINDINGS_SCHEMA })))
+
+<span class="c">// garder bloquant/majeur, puis réfuter chaque constat avec 2 sceptiques</span>
+<span class="k">const</span> verdicts = <span class="k">await</span> parallel(findings.map((f) =&gt; () =&gt;
+  parallel([1, 2].map((k) =&gt; () =&gt;
+    agent(validatePrompt(n, f, diff, k), { schema: VERDICT_SCHEMA })))
+    .then((votes) =&gt; ({ f, real: votes.some((v) =&gt; v.real) }))))
+
+<span class="k">const</span> confirmed = verdicts.filter((v) =&gt; v.real).map((v) =&gt; v.f)</code></pre>
+        </div>
+        <p>Quatre propriétés tiennent pour chaque agent du run, par construction :</p>
+        <ul class="feature-list">
+          <li><strong>Sortie typée, jamais en prose.</strong> Chaque agent est forcé d'émettre un résultat structuré contre un schéma JSON — le mode d'échec &laquo;&nbsp;l'agent a fini en paragraphe au lieu d'un résultat&nbsp;&raquo; est éliminé par conception.</li>
+          <li><strong>Un seul contrat, injecté verbatim.</strong> Les mêmes règles RCA (§6) entrent dans chaque prompt, pour que dix-neuf agents non coordonnés raisonnent de la même façon.</li>
+          <li><strong>Réessai au niveau de l'inférence.</strong> Un wrapper <code>tryAgent</code> réessaie trois fois avec back-off croissant — le correctif de la tempête de surcharge du soir d'ouverture, désormais un défaut.</li>
+          <li><strong>Isoler, différer, continuer.</strong> Une feuille qui lève une erreur est capturée, enregistrée et ignorée ; la vague n'avorte jamais sur un échec isolé. La concurrence est plafonnée à trois issues en vol, pour la cadence de fusion.</li>
+        </ul>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>De la PR relue à la fusion</h2>
+        <p>Le workflow rend une PR relue ; la <strong>boucle principale</strong> prend le relais — et c'est là que tout reste autonome. La séparation compte : le workflow développe, la boucle principale fusionne, pour que les dépendants branchent toujours depuis une base fraîchement fusionnée.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Gate CI</div><div class="step-desc"><code>ci</code> et le scan de secrets doivent être au vert — les mêmes checks que l'agent a déjà exécutés en local.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Label + auto-merge</div><div class="step-desc">Ajouter le label <code>reviewed</code>, activer <code>gh pr merge --auto</code>. Aucune approbation humaine dans le chemin.</div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Watcher base-stricte</div><div class="step-desc"><code>staging</code> exige des branches à jour ; une boucle de poll lance <code>update-branch</code> à chaque <code>BEHIND</code> et abandonne sur <code>DIRTY</code>.</div></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Fusionné → débloque</div><div class="step-desc">La fusion libère les feuilles qui étaient <code>blocked_by</code> elle, ouvrant la vague suivante.</div></div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Vague suivante</div><div class="step-desc">Ré-invoquer le workflow ; ses agents branchent depuis la base que la dernière vague vient de fusionner.</div></div></div>
+        </div>
+        <div class="callout"><p>La barrière de fusion était <strong>CI au vert + un label <code>reviewed</code> + la revue croisée entre agents en cours de run</strong> — et rien d'autre. Aucune approbation humaine ne se tenait entre une PR au vert et la branche <code>staging</code>.</p></div>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Ordonnancer par empreinte</h2>
+        <p>Dix-neuf feuilles ne peuvent pas tourner toutes en même temps — certaines touchent les mêmes fichiers, et deux agents qui éditent un seul fichier produisent un conflit de fusion, pas une fonctionnalité. L'ordonnanceur a suivi un unique prédicat, lu directement sur le graphe <code>blocked_by</code> de l'epic : <strong>empreinte disjointe ⇒ parallèle ; fichier partagé ⇒ série.</strong> Le parallélisme était plafonné à trois agents concurrents, et autorisé uniquement là où les empreintes étaient prouvablement disjointes.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 205" role="img" aria-label="L'ordonnancement en quatre vagues : V1 neuf feuilles en parallèle, V2 trois feuilles conditionnées aux fusions de V1, V3 cinq feuilles strictement en série car elles partagent des fichiers CI, V4 deux feuilles en série partageant un CLAUDE.md." style="width:100%;height:auto">
+            <defs>
+              <marker id="wv-arr-fr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <text x="20" y="22" font-family="var(--font-mono)" font-size="10" letter-spacing="0.15em" fill="var(--text-dim)">ORDONNANCEMENT</text>
+            <text x="740" y="22" text-anchor="end" font-family="var(--font-mono)" font-size="10" letter-spacing="0.1em" fill="var(--text-dim)">TEMPS &rarr;</text>
+            <rect x="32" y="72" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1"/>
+            <rect x="26" y="66" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <rect x="20" y="60" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="89" y="90" text-anchor="middle" font-family="var(--font-mono)" font-size="14" font-weight="700" fill="var(--text)">V1</text>
+            <text x="89" y="110" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">9 feuilles</text>
+            <text x="89" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--text-dim)">fan-out parallèle</text>
+            <rect x="216" y="66" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1"/>
+            <rect x="210" y="60" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="279" y="90" text-anchor="middle" font-family="var(--font-mono)" font-size="14" font-weight="700" fill="var(--text)">V2</text>
+            <text x="279" y="110" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">3 feuilles</text>
+            <text x="279" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--text-dim)">départ conditionné</text>
+            <rect x="400" y="60" width="138" height="76" rx="8" fill="var(--accent)"/>
+            <text x="469" y="90" text-anchor="middle" font-family="var(--font-mono)" font-size="14" font-weight="700" fill="var(--accent-on)">V3</text>
+            <text x="469" y="110" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent-on)">5 feuilles</text>
+            <text x="469" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--accent-on)">strictement en série</text>
+            <rect x="590" y="60" width="138" height="76" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="659" y="90" text-anchor="middle" font-family="var(--font-mono)" font-size="14" font-weight="700" fill="var(--text)">V4</text>
+            <text x="659" y="110" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">2 feuilles</text>
+            <text x="659" y="128" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--text-dim)">en série</text>
+            <line x1="172" y1="98" x2="208" y2="98" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#wv-arr-fr)"/>
+            <line x1="356" y1="98" x2="398" y2="98" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#wv-arr-fr)"/>
+            <line x1="540" y1="98" x2="588" y2="98" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#wv-arr-fr)"/>
+            <text x="89" y="172" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">empreintes disjointes</text>
+            <text x="89" y="186" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">core · infra · config</text>
+            <text x="279" y="172" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">attend une</text>
+            <text x="279" y="186" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">fusion de V1</text>
+            <text x="469" y="172" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">partagent ci.yml ·</text>
+            <text x="469" y="186" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">pre-commit · stack.yml</text>
+            <text x="659" y="172" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">partagent un</text>
+            <text x="659" y="186" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-dim)">CLAUDE.md</text>
+          </svg>
+          <figcaption>Quatre vagues, ordonnancées par empreinte : en parallèle là où les feuilles sont disjointes, en série là où elles partagent un fichier. Sérialiser V3 — cinq feuilles éditant toutes la config CI — a maintenu le lot sans conflit.</figcaption>
+        </figure>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Vague</th><th>Feuilles</th><th>Stratégie</th><th>Pourquoi</th></tr></thead>
+            <tbody>
+              <tr><td><strong>V1</strong></td><td>9</td><td>fan-out parallèle</td><td>empreintes disjointes — core, infra, config, adapters</td></tr>
+              <tr><td><strong>V2</strong></td><td>3</td><td>départ conditionné</td><td>chacune dépend d'une fusion de V1</td></tr>
+              <tr><td><strong>V3</strong></td><td>5</td><td>strictement en série</td><td>partagent toutes <code>ci.yml</code> · <code>pre-commit</code> · <code>stack.yml</code></td></tr>
+              <tr><td><strong>V4</strong></td><td>2</td><td>en série</td><td>partagent un <code>CLAUDE.md</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><p>Sérialiser V3 fut la décision d'ordonnancement la plus déterminante. Cinq feuilles ajoutaient toutes à la même config CI ; en parallèle, elles se seraient écrasées les unes les autres. En série, chacune voyait le changement de la précédente.</p></div>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>Un seul contrat, dix-neuf agents</h2>
+        <p>Dix-neuf agents ont travaillé en isolation, aucun conscient des autres. Ce qui a gardé leur production cohérente — et relisible — fut un unique contrat de raisonnement, injecté verbatim dans chaque agent d'implémentation et répercuté dans chaque corps de PR.</p>
+        <div class="formula-box"><pre><code>obs(constat)  &rarr;  cause_racine            <span class="c"># pas le symptôme</span>
+              &rarr;  corrections &isin; {Patch ⊻ Archi}   <span class="c"># choisir, explicitement</span>
+              &rarr;  corriger au niveau de la cause
+              &rarr;  trust(input)?  ·  testé &and; correct   <span class="c"># vert &ne; correct</span>
+              &rarr;  tracer la décision dans le corps de PR</code></pre></div>
+        <p>La règle qui a le plus servi fut <strong>vert &ne; correct</strong> : un run CI au vert est nécessaire, jamais suffisant. Et forcer chaque agent à choisir entre un <em>patch</em> (traiter le symptôme) et un correctif <em>architectural</em> (déplacer la cause) — à voix haute, dans la PR — a transformé dix-neuf runs non coordonnés en un dossier relisible. Ce document est rédigeable parce que ce dossier existe.</p>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>Ce qui a cassé, et pourquoi</h2>
+        <p>La valeur d'un retour d'expérience est dans les échecs. Sept blocages ont enrayé le run ; chacun a été ramené à une cause racine et corrigé à ce niveau, pas rustiné. Les coûteux étaient systémiques — et vivent désormais comme défauts durcis dans le harnais d'orchestration.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Ce qui a cassé</th><th>Cause racine</th><th>Correctif</th></tr></thead>
+            <tbody>
+              <tr><td>9 agents sur 9 ont échoué au premier essai</td><td>Une surcharge transitoire <code>API 529</code> à la première inférence, masquée en &laquo;&nbsp;terminé&nbsp;&raquo;</td><td>Réessai + back-off au niveau de l'inférence</td></tr>
+              <tr><td>Les agents lourds finissaient en prose, sans résultat</td><td>Les gros diffs faisaient exploser le budget de sortie structurée</td><td>Rendre le diff optionnel, le récupérer hors bande, scinder les feuilles surdimensionnées</td></tr>
+              <tr><td>Les PR ne fusionnaient jamais</td><td>Un <em>blocage par retard</em> en strict-merge — aucune PR n'est à jour, donc l'auto-update ne se déclenche jamais</td><td>Une boucle watcher <code>update-branch</code> manuelle par PR</td></tr>
+              <tr><td>Les refactos parallèles passaient <code>DIRTY</code></td><td>Des éditions interdépendantes sur les mêmes fichiers CI</td><td>Sérialiser les vagues par empreinte de fichier partagé</td></tr>
+              <tr><td>Le check CI requis disparaissait en silence</td><td>Un deux-points non quoté dans un <code>name:</code> d'étape YAML invalidait tout le workflow</td><td>Quoter tout <code>name:</code> contenant un deux-points + un gate de validation YAML</td></tr>
+              <tr><td>Un gate de dette criait au loup</td><td>Le formateur recomposait un appel multi-ligne hors de sa ligne de commentaire</td><td>Réécriture du gate pour parcourir les parenthèses équilibrées, multi-ligne</td></tr>
+              <tr><td>Un agent a livré un câblage cassé</td><td>Un worktree branché depuis un <code>staging</code> <em>local périmé</em> n'a jamais vu les nouveaux hooks</td><td>Fast-forward et épinglage de la base sur <code>origin/staging</code> avant le spawn</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><p>Seul le dernier a exigé un sauvetage humain. Tout le reste a été capté, ramené à sa cause, et transformé en défaut — la différence entre un correctif ponctuel et un pipeline qui tourne plus propre la fois suivante.</p></div>
+      </div>
+
+      <div class="titre" id="sec-8">
+        <span class="label">08</span>
+        <h2>Le coût, sans fard</h2>
+        <p>Le temps est une donnée dure, lue directement sur les horodatages des PR. Les tokens, non — le harnais n'a jamais capté l'usage par agent, donc le total du run est une <em>estimation ascendante</em> : compter les agents que le pipeline lance réellement, multiplier par ce que coûte un agent. C'est étiqueté comme une estimation, mais l'ordre de grandeur ne fait pas de doute.</p>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">4 h 32 m</span><span class="kpi-label">1ʳᵉ PR &rarr; dernière fusion</span></div>
+          <div class="kpi-item"><span class="kpi-value">~3 min</span><span class="kpi-label">CI moyen par PR</span></div>
+          <div class="kpi-item"><span class="kpi-value">~96</span><span class="kpi-label">commits</span></div>
+          <div class="kpi-item"><span class="kpi-value">+4,6k / −1,5k</span><span class="kpi-label">lignes modifiées</span></div>
+        </div>
+
+        <h3 style="margin-top:var(--s-xl)">Combien d'agents par issue ?</h3>
+        <p>Le run n'a jamais été <em>trente</em> agents — c'était le compte des invocations <code>/dev</code> de premier niveau. Le vrai fan-out, c'est le pipeline par issue (§4) qui lance un sous-agent neuf à chaque étape, et les étapes lourdes qui re-fan-out à leur tour. Lu directement sur <a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/plans/epic-1662-wave.mjs" rel="noopener"><code>epic-1662-wave.mjs</code></a> :</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Étape (§4)</th><th>Agents, un tour</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Implémenter</strong> — petite feuille</td><td>2</td><td>1 impl (worktree isolé) + 1 récupération de diff hors bande</td></tr>
+              <tr><td><strong>Implémenter</strong> — grosse feuille</td><td>5–6</td><td>1 <code>PLAN</code> + 2–3 sous-impl en parallèle + 1 <code>INTEGRATE</code> + 1 diff</td></tr>
+              <tr><td><strong>Revue</strong> (panel)</td><td>5</td><td>un agent spécialiste par lentille, en parallèle</td></tr>
+              <tr><td><strong>Validation</strong></td><td>2 × chaque constat</td><td>deux sceptiques indépendants par constat (~3 constats &rarr; ~6 agents)</td></tr>
+              <tr><td><strong>Correctif</strong></td><td>1 / tour</td><td>la boucle revue&rarr;validation&rarr;correctif tourne deux fois au plus</td></tr>
+              <tr><td><strong>Report</strong></td><td>0–1</td><td>une fois, seulement si un résiduel survit à 2 tours</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Une petite feuille représentative, un seul tour de revue, ~3 constats : <strong>2 + 5 + 6 + 1 ≈ 14 agents</strong>. Un second tour double presque le bloc revue/validation/correctif, poussant une feuille contestée vers ~25. Moyenné sur les dix-neuf feuilles fusionnées (majoritairement petites, quatre grosses), comptez <strong>~18 agents par issue → ~340 invocations d'agents</strong> sur le run.</p>
+        <p><strong>Plus le debug.</strong> La tempête de surcharge d'ouverture (§7) a lancé une vague entière morte à la première inférence — <strong>9 agents, ≈ 0 token chacun</strong> (l'<code>API 529</code> a frappé avant tout travail réel) : ça a coûté du temps mural et un re-run, pas des tokens. Ajoutez une poignée de re-devs et la récupération à la main du #1697 (base périmée) par-dessus.</p>
+
+        <h3 style="margin-top:var(--s-xl)">Les tokens, estimés</h3>
+        <p>Un agent vivant d'impl, de revue ou de correctif lit sa tranche du dépôt, le diff de la PR, et exécute toute la suite de gates — ce qui place un seul agent à <strong>100–200k tokens, parfois plus</strong>. L'unique donnée dure se situe au <em>bas</em> de cette fourchette, exactement comme attendu : les deux agents instrumentés étaient des récupérations <em>post-compaction</em>, reprises depuis un contexte rétréci. Donc ~340 agents × ~150k ≈ <strong>~50 M tokens</strong> pour le run — une fourchette de ~35–70 M aux bornes 100–200k — et <strong>~2,5–3 M tokens par issue</strong>. L'estimation antérieure de &laquo;&nbsp;~1,5–2,5 M pour tout le run&nbsp;&raquo; était fausse d'un facteur ~20 : c'était à peu près le coût d'une <em>seule</em> issue.</p>
+        <div class="caveat-grid">
+          <div class="caveat-card">
+            <div class="caveat-q">Qu'est-ce qui a été mesuré ?</div>
+            <div class="caveat-body">Deux agents de récupération post-compaction ont rapporté <strong>122 505 tokens</strong> cumulés (~61k chacun) avec une confiance élevée, directement depuis leurs notifications de tâche — l'ancre basse pour un agent.</div>
+          </div>
+          <div class="caveat-card">
+            <div class="caveat-q">Qu'est-ce qui a été estimé ?</div>
+            <div class="caveat-body">~340 invocations d'agents × 100–200k tokens chacune ⇒ <strong>~35–70 M tokens</strong> pour le run complet (central ~50 M), ≈ <strong>~2,5–3 M par issue</strong>. Confiance faible sur le multiplicateur exact ; confiance élevée sur l'ordre : des dizaines de millions, pas un chiffre unique.</div>
+            <div class="caveat-direction"><strong>Suite :</strong> capture de tokens par agent dans le harnais — on n'optimise pas ce qu'on ne mesure pas.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-9">
+        <span class="label">09</span>
+        <h2>La preuve que c'est passé</h2>
+        <p>Dix-neuf PR fusionnées prouvent que le <em>processus</em> est allé au bout. Elles ne prouvent pas que le <em>code</em> est juste — un pipeline vert et un epic clos peuvent tous deux reposer sur un correctif qui a discrètement dérivé de son intention. Une fois le run terminé, un audit de second niveau a donc relu directement la source fusionnée sur <code>staging</code>, constat par constat, avec une seule question : chaque correctif a-t-il vraiment atterri comme sa PR le prétendait ?</p>
+        <p>Trois agents spécialistes se sont partagé la surface — refactors et architecture, les chemins sensibles à la sécurité, et la dérive inter-couches — et ont lu les fichiers, pas les diffs.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Auditeur</th><th>Périmètre</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td><code>backend-dev</code></td><td>refactors DRY, axe d'étage, configs, protocoles</td><td>8 / 8 &#x2705;</td></tr>
+              <tr><td><code>security-auditor</code></td><td><code>process_one</code>, journalisation des tours, catch large, <code>sleep()</code></td><td>4 / 4 &#x2705;</td></tr>
+              <tr><td><code>axial-adr-review</code></td><td>pollution inter-couches, dérive hors de l'axe primaire</td><td>2 fuites mineures</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">19/19</span><span class="kpi-label">feuilles confirmées dans la source</span></div>
+          <div class="kpi-item"><span class="kpi-value">0</span><span class="kpi-label">régression</span></div>
+          <div class="kpi-item"><span class="kpi-value">0</span><span class="kpi-label">bloqueur</span></div>
+          <div class="kpi-item"><span class="kpi-value">3</span><span class="kpi-label">points résiduels</span></div>
+        </div>
+        <p>Les deux fuites architecturales étaient réelles mais minces — du code de cœur de hub discriminant encore deux types de message propres à une plateforme là où un trait générique a sa place, et un classificateur d'erreurs s'appuyant sur les noms de modules d'adaptateur plutôt que sur une taxonomie que les adaptateurs déclarent. Ajoutez une limite codée en dur qui réclame un nom, et c'était tout le résidu : versé en suivis non bloquants, au dossier plutôt qu'enfoui.</p>
+        <div class="callout"><p>La machinerie qui a <em>trouvé</em> la dette a été retournée sur le code qui l'a <em>résorbée</em>. <strong>19 correctifs sur 19 confirmés dans la source, zéro régression</strong> — et les trois points qu'elle a soulevés sont versés au dossier, pas balayés. La validation, c'est le fan-out de lecture, rejoué une fois de plus.</p></div>
+      </div>
+
+      <div class="titre" id="sec-10">
+        <span class="label">10</span>
+        <h2>Ce qui se capitalise</h2>
+        <p>Les constats étaient propres à une base de code. Les patterns, non — voici les parties qui se reportent au run suivant.</p>
+        <ul class="feature-list">
+          <li><strong>Les feuilles plutôt que les parapluies.</strong> Ordonnancer sur la feuille actionnable ; laisser les issues parentes se fermer d'elles-mêmes quand leurs enfants fusionnent. Aucune dépendance fantôme.</li>
+          <li><strong>Parallélisme par empreinte.</strong> &laquo;&nbsp;Empreinte disjointe ⇒ parallèle ; fichier partagé ⇒ série&nbsp;&raquo; est un prédicat plus propre, pour éviter les conflits, que la taille ou la priorité d'une issue.</li>
+          <li><strong>Corps de PR à trace de décision.</strong> Cause racine + Patch ⊻ Archi + niveau, dans chaque PR. Cela rend des agents indépendants relisibles — et un retour d'expérience rédigeable.</li>
+          <li><strong>Isoler, différer, continuer.</strong> Une feuille en échec est isolée et différée ; la vague avance. Aucun échec isolé n'enraye le lot.</li>
+          <li><strong>Antériorité de référence pour les gates de dette.</strong> Un nouveau gate atterrit en bloquant les <em>nouvelles</em> violations tout en tolérant l'existant par antériorité, avec un plan de résorption à suivre — pour que le gate atterrisse aujourd'hui au lieu d'attendre une refonte de 90 items.</li>
+        </ul>
+        <div class="callout"><p>Un seul opérateur a mené vingt-deux constats jusqu'à la fusion en une seule après-midi — et chaque décision est au dossier. C'est toute la thèse en un run : <strong>le rendement d'une équipe, entièrement auditable, sans verrouillage.</strong></p></div>
+      </div>
+
+      <div class="titre" id="sec-11">
+        <span class="label">11</span>
+        <h2>Sources &amp; code</h2>
+        <p>Chaque artefact de ce compte rendu est public. Le dépôt est <a href="https://github.com/Roxabi/roxabi-factory" rel="noopener">Roxabi/roxabi-factory</a> (AGPL-3.0).</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Artefact</th><th>Ce que c'est</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/issues/1662" rel="noopener">Epic #1662</a></td><td>l'epic aux 22 constats (clos)</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/plans/epic-1662-wave.mjs" rel="noopener"><code>epic-1662-wave.mjs</code></a></td><td>le harnais workflow (§3)</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/plans/epic-1662-ledger.md" rel="noopener"><code>epic-1662-ledger.md</code></a></td><td>journal d'exécution (source de vérité)</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/audits/2026-06-02-quality-audit/AUDIT-SUMMARY.md" rel="noopener"><code>AUDIT-SUMMARY.md</code></a></td><td>le rapport final de l'audit profond</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/blob/staging/artifacts/audits/2026-06-02-quality-audit/REMEDIATION-RECAP.md" rel="noopener"><code>REMEDIATION-RECAP.md</code></a></td><td>le retour d'expérience que ce doc distille</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-plugins/blob/staging/playbooks/multi-agent-audit-playbook.md" rel="noopener">playbook d'audit multi-agents</a></td><td>la méthodologie d'audit réutilisable</td></tr>
+              <tr><td><a href="https://github.com/Roxabi/roxabi-factory/blob/staging/docs/playbooks/quality-debt-pipeline.md" rel="noopener">playbook pipeline qualité-dette</a></td><td>le mode d'emploi du scanner de dette permanent</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

@@ -1,0 +1,210 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">LIVING MEMORY</p>
+    <h1>The Exocortex</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Thousands of siloed agent sessions, zero consolidation — the exocortex is the cognitive organ that captures, structures, and feeds it all back.</p>
+    <div class="doc-hero-tags">{{doc_tags}}</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — The Dark Matter of Agent Data</a>
+      <a href="#sec-2">2 — Why &laquo;&nbsp;Exocortex&nbsp;&raquo;</a>
+      <a href="#sec-3">3 — Two Maps, One Tissue</a>
+      <a href="#sec-4">4 — Four Domains by Responsibility</a>
+      <a href="#sec-5">5 — The Four Layers of the Substrate</a>
+      <a href="#sec-6">6 — Memory Strength</a>
+      <a href="#sec-7">7 — The Ouroboros</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>The Dark Matter of Agent Data</h2>
+        <p>Weeks of active agent work across some fifteen projects leave behind thousands of <code>JSONL</code> session files — on the order of 1.5&nbsp;GB — sitting in <code>~/.claude/projects/</code>. A colossal corpus that never speaks. In parallel, agent conversations on Telegram and Discord, git commits, pull requests, issues, and voice notes each live in their own silo.</p>
+        <p>Every agent — Lyra, Claude Code — builds a fragmented memory with no access to what the others already know. The same recurring conditions resurface. Context evaporates between sessions. Learning never accumulates. What is missing is not storage; it is an <strong>organ</strong> — something that knows how to capture, how to selectively forget, and how to surface the right thing at the right moment.</p>
+        <div class="callout"><p>We call this unstructured, massive, invisible corpus the <strong>dark matter of agent data</strong>: present, heavy, and silent to the agents that produced it.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Why &laquo;&nbsp;Exocortex&nbsp;&raquo;</h2>
+        <p>An exocortex is an external extension of the cerebral cortex — a system that carries cognition beyond the skull. The metaphor is exact: this is not a tool you consult, it is an organ that thinks <em>with</em> the operator and their agents. The grounding is Clark &amp; Chalmers' <strong>extended-mind thesis</strong> (1998): tools used habitually — a notebook, a calendar, a phone — become genuine parts of a cognitive process. The exocortex takes that to its conclusion. A digital system shared between human and agents becomes a cognitive actor in its own right.</p>
+        <p>What it is <strong>not</strong>: a cache (a replica for speed), a dump (accumulation without structure), or a RAG index (text retrieval). What it <strong>is</strong>: a living graph that learns, forgets, and reorganises; a typed map where every entity carries meaning; a memory that decays and strengthens like a biological one.</p>
+        <div class="callout"><p>The durable asset is <strong>the graph</strong>. Producers, analysers, and consumers are all swappable — the structured memory they feed is what compounds.</p></div>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Two Maps, One Tissue</h2>
+        <p>Memory here is not undifferentiated. It separates into two coupled maps, joined by a tissue of raw events.</p>
+        <p>The <strong>external world</strong> (<code>world:*</code>) holds everything that exists independently of the operator — people, organisations, projects, contracts, events, topics, places, artefacts. It is a <em>statically enriched ontology</em>, the analogue of Tulving's <strong>semantic memory</strong> (1972): decontextualised facts about the world.</p>
+        <p>The <strong>internal world</strong> (<code>self:*</code> + <code>agent:*</code>) holds the operator's own functioning — patterns, values, preferences, work rhythms, recurring conditions — and each agent's functioning — skills, personas, instruction sets, observed failure modes. It is a <em>dynamic ontology</em>, the analogue of procedural memory and the brain's Default Mode Network.</p>
+        <p>Between them runs the <strong>tissue</strong>: raw events, append-only, source-tagged, immutable — the episodic layer, dated and lived. A single interaction can update several entries across both maps at once: closing a contract by message touches <code>world:person</code>, <code>world:contract</code>, and <code>self:operator:pattern:contract-closure</code> from one event.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 760 350" role="img" aria-label="Two maps joined by one tissue: the external world (world:*) and the internal world (self:* + agent:*) are both fed by the same raw events log." style="width:100%;height:auto">
+            <defs>
+              <marker id="ex1-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <!-- External world box -->
+            <rect x="20" y="20" width="320" height="180" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="180" y="46" text-anchor="middle" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">External World</text>
+            <text x="180" y="62" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">world:*</text>
+            <text x="44" y="92" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">world:person:*&#160;&#160;&#160;world:org:*</text>
+            <text x="44" y="112" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">world:project:*&#160;&#160;world:contract:*</text>
+            <text x="44" y="132" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">world:event:*&#160;&#160;&#160;world:topic:*</text>
+            <text x="180" y="180" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">statically enriched ontology · semantic</text>
+            <!-- Internal world box -->
+            <rect x="420" y="20" width="320" height="180" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="580" y="46" text-anchor="middle" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">Internal World</text>
+            <text x="580" y="62" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">self:* + agent:*</text>
+            <text x="444" y="92" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">self:operator:*</text>
+            <text x="444" y="112" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">agent:lyra:*</text>
+            <text x="444" y="132" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">agent:claude-code:*</text>
+            <line x1="444" y1="146" x2="716" y2="146" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,4"/>
+            <text x="580" y="180" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">dynamic ontology · procedural</text>
+            <!-- Converging arrows -->
+            <path d="M180,200 C180,250 320,250 372,270" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ex1-arr)"/>
+            <path d="M580,200 C580,250 440,250 388,270" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ex1-arr)"/>
+            <text x="380" y="240" text-anchor="middle" font-family="var(--font-mono)" font-size="10" font-style="italic" fill="var(--text-muted)">fed by the same interactions</text>
+            <!-- Tissue box -->
+            <rect x="240" y="278" width="280" height="62" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="380" y="304" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">The Tissue — events log</text>
+            <text x="380" y="324" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">append-only · source-tagged · immutable · episodic</text>
+          </svg>
+          <figcaption>The core dichotomy: two coupled maps — the external <code>world:*</code> and the internal <code>self:*</code>/<code>agent:*</code> — both fed by a single immutable tissue of raw events.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Four Domains by Responsibility</h2>
+        <p>The system decomposes by <strong>responsibility</strong>, not by data source — so any new source plugs in without touching the core, and any analyser is replaced without breaking the graph. Four domains:</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>Producers</strong> parse one source and emit typed events — Claude Code JSONL ingest, git/gh ingest, mail/Telegram/voice ingest to come. <em>Interchangeable.</em></li>
+          <li><strong>Substrate</strong> (<code>cortex-memory</code>) stores, consolidates, synthesises, and serves. <em>The stable long-term asset.</em></li>
+          <li><strong>Analysers</strong> (<code>cortex-insight</code>) turn events into typed findings — the behavioural pipeline over Claude Code sessions. <em>Replaceable.</em> A single repo can be both producer and analyser when the roles are inseparable.</li>
+          <li><strong>Consumers</strong> read the graph to act — Claude Code <code>/dev</code> assembly, Lyra recall for chat context, the weekly behavioural digest. <em>Autonomous.</em></li>
+        </ul>
+        <p>At the boundary, producers speak to the substrate through a typed envelope, and the substrate emits <code>Observation</code> objects on NATS (<code>roxabi.memory.observations.publish</code>, <code>roxabi.memory.query.*</code>). That contract is the subject of the Observation Contract document.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>The Four Layers of the Substrate</h2>
+        <p>Inside <code>cortex-memory</code>, four successive layers turn raw flux into knowledge you can act on.</p>
+        <ul class="feature-list" style="margin-top:var(--s-md)">
+          <li><strong>Layer 1 — Raw Event Log.</strong> Append-only, immutable, source-tagged, sanitised. The fossil record; ground truth that can regenerate everything above it. Each <code>MemoryEvent</code> carries a ULID, source, timestamp, type/subtype, actor, project, a correlation triple, and a payload.</li>
+          <li><strong>Layer 2 — Knowledge Graph.</strong> Entities and relations, with temporal decay, deduplication (cosine + alias), conflict detection (Jaccard + polarity), and a <code>schema_fit</code> score that fast-tracks the familiar (&gt;0.7) and quarantines dark matter (&lt;0.3). A heuristic <strong>Retain Job</strong> routes each (source, subtype) to the handler that extracts its entities.</li>
+          <li><strong>Layer 3 — Compiled Truth.</strong> A per-entity markdown synthesis, regenerated nightly, versioned through a <code>superseded_by</code> chain, rewritten only when strength shifts past the regen threshold (~10%). The analogue of memory reconsolidation: every recall rewrites the trace.</li>
+          <li><strong>Layer 4 — Actuation.</strong> The loop closes. The system proposes edits to the very artefacts it observes — <code>CLAUDE.md</code>, skills, memory entries — behind a mandatory human gate; once approved, an automatic PR lands on the target repo.</li>
+        </ul>
+        <p>Mapped onto Atkinson-Shiffrin (1968): L1 ≈ sensory memory, L2 ≈ long-term memory, L3 ≈ working/narrative memory, L4 ≈ modified behaviour.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 720 470" role="img" aria-label="The four layers of the substrate, bottom to top: Raw Event Log, Knowledge Graph, Compiled Truth, Actuation — each transformed into the next." style="width:100%;height:auto">
+            <defs>
+              <marker id="ex2-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <text x="28" y="240" text-anchor="middle" font-family="var(--font-mono)" font-size="11" letter-spacing="0.15em" fill="var(--text-dim)" transform="rotate(-90 28 240)">SUBSTRATE</text>
+            <!-- L4 actuation (accent) -->
+            <rect x="140" y="24" width="440" height="72" rx="8" fill="var(--accent)"/>
+            <text x="160" y="52" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--accent-on)">Layer 4 — Actuation</text>
+            <text x="160" y="74" font-family="var(--font-mono)" font-size="11" fill="var(--accent-on)">approval queue → auto-PR → CLAUDE.md · skill · mem</text>
+            <!-- L3 -->
+            <rect x="140" y="140" width="440" height="72" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="160" y="168" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">Layer 3 — Compiled Truth</text>
+            <text x="160" y="190" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">per-entity markdown · nightly regen · superseded chain</text>
+            <!-- L2 -->
+            <rect x="140" y="256" width="440" height="72" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="160" y="284" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">Layer 2 — Knowledge Graph</text>
+            <text x="160" y="306" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">entities + relations · decay · dedup · conflict · schema_fit</text>
+            <!-- L1 -->
+            <rect x="140" y="372" width="440" height="72" rx="8" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="160" y="400" font-family="var(--font-mono)" font-size="13" font-weight="700" fill="var(--text)">Layer 1 — Raw Event Log</text>
+            <text x="160" y="422" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">append-only · multi-lane · source-tagged · immutable</text>
+            <!-- Upward arrows + labels -->
+            <line x1="610" y1="372" x2="610" y2="330" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ex2-arr)"/>
+            <text x="600" y="356" text-anchor="end" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-muted)">Retain Job</text>
+            <line x1="610" y1="256" x2="610" y2="214" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ex2-arr)"/>
+            <text x="600" y="240" text-anchor="end" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-muted)">Δ strength</text>
+            <line x1="610" y1="140" x2="610" y2="98" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ex2-arr)"/>
+            <text x="600" y="124" text-anchor="end" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-muted)">human gate</text>
+          </svg>
+          <figcaption>From the immutable Raw Event Log up to Actuation: each layer is a distinct transformation, and L1 alone can regenerate everything above it.</figcaption>
+        </figure>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>Memory Strength: Decay, Retrieval, Emotion</h2>
+        <p>A node's strength in the graph is continuous and dynamic, never binary. It is computed from a handful of terms, each mapped to a validated cognitive phenomenon.</p>
+        <div class="formula-box"><pre><code>strength(t)          = base × decay × retrieval_boost × emotional_mult
+decay                = 0.5 ^ (Δt / effective_half_life)
+effective_half_life  = half_life × reward_factor
+reward_factor        = 1 + 0.5 × ((pos − neg) / (pos + neg + 1))
+retrieval_boost      = 1 + 0.1 × log₂(retrieval_count + 1)
+emotional_mult       = neutral 1.0 · positive 1.3 · negative 1.5 · critical 2.0</code></pre></div>
+        <p>Half-lives vary by entity class: ~30 days for behavioural patterns, 60 for instructions, 90 for world entities. Each term has a lineage — <code>decay</code> → Ebbinghaus's forgetting curve (1885); <code>retrieval_boost</code> → the testing effect (Roediger &amp; Karpicke 2006); <code>emotional_mult</code> → amygdala modulation (Cahill &amp; McGaugh 1998); <code>reward_factor</code> → dopaminergic plasticity (Schultz 1998); <code>schema_fit</code> → Piaget's assimilation/accommodation. The model is biologically plausible and needs no LLM in Phase&nbsp;1. The Temporal Decay document develops decay in full.</p>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>The Ouroboros: A Closed Feedback Loop</h2>
+        <p>The exocortex becomes truly living the moment it begins to modify the artefacts that guide its own behaviour. The loop has five steps: <strong>Capture</strong> (events, multi-source, append-only) → <strong>Understand</strong> (the Retain Job extracts entities and relations) → <strong>Synthesise</strong> (Compiled Truth regenerates per-entity markdown nightly) → <strong>Propose</strong> (Layer&nbsp;4 emits a diff toward a <code>CLAUDE.md</code>, a skill, or a memory entry) → <strong>Rewrite</strong> (a human approves, an auto-PR commits). The next session loads the updated <code>CLAUDE.md</code>, and the circle is complete.</p>
+        <div class="callout"><p>The system does not self-modify — it <strong>proposes</strong>. The decision stays human; the approval queue is an architectural gate, not a soft convention.</p></div>
+        <p>This is Bateson's <strong>second-order learning</strong> (1972): Level&nbsp;I learns associations within a fixed context; Level&nbsp;II changes the rules by which one learns. A closed exocortex operates at Level&nbsp;II — it rewrites its own operating instructions. The Phase&nbsp;3+ extension, <strong>GEPA</strong>, uses outcome measurement to evolve those instructions by adversarial selection.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 720 500" role="img" aria-label="The ouroboros: a five-step clockwise loop — Capture, Understand, Synthesise, Propose, Rewrite — gated by human approval before the loop closes." style="width:100%;height:auto">
+            <defs>
+              <marker id="ex3-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <!-- Node 1 Capture -->
+            <rect x="100" y="40" width="170" height="66" rx="10" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="185" y="68" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">1 · Capture</text>
+            <text x="185" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">events log · append-only</text>
+            <!-- Node 2 Understand -->
+            <rect x="450" y="40" width="170" height="66" rx="10" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="535" y="68" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">2 · Understand</text>
+            <text x="535" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">entities + relations</text>
+            <!-- Node 3 Synthesise -->
+            <rect x="520" y="220" width="170" height="66" rx="10" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="605" y="248" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">3 · Synthesise</text>
+            <text x="605" y="268" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">compiled truth</text>
+            <!-- Node 4 Propose -->
+            <rect x="360" y="400" width="170" height="66" rx="10" fill="var(--panel)" stroke="var(--border-hi)" stroke-width="1.5"/>
+            <text x="445" y="428" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--text)">4 · Propose</text>
+            <text x="445" y="448" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">diff → CLAUDE.md · skill</text>
+            <!-- Node 5 Rewrite (accent) -->
+            <rect x="40" y="300" width="170" height="66" rx="10" fill="var(--accent)"/>
+            <text x="125" y="328" text-anchor="middle" font-family="var(--font-mono)" font-size="12" font-weight="700" fill="var(--accent-on)">5 · Rewrite</text>
+            <text x="125" y="348" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--accent-on)">PR commit · re-observe</text>
+            <!-- Arrows clockwise -->
+            <line x1="270" y1="73" x2="450" y2="73" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ex3-arr)"/>
+            <text x="360" y="60" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-muted)">Retain Job</text>
+            <path d="M620,90 C670,120 660,180 615,218" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ex3-arr)"/>
+            <text x="680" y="160" text-anchor="end" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-muted)">nightly regen</text>
+            <path d="M575,286 C560,340 530,372 500,398" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ex3-arr)"/>
+            <text x="585" y="350" text-anchor="start" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-muted)">approval queue</text>
+            <path d="M360,440 C290,452 250,420 215,372" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#ex3-arr)"/>
+            <!-- Human gate badge on 4→5 -->
+            <rect x="232" y="404" width="128" height="30" rx="15" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="296" y="423" text-anchor="middle" font-family="var(--font-mono)" font-size="11" font-weight="700" fill="var(--accent)">HUMAN · APPROVE</text>
+            <path d="M90,300 C50,250 60,150 100,108" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ex3-arr)"/>
+            <text x="44" y="210" text-anchor="start" font-family="var(--font-mono)" font-size="9" font-style="italic" fill="var(--text-muted)">auto-PR + reload</text>
+            <!-- Center caption -->
+            <text x="375" y="250" text-anchor="middle" font-family="var(--font-mono)" font-size="11" font-style="italic" fill="var(--text-dim)">the system modifies the rules</text>
+            <text x="375" y="268" text-anchor="middle" font-family="var(--font-mono)" font-size="11" font-style="italic" fill="var(--text-dim)">by which it is observed</text>
+          </svg>
+          <figcaption>The five-step loop closes only through a human approval gate. Capture → Understand → Synthesise → Propose → Rewrite — then the next session reloads the artefacts the loop just rewrote.</figcaption>
+        </figure>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

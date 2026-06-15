@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero 01 — Terminal · Roxabi lab</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="./_base.css">
+<style>
+/* ── Hero layout ─────────────────────────────────────────── */
+.hero .wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2xl);
+  align-items: center;
+  width: 100%;
+}
+
+@media (max-width: 820px) {
+  .hero .wrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Copy column ─────────────────────────────────────────── */
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-lg);
+}
+
+.hero-copy .badge {
+  align-self: flex-start;
+}
+
+.hero-sub {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -.01em;
+  margin-top: calc(-1 * var(--s-sm));
+}
+
+.hero-lead {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 44ch;
+}
+
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-sm);
+  margin-top: var(--s-xs);
+}
+
+/* ── Terminal window ─────────────────────────────────────── */
+.terminal {
+  background: var(--code-bg);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-md), 0 0 60px rgba(240,180,41,.08);
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: .875rem;
+  line-height: 1.65;
+  /* prevent terminal from overflowing its cell */
+  min-width: 0;
+}
+
+/* titlebar */
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-sm);
+  padding: 12px var(--s-md);
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.terminal-dots {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.terminal-dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--r-full);
+}
+
+.terminal-dots .dot-close  { background: #ff5f57; }
+.terminal-dots .dot-min    { background: #ffbd2e; }
+.terminal-dots .dot-max    { background: #28c840; }
+
+.terminal-title {
+  flex: 1;
+  text-align: center;
+  font-size: .78rem;
+  color: var(--text-dim);
+  letter-spacing: .02em;
+  /* don't push dots if title is long */
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* body */
+.terminal-body {
+  padding: var(--s-md) var(--s-lg);
+  /* fixed height so the panel doesn't jump as lines appear */
+  min-height: 240px;
+  overflow-x: auto;
+}
+
+.terminal-line {
+  display: block;
+  white-space: pre;
+}
+
+/* colour roles */
+.t-prompt  { color: var(--accent); }          /* $ and ✓ / → */
+.t-cmd     { color: var(--code-text); }        /* command text */
+.t-ok      { color: var(--accent); }           /* ✓ checkmarks */
+.t-arrow   { color: var(--accent); }           /* → */
+.t-path    { color: var(--code-string); }      /* paths / values */
+.t-comment { color: var(--code-muted); }       /* # comments */
+.t-dim     { color: var(--text-dim); }         /* dimmed output */
+
+/* blinking cursor */
+.cursor {
+  display: inline-block;
+  width: .55em;
+  height: 1.1em;
+  background: var(--accent);
+  vertical-align: text-bottom;
+  border-radius: 1px;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* cursor blinks in motion mode; stays solid for reduced-motion */
+.cursor.animated {
+  animation: blink 1s step-end infinite;
+}
+
+/* ── Responsive: on mobile show terminal below copy ──────── */
+@media (max-width: 820px) {
+  .hero-lead {
+    max-width: 100%;
+  }
+  .terminal-body {
+    min-height: 200px;
+  }
+}
+</style>
+</head>
+<body>
+<a class="lab-back" href="./index.html">← gallery</a>
+<span class="lab-tag">01 · terminal</span>
+<header class="lab-nav">
+  <a class="brand" href="#"><img src="/assets/logo/foundation-block.svg" width="26" height="26" alt=""><span>Roxabi</span></a>
+  <nav class="lab-nav-links"><a href="#">Projects</a><a href="#">Constitution</a></nav>
+  <a class="btn btn-ghost btn-sm" href="#">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <div class="wrap">
+
+      <!-- Copy column -->
+      <div class="hero-copy">
+        <span class="badge"><span class="dot" aria-hidden="true"></span>AGPL-3.0 · Open by architecture</span>
+        <h1>One person.<br>Team-scale output.</h1>
+        <p class="hero-sub">Pre-wired. Open. Yours.</p>
+        <p class="hero-lead">An agent &amp; worker factory. Open-source tools plug in over NATS, CLI, skills, or API.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#">Explore the projects →</a>
+          <a class="btn btn-ghost" href="#">GitHub</a>
+        </div>
+      </div>
+
+      <!-- Terminal window -->
+      <div class="terminal" role="img" aria-label="Terminal session showing roxabi init command output">
+        <div class="terminal-bar" aria-hidden="true">
+          <div class="terminal-dots">
+            <span class="dot-close"></span>
+            <span class="dot-min"></span>
+            <span class="dot-max"></span>
+          </div>
+          <span class="terminal-title">roxabi — zsh</span>
+        </div>
+        <div class="terminal-body" id="terminal-body" aria-hidden="true">
+          <!-- JS fills this; noscript / reduced-motion fallback below -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- Noscript static fallback (hidden when JS runs) -->
+<noscript>
+<style>
+  #terminal-body { display: none; }
+  #terminal-static { display: block !important; }
+</style>
+</noscript>
+<div id="terminal-static" style="display:none" class="terminal-body" aria-hidden="true">
+  <span class="terminal-line"><span class="t-prompt">$</span> <span class="t-cmd">roxabi init</span></span>
+  <span class="terminal-line"> </span>
+  <span class="terminal-line"><span class="t-ok">✓</span> factory online</span>
+  <span class="terminal-line"><span class="t-ok">✓</span> <span class="t-path">llmCLI</span> · <span class="t-path">voiceCLI</span> · <span class="t-path">imageCLI</span> wired</span>
+  <span class="terminal-line"><span class="t-arrow">→</span> channels: <span class="t-path">NATS</span> · <span class="t-path">CLI</span> · <span class="t-path">skills</span> · <span class="t-path">API</span></span>
+  <span class="terminal-line"><span class="t-comment"># ready. run `roxabi status` to inspect workers.</span></span>
+  <span class="terminal-line"> </span>
+  <span class="terminal-line"><span class="t-prompt">$</span> <span class="cursor"></span></span>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var body = document.getElementById('terminal-body');
+  var staticBlock = document.getElementById('terminal-static');
+
+  /* ── Static (reduced-motion) path ──────────────────────── */
+  if (prefersReduced) {
+    body.innerHTML = staticBlock.innerHTML;
+    staticBlock.remove();
+    return;
+  }
+
+  /* ── Animated path ──────────────────────────────────────── */
+  staticBlock.remove();
+
+  /*
+    Script = ordered list of steps.
+    Each step has a `type`:
+      'type'   — typewriter on the current line (char by char)
+      'line'   — append a complete line immediately
+      'pause'  — wait N ms (blank step for breath room)
+      'prompt' — append a new empty prompt line + blinking cursor
+  */
+  var STEPS = [
+    { type: 'start-line' },
+    { type: 'type', html: '<span class="t-prompt">$</span> ', text: '' },          /* prompt first */
+    { type: 'type', html: '', text: 'roxabi init', cls: 't-cmd' },
+    { type: 'pause', ms: 300 },
+    { type: 'newline' },
+    { type: 'line',  html: ' ' },
+    { type: 'line',  html: '<span class="t-ok">✓</span> factory online' },
+    { type: 'pause', ms: 120 },
+    { type: 'line',  html: '<span class="t-ok">✓</span> <span class="t-path">llmCLI</span> · <span class="t-path">voiceCLI</span> · <span class="t-path">imageCLI</span> wired' },
+    { type: 'pause', ms: 120 },
+    { type: 'line',  html: '<span class="t-arrow">→</span> channels: <span class="t-path">NATS</span> · <span class="t-path">CLI</span> · <span class="t-path">skills</span> · <span class="t-path">API</span>' },
+    { type: 'pause', ms: 160 },
+    { type: 'line',  html: '<span class="t-comment"># ready. run `roxabi status` to inspect workers.</span>' },
+    { type: 'pause', ms: 300 },
+    { type: 'line',  html: ' ' },
+    { type: 'prompt' }
+  ];
+
+  var CHAR_DELAY = 55;   /* ms per character while typing */
+  var LINE_DELAY = 95;   /* ms between instant lines */
+
+  /* Track paused state so we don't leak timers into hidden tabs */
+  var paused = false;
+  var currentTimer = null;
+
+  function safeTimeout(fn, ms) {
+    if (paused) { return; }
+    currentTimer = setTimeout(fn, ms);
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      paused = true;
+      clearTimeout(currentTimer);
+    } else {
+      /* Resume by re-running from where we are — simplest: restart whole sequence. */
+      paused = false;
+      runSequence();
+    }
+  });
+
+  /* ── DOM helpers ─────────────────────────────────────────── */
+  function appendLine(html) {
+    var span = document.createElement('span');
+    span.className = 'terminal-line';
+    span.innerHTML = html;
+    body.appendChild(span);
+    return span;
+  }
+
+  function removeCursor() {
+    var c = body.querySelector('.cursor');
+    if (c) { c.remove(); }
+  }
+
+  function appendCursor(animated) {
+    var c = document.createElement('span');
+    c.className = animated ? 'cursor animated' : 'cursor';
+    return c;
+  }
+
+  /* ── Sequence runner ─────────────────────────────────────── */
+  var stepIndex = 0;
+  var currentLine = null;   /* the <span> being built (for 'type') */
+  var charQueue = '';       /* remaining chars to type */
+  var charCls = '';         /* class for typed chars */
+  var typingCursor = null;  /* inline cursor shown during typing */
+
+  function runSequence() {
+    /* Clear board for a clean restart after tab re-focus */
+    body.innerHTML = '';
+    stepIndex = 0;
+    currentLine = null;
+    charQueue = '';
+    typingCursor = null;
+    tick();
+  }
+
+  function tick() {
+    if (paused) { return; }
+
+    /* ── Mid-type: still characters left to emit ── */
+    if (charQueue.length > 0) {
+      var ch = charQueue[0];
+      charQueue = charQueue.slice(1);
+
+      /* Remove cursor, append char, re-add cursor */
+      if (typingCursor && typingCursor.parentNode) { typingCursor.remove(); }
+
+      var t = document.createElement('span');
+      if (charCls) { t.className = charCls; }
+      t.textContent = ch;
+      currentLine.appendChild(t);
+
+      /* Put cursor back at end of line */
+      typingCursor = appendCursor(false);
+      currentLine.appendChild(typingCursor);
+
+      safeTimeout(tick, CHAR_DELAY);
+      return;
+    }
+
+    /* ── Next step ── */
+    if (stepIndex >= STEPS.length) { return; }
+    var step = STEPS[stepIndex++];
+
+    if (step.type === 'start-line') {
+      currentLine = appendLine('');
+      safeTimeout(tick, 0);
+
+    } else if (step.type === 'type') {
+      /* First inject the html fragment (prompt $), then type the text */
+      if (step.html) {
+        removeCursor();
+        if (typingCursor && typingCursor.parentNode) { typingCursor.remove(); }
+        var frag = document.createElement('span');
+        frag.innerHTML = step.html;
+        while (frag.firstChild) { currentLine.appendChild(frag.firstChild); }
+      }
+      charQueue = step.text || '';
+      charCls   = step.cls  || '';
+      if (charQueue.length > 0) {
+        /* Show cursor before first char */
+        typingCursor = appendCursor(false);
+        currentLine.appendChild(typingCursor);
+      }
+      safeTimeout(tick, charQueue.length > 0 ? CHAR_DELAY : 0);
+
+    } else if (step.type === 'newline') {
+      if (typingCursor && typingCursor.parentNode) { typingCursor.remove(); }
+      typingCursor = null;
+      currentLine = null;
+      safeTimeout(tick, LINE_DELAY);
+
+    } else if (step.type === 'line') {
+      appendLine(step.html);
+      safeTimeout(tick, LINE_DELAY);
+
+    } else if (step.type === 'pause') {
+      safeTimeout(tick, step.ms);
+
+    } else if (step.type === 'prompt') {
+      var pl = appendLine('');
+      var ps = document.createElement('span');
+      ps.className = 't-prompt';
+      ps.textContent = '$ ';
+      pl.appendChild(ps);
+      pl.appendChild(appendCursor(true));   /* blinking — done */
+    }
+  }
+
+  runSequence();
+})();
+</script>
+</body>
+</html>

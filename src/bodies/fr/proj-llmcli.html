@@ -1,0 +1,94 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">SERVICE LLM · LOCAL D'ABORD</p>
+    <h1>llmCLI</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">Une seule CLI pour servir des modèles de langage en local sur ton propre GPU. Les moteurs <code>llama.cpp</code> et GGUF se tiennent derrière un endpoint HTTP compatible OpenAI, hot-swappables depuis un catalogue TOML, avec un proxy LiteLLM partagé que tout outil du LAN peut appeler. Le frère de voiceCLI et imageCLI — même forme, la couche d'inférence.</p>
+    <div class="doc-hero-tags"><span class="tag">Python</span><span class="tag">llama.cpp</span><span class="tag">AGPL-3.0</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — Ce que c'est</a>
+      <a href="#sec-2">2 — Un catalogue de modèles</a>
+      <a href="#sec-3">3 — Un endpoint, tous les appelants</a>
+      <a href="#sec-4">4 — Proxy &amp; worker</a>
+      <a href="#sec-5">5 — Lance-le</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>Ce que c'est</h2>
+        <p>Servir un modèle local revient d'habitude à veiller sur un processus serveur — choisir des ports, jongler avec la VRAM, redémarrer pour changer de poids. llmCLI réduit ça à une commande : récupère un GGUF, sers-le sur un endpoint compatible OpenAI, hot-swap vers un autre sans toucher aux appelants. Tout tourne sur un matériel que tu possèdes — aucune clé cloud, aucune facturation au token, aucun modèle qui disparaît quand un fournisseur le déprécie.</p>
+        <p>C'est le troisième frère de la famille des CLI local-first. voiceCLI fait la voix, imageCLI fait les pixels, llmCLI fait les tokens — la même forme opérationnelle appliquée à la couche d'inférence sur laquelle les autres s'appuient.</p>
+        <div class="callout"><p>Le contrat durable, c'est l'<strong>endpoint OpenAI</strong>, pas le moteur. Les appelants parlent une seule API ; le modèle derrière change librement.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>Un catalogue de modèles</h2>
+        <p>Les modèles sont de la config, pas du code. Les réglages d'hôte vivent dans un TOML ; chaque modèle est un fichier plat unique dans un dossier <code>models/</code> — nomme le fichier, nomme le modèle. Dépose-en un nouveau et <code>llmcli list</code> le détecte aussitôt, sans redémarrage.</p>
+        <div class="formula-box"><pre><code># ~/.roxabi/llmcli/models/qwen3-14b-q5.toml
+engine   = "llamacpp"
+repo     = "Qwen/Qwen3-14B-GGUF"
+file     = "qwen3-14b-q5_k_m.gguf"
+port     = 8092
+vram_gib = 11
+flags    = ["-ngl", "99", "-c", "8192", "-fa", "on", "--jinja"]</code></pre></div>
+        <p>Le catalogue laisse chaque hôte porter ce que sa carte peut tenir — un poste de 16&nbsp;Go fixe les gros modèles, une machine toujours allumée de 10&nbsp;Go garde les petits résidents. <code>llmcli swap</code> hot-swap le moteur en cours ; <code>llmcli status</code> rapporte moteurs, ports, VRAM et uptime d'un coup d'œil.</p>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>Un endpoint, tous les appelants</h2>
+        <p>Le serveur expose l'API chat-completions d'OpenAI, donc tout ce qui parle ce protocole fonctionne sans changement — tes propres scripts, un SDK, un agent. L'enjeu est l'uniformité : un Qwen local et un modèle hébergé ont la même forme d'appel pour ce qui se tient devant.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Commande</th><th>Fait</th></tr></thead>
+            <tbody>
+              <tr><td><code>llmcli pull &lt;name&gt;</code></td><td>Télécharge un modèle dans le cache HF hub partagé.</td></tr>
+              <tr><td><code>llmcli serve [name]</code></td><td>Démarre le daemon et sert un modèle.</td></tr>
+              <tr><td><code>llmcli swap &lt;name&gt;</code></td><td>Hot-swap le modèle en cours sur place.</td></tr>
+              <tr><td><code>llmcli status</code> &middot; <code>list</code></td><td>Moteurs, ports, VRAM, uptime · catalogue + état en cours.</td></tr>
+              <tr><td><code>llmcli chat &lt;name&gt; "…"</code></td><td>Appel one-shot, en contournant le proxy.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Proxy &amp; worker</h2>
+        <p>Deux surfaces de déploiement sont livrées comme unités Quadlet Podman. Le <strong>proxy LiteLLM</strong> tourne sur chaque hôte et donne à tout le LAN une seule adresse — Claude Code, agents et outils routent à travers lui, mêlant moteurs locaux et modèles cloud derrière une config unique. Le <strong>worker NATS</strong> ne tourne que là où vit un GPU, exposant l'inférence locale sur le bus de messages.</p>
+        <div class="formula-box"><pre><code>llama-server :PORT   ◄── llmcli serve (hot-swap piloté par catalogue)
+      ▲
+      │ API OpenAI
+      ├── agents          (bibliothèque LiteLLM, config par agent)
+      └── proxy litellm   ◄── claude-code, outils du LAN</code></pre></div>
+        <p>C'est ainsi que llmCLI se branche sur <a href="/fr/projects/roxabi-factory/">roxabi-factory</a> : le worker s'enregistre sur le bus, et n'importe quel agent atteint un modèle local sans savoir quelle machine porte le GPU.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Lance-le</h2>
+        <p>Prérequis : Python 3.12, un GPU CUDA pour le service local, et le gestionnaire de paquets <a href="https://docs.astral.sh/uv/" rel="noopener">uv</a>. Le proxy seul tourne partout ; le moteur veut le GPU.</p>
+        <div class="formula-box"><pre><code>uv sync
+cp models/*.toml ~/.roxabi/llmcli/models/   # amorce le catalogue
+llmcli pull qwen3_6-35b-a3b-tq3             # récupère un modèle
+systemctl --user start llmcli               # proxy sur :18091
+llmcli status</code></pre></div>
+        <p>Moteurs, catalogue, proxy et worker NATS sont tous en accès ouvert.</p>
+        <ul class="feature-list">
+          <li><strong>Le repo</strong> &middot; <a href="https://github.com/Roxabi/llmCLI" target="_blank" rel="noopener">github.com/Roxabi/llmCLI &rarr;</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

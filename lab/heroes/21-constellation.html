@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero 21 — Constellation hub · Roxabi lab</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="./_base.css">
+<style>
+/* ── Two-column layout: copy left, canvas right ── */
+.hero {
+  padding-block: 0;
+}
+
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  min-height: calc(100svh - 60px);
+  gap: 0;
+}
+
+/* Left copy column */
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-lg);
+  padding-block: var(--s-2xl);
+  padding-right: var(--s-xl);
+  position: relative;
+  z-index: 2;
+}
+
+.hero-copy .badge {
+  align-self: flex-start;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-sans);
+  letter-spacing: -.01em;
+}
+
+.hero-lead {
+  font-size: 1.075rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  max-width: 42ch;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: var(--s-md);
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: var(--s-xs);
+}
+
+/* Right canvas column */
+.hero-canvas-col {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100svh - 60px);
+}
+
+#constellation {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Mobile: stack; canvas becomes dim background ── */
+@media (max-width: 820px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    position: relative;
+  }
+
+  .hero-canvas-col {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #constellation {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-copy {
+    padding-right: 0;
+    padding-block: var(--s-2xl);
+    z-index: 2;
+    min-height: calc(100svh - 60px);
+    justify-content: center;
+  }
+
+  .hero-lead {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-copy h1 {
+    font-size: clamp(2rem, 10vw, 2.75rem);
+  }
+
+  .hero-ctas {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>
+</head>
+<body>
+<a class="lab-back" href="./index.html">← gallery</a>
+<span class="lab-tag">21 · constellation hub</span>
+<header class="lab-nav">
+  <a class="brand" href="#"><img src="/assets/logo/foundation-block.svg" width="26" height="26" alt=""><span>Roxabi</span></a>
+  <nav class="lab-nav-links"><a href="#">Projects</a><a href="#">Constitution</a></nav>
+  <a class="btn btn-ghost btn-sm" href="#">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <div class="hero-inner wrap">
+
+      <!-- Copy column -->
+      <div class="hero-copy">
+        <span class="badge"><span class="dot"></span>AGPL-3.0 · Open by architecture</span>
+        <h1>One person.<br>Team-scale output.</h1>
+        <p class="hero-sub">Pre-wired. Open. Yours.</p>
+        <p class="hero-lead">An agent &amp; worker factory. Open-source tools plug in over NATS, CLI, skills, or API.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#">Explore the projects →</a>
+          <a class="btn btn-ghost" href="#">GitHub</a>
+        </div>
+      </div>
+
+      <!-- Canvas column -->
+      <div class="hero-canvas-col">
+        <canvas id="constellation" aria-hidden="true"></canvas>
+      </div>
+
+    </div>
+  </section>
+</main>
+<script>
+/* ── Constellation hub — 04+15 merge ──────────────────────────────────────
+   Living network: central core + 6 module nodes that GENTLY DRIFT on slow
+   sinusoidal paths, connected by thin amber edges (core↔module + 3 cross-
+   links). Faint amber pulses travel along edges. Canvas 2D, DPR-aware (cap
+   2), resize-aware. Reduced-motion → static snapshot. Pause on hidden.
+──────────────────────────────────────────────────────────────────────────── */
+(function () {
+  'use strict';
+
+  const canvas = document.getElementById('constellation');
+  const ctx    = canvas.getContext('2d');
+
+  /* ── Design tokens (mirror tokens.css) ── */
+  const T = {
+    accent:      '#f0b429',
+    accentDim:   'rgba(240,180,41,0.50)',
+    accentGlow:  'rgba(240,180,41,0.18)',
+    accentEdge:  'rgba(240,180,41,0.28)',
+    accentFaint: 'rgba(240,180,41,0.10)',
+    border:      '#21262d',
+    borderHi:    '#30363d',
+    textMuted:   '#9ca3af',
+    textDim:     '#6b7280',
+    bg:          '#0d1117',
+    surface:     '#161b22',
+    fontMono:    "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
+  };
+
+  /* ── Reduced-motion ── */
+  const reducedMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* ── DPR-aware canvas resize ── */
+  let dpr = 1, W = 0, H = 0;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    canvas.width  = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (reducedMQ.matches) drawStatic();
+  }
+
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+  resize();
+
+  /* ── Node definitions ──
+     Each module node has a base position (polar from centre) plus two
+     independent sinusoidal drift components (amplitude, phase, frequency).
+     The drift is SMALL — the web "breathes" rather than orbits.          */
+  const TWO_PI = Math.PI * 2;
+
+  /* Base ring radius as fraction of min(W,H) — set at draw time */
+  const RING_FRAC = 0.31;
+
+  /* Per-node drift: dx and dy each = A*sin(freq*t + phase) in px */
+  const NODES = [
+    { id: 'llmCLI',   baseAngle: 0,              dx: { a: 14, f: 0.00038, p: 0.0  }, dy: { a: 10, f: 0.00051, p: 1.1  } },
+    { id: 'voiceCLI', baseAngle: TWO_PI / 6,     dx: { a: 10, f: 0.00044, p: 0.7  }, dy: { a: 16, f: 0.00033, p: 2.3  } },
+    { id: 'imageCLI', baseAngle: TWO_PI * 2 / 6, dx: { a: 12, f: 0.00029, p: 1.5  }, dy: { a:  9, f: 0.00061, p: 0.4  } },
+    { id: 'cortex',   baseAngle: Math.PI,         dx: { a: 11, f: 0.00055, p: 2.2  }, dy: { a: 14, f: 0.00038, p: 3.1  } },
+    { id: 'intel',    baseAngle: TWO_PI * 4 / 6, dx: { a: 13, f: 0.00041, p: 0.9  }, dy: { a: 11, f: 0.00047, p: 1.8  } },
+    { id: 'idna',     baseAngle: TWO_PI * 5 / 6, dx: { a:  9, f: 0.00062, p: 3.4  }, dy: { a: 15, f: 0.00035, p: 2.7  } },
+  ];
+
+  /* ── Cross-links (module↔module) — 3 non-adjacent pairs ── */
+  const CROSS_LINKS = [
+    [0, 2],  /* llmCLI — imageCLI */
+    [1, 4],  /* voiceCLI — intel  */
+    [3, 5],  /* cortex — idna     */
+  ];
+
+  /* ── Secondary faint dots — tiny drifting background stars ── */
+  const SEC_DOTS = Array.from({ length: 8 }, (_, i) => ({
+    bx: (Math.random() - 0.5) * 0.7,  /* relative to centre, -0.35..0.35 of half-W */
+    by: (Math.random() - 0.5) * 0.7,
+    dx: { a: 6 + Math.random() * 8, f: 0.00025 + Math.random() * 0.0004, p: Math.random() * TWO_PI },
+    dy: { a: 6 + Math.random() * 8, f: 0.00025 + Math.random() * 0.0004, p: Math.random() * TWO_PI },
+    r:  1.2 + Math.random() * 1.4,
+  }));
+
+  /* ── Edge pulse state ──
+     One active pulse per edge (core↔module). Travels t 0→1 along the edge.  */
+  const CORE_EDGES = NODES.map((_, i) => ({
+    nodeIdx: i,
+    t: Math.random(),        /* stagger starts */
+    speed: 0.00045 + Math.random() * 0.0003,
+    active: Math.random() > 0.35, /* not all fire at once */
+    cooldown: Math.random() * 4000,
+  }));
+
+  /* ── rAF loop ── */
+  let rafId  = null;
+  let lastTs = null;
+  let elapsed = 0;  /* monotonic ms accumulator for drift */
+
+  function tick(now) {
+    if (document.hidden) { lastTs = null; rafId = requestAnimationFrame(tick); return; }
+    if (lastTs === null) lastTs = now;
+    const dt = Math.min(now - lastTs, 50);
+    lastTs = now;
+    elapsed += dt;
+
+    /* advance pulses */
+    for (const e of CORE_EDGES) {
+      if (e.active) {
+        e.t += e.speed * dt;
+        if (e.t >= 1) {
+          e.t = 0;
+          e.active = false;
+          e.cooldown = 1200 + Math.random() * 3000;
+        }
+      } else {
+        e.cooldown -= dt;
+        if (e.cooldown <= 0) { e.active = true; e.t = 0; }
+      }
+    }
+
+    drawFrame(elapsed);
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function startLoop() {
+    if (rafId !== null) return;
+    lastTs = null;
+    rafId  = requestAnimationFrame(tick);
+  }
+
+  function stopLoop() {
+    if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+  }
+
+  /* ── Geometry helpers ── */
+  function cx() { return W / 2; }
+  function cy() { return H / 2; }
+  function ringR() { return Math.min(W, H) * RING_FRAC; }
+  function coreR() { return Math.min(W, H) * 0.038; }
+  function nodeR() { return Math.min(W, H) * 0.024; }
+
+  function sin(f, p, t) { return Math.sin(f * t + p); }
+
+  function nodePos(i, t) {
+    const n  = NODES[i];
+    const r  = ringR();
+    const bx = cx() + Math.cos(n.baseAngle) * r;
+    const by = cy() + Math.sin(n.baseAngle) * r;
+    return {
+      x: bx + n.dx.a * sin(n.dx.f, n.dx.p, t),
+      y: by + n.dy.a * sin(n.dy.f, n.dy.p, t),
+    };
+  }
+
+  /* ── Draw ── */
+  function drawFrame(t) {
+    ctx.clearRect(0, 0, W, H);
+    const positions = NODES.map((_, i) => nodePos(i, t));
+    drawSecDots(t);
+    drawCrossEdges(positions);
+    drawCoreEdges(positions);
+    drawEdgePulses(positions, t);
+    drawNodes(positions, t);
+    drawCore(t);
+    drawLabels(positions);
+  }
+
+  /* background secondary dots */
+  function drawSecDots(t) {
+    for (const d of SEC_DOTS) {
+      const x = cx() + d.bx * W + d.dx.a * sin(d.dx.f, d.dx.p, t);
+      const y = cy() + d.by * H + d.dy.a * sin(d.dy.f, d.dy.p, t);
+      ctx.globalAlpha = 0.22;
+      ctx.beginPath();
+      ctx.arc(x, y, d.r, 0, TWO_PI);
+      ctx.fillStyle = T.accent;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* core ↔ module edges */
+  function drawCoreEdges(pos) {
+    for (const p of pos) {
+      ctx.beginPath();
+      ctx.moveTo(cx(), cy());
+      ctx.lineTo(p.x, p.y);
+      ctx.strokeStyle = T.accentEdge;
+      ctx.lineWidth   = 1;
+      ctx.globalAlpha = 0.55;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* module ↔ module cross-links */
+  function drawCrossEdges(pos) {
+    for (const [a, b] of CROSS_LINKS) {
+      ctx.beginPath();
+      ctx.moveTo(pos[a].x, pos[a].y);
+      ctx.lineTo(pos[b].x, pos[b].y);
+      ctx.strokeStyle = T.accentFaint;
+      ctx.lineWidth   = 1;
+      ctx.globalAlpha = 0.45;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* amber pulse dots travelling core→module */
+  function drawEdgePulses(pos, t) {
+    for (const e of CORE_EDGES) {
+      if (!e.active) continue;
+      const p  = pos[e.nodeIdx];
+      const px = cx() + (p.x - cx()) * e.t;
+      const py = cy() + (p.y - cy()) * e.t;
+      /* fade in + fade out */
+      const fadeIn  = Math.min(e.t * 5, 1);
+      const fadeOut = Math.min((1 - e.t) * 5, 1);
+      const alpha   = 0.75 * fadeIn * fadeOut;
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      ctx.arc(px, py, 2.8, 0, TWO_PI);
+      ctx.fillStyle = T.accent;
+      ctx.fill();
+      /* small trailing glow */
+      const g = ctx.createRadialGradient(px, py, 0, px, py, 8);
+      g.addColorStop(0, 'rgba(240,180,41,0.35)');
+      g.addColorStop(1, 'rgba(240,180,41,0)');
+      ctx.beginPath();
+      ctx.arc(px, py, 8, 0, TWO_PI);
+      ctx.fillStyle = g;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* module nodes */
+  function drawNodes(pos, t) {
+    const nr = nodeR();
+    for (let i = 0; i < NODES.length; i++) {
+      const { x, y } = pos[i];
+      /* stagger breath per node */
+      const pm = Math.sin(t * 0.00095 + i * (TWO_PI / NODES.length)) * 0.10 + 1;
+      const r  = nr * pm;
+
+      /* soft ambient glow */
+      const grd = ctx.createRadialGradient(x, y, r * 0.5, x, y, r * 2.8);
+      grd.addColorStop(0, 'rgba(240,180,41,0.09)');
+      grd.addColorStop(1, 'rgba(240,180,41,0)');
+      ctx.beginPath();
+      ctx.arc(x, y, r * 2.8, 0, TWO_PI);
+      ctx.fillStyle = grd;
+      ctx.fill();
+
+      /* node body */
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, TWO_PI);
+      ctx.fillStyle = T.surface;
+      ctx.fill();
+      ctx.strokeStyle = T.borderHi;
+      ctx.lineWidth   = 1.4;
+      ctx.stroke();
+
+      /* inner amber pip */
+      ctx.beginPath();
+      ctx.arc(x, y, r * 0.36, 0, TWO_PI);
+      ctx.fillStyle = T.accentDim;
+      ctx.fill();
+    }
+  }
+
+  /* central core */
+  function drawCore(t) {
+    const cr = coreR();
+    const pm = Math.sin(t * 0.0007) * 0.07 + 1;
+    const r  = cr * pm;
+    const x  = cx(), y = cy();
+
+    /* layered glow */
+    const grd = ctx.createRadialGradient(x, y, 0, x, y, r * 5.5);
+    grd.addColorStop(0,   'rgba(240,180,41,0.42)');
+    grd.addColorStop(0.28,'rgba(240,180,41,0.16)');
+    grd.addColorStop(1,   'rgba(240,180,41,0)');
+    ctx.beginPath();
+    ctx.arc(x, y, r * 5.5, 0, TWO_PI);
+    ctx.fillStyle = grd;
+    ctx.fill();
+
+    /* core disc */
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, TWO_PI);
+    ctx.fillStyle = T.accent;
+    ctx.fill();
+
+    /* halo ring */
+    ctx.beginPath();
+    ctx.arc(x, y, r * 1.7, 0, TWO_PI);
+    ctx.strokeStyle = T.accentDim;
+    ctx.lineWidth   = 1;
+    ctx.globalAlpha = 0.5;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  /* node labels */
+  function drawLabels(pos) {
+    const nr  = nodeR();
+    const off = nr * 3.0;
+    ctx.font         = `600 11px ${T.fontMono}`;
+    ctx.fillStyle    = T.textMuted;
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i < NODES.length; i++) {
+      const { x, y } = pos[i];
+      /* push label outward from centre */
+      const dx = x - cx(), dy = y - cy();
+      const len = Math.sqrt(dx * dx + dy * dy) || 1;
+      const lx  = x + (dx / len) * off;
+      const ly  = y + (dy / len) * off;
+
+      /* align by horizontal position */
+      const cos = dx / len;
+      if      (cos >  0.25) ctx.textAlign = 'left';
+      else if (cos < -0.25) ctx.textAlign = 'right';
+      else                  ctx.textAlign = 'center';
+
+      ctx.fillText(NODES[i].id, lx, ly);
+    }
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  /* ── Static snapshot for reduced-motion ── */
+  function drawStatic() {
+    ctx.clearRect(0, 0, W, H);
+    const staticPos = NODES.map((_, i) => nodePos(i, 0));
+    drawSecDots(0);
+    drawCrossEdges(staticPos);
+    drawCoreEdges(staticPos);
+    /* one mid-edge dot per core edge */
+    for (let i = 0; i < NODES.length; i++) {
+      const { x, y } = staticPos[i];
+      const px = cx() + (x - cx()) * 0.5;
+      const py = cy() + (y - cy()) * 0.5;
+      ctx.globalAlpha = 0.55;
+      ctx.beginPath();
+      ctx.arc(px, py, 2.5, 0, TWO_PI);
+      ctx.fillStyle = T.accent;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+    drawNodes(staticPos, Math.PI / 2);   /* mid-breath snapshot */
+    drawCore(Math.PI / 2);
+    drawLabels(staticPos);
+  }
+
+  /* ── Visibility API ── */
+  document.addEventListener('visibilitychange', () => {
+    if (reducedMQ.matches) return;
+    if (document.hidden) stopLoop();
+    else startLoop();
+  });
+
+  /* ── Boot ── */
+  if (reducedMQ.matches) {
+    drawStatic();
+  } else {
+    startLoop();
+  }
+
+  reducedMQ.addEventListener('change', (e) => {
+    if (e.matches) { stopLoop(); drawStatic(); }
+    else           { startLoop(); }
+  });
+
+}());
+</script>
+</body>
+</html>

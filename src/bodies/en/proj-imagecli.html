@@ -1,0 +1,89 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">IMAGE GEN · LOCAL-FIRST</p>
+    <h1>imageCLI</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">One CLI for image generation, running entirely on your own GPU. FLUX.2, FLUX.1 (with PuLID face lock), and SD3.5 backends sit behind a single command through HuggingFace Diffusers — quantization, VRAM management, and preflight checks handled for you. Point it at a prompt, swap engines with one flag. No API costs, no rate limits.</p>
+    <div class="doc-hero-tags"><span class="tag">Python</span><span class="tag">CUDA</span><span class="tag">AGPL-3.0</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — What it is</a>
+      <a href="#sec-2">2 — One command, every engine</a>
+      <a href="#sec-3">3 — How a prompt becomes an image</a>
+      <a href="#sec-4">4 — Cross-host over NATS</a>
+      <a href="#sec-5">5 — Run it</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>What it is</h2>
+        <p>Running image generation locally means no API costs, no rate limits, and full control over prompts and outputs. But wiring up HuggingFace Diffusers — quantization, VRAM budgeting, preflight checks, freeing memory after — is the same boilerplate every time. imageCLI wraps all of it into one command. Give it a text prompt or a Markdown file and get an image; swap the backend with <code>-e</code>; batch a whole directory; or import it as a Python library.</p>
+        <p>It is the pixels sibling to voiceCLI's speech and llmCLI's tokens — local-first, GPU-resident, the same operational shape.</p>
+        <div class="callout"><p>The durable contract is the <strong>prompt</strong>, not the engine. Write it once; switch from FLUX.2 to SD3.5 with a single flag.</p></div>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>One command, every engine</h2>
+        <p>A small fleet of backends, each tuned for a different trade-off between speed, VRAM, and fidelity — and each just a value of <code>-e</code>. PuLID variants add face-identity lock from a reference image.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Engine</th><th>Best for</th><th>VRAM</th></tr></thead>
+            <tbody>
+              <tr><td><code>flux2-klein</code></td><td>The fast default — FP8 quanto, fastest path.</td><td>~8&nbsp;GB</td></tr>
+              <tr><td><code>flux1-dev</code></td><td>Maximum quality, longer prompts.</td><td>~10&nbsp;GB</td></tr>
+              <tr><td><code>flux1-schnell</code></td><td>Fastest, four steps, ungated (Apache&nbsp;2.0).</td><td>~10&nbsp;GB</td></tr>
+              <tr><td><code>pulid-flux1-dev</code></td><td>Face-identity lock from a reference image.</td><td>~10&nbsp;GB</td></tr>
+              <tr><td><code>sd35</code></td><td>CFG-free, realistic photos.</td><td>~14&nbsp;GB</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>NVFP4 variants target Blackwell cards for an extra speed step. The full matrix — nine engines with steps, speed, and quantization notes — lives in the repo README.</p>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>How a prompt becomes an image</h2>
+        <p>A prompt — plain text or a <code>.md</code> file with frontmatter — is dispatched to the chosen engine. The engine lazy-loads its model on the first call, runs preflight VRAM and RAM checks, generates, saves the image, then frees the GPU. Nothing stays resident longer than it needs to.</p>
+        <ul class="feature-list">
+          <li><strong>Dispatch</strong> — route the prompt (or each file in a batch) to its engine.</li>
+          <li><strong>Preflight</strong> — lazy-load the model, check VRAM/RAM before committing.</li>
+          <li><strong>Generate</strong> — run the diffusion steps at the configured resolution.</li>
+          <li><strong>Save &amp; free</strong> — write the image out, release GPU memory.</li>
+        </ul>
+        <p><code>imagecli batch</code> applies the same flow to every prompt in a directory; <code>imagecli info</code> verifies the install and GPU detection before you spend a model download on it.</p>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Cross-host over NATS</h2>
+        <p>The GPU and the caller need not be the same machine. imageCLI ships a <strong>NATS satellite</strong>: the model loads once on a GPU server, and a request from anywhere on the bus returns a generated image — PUT to a cross-host blob store so a non-GPU box never touches the weights.</p>
+        <p>That is how imageCLI plugs into <a href="/projects/roxabi-factory/">roxabi-factory</a>: it registers as an image worker exposing <code>image.generate</code>, so any agent in the factory renders by publishing a request — the transport invisible to the model's reasoning loop.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>Run it</h2>
+        <p>Requirements: Python 3.12, a CUDA GPU (16&nbsp;GB recommended; 10&nbsp;GB for fp8 engines), and the <a href="https://docs.astral.sh/uv/" rel="noopener">uv</a> package manager. Heavy engine deps are opt-in, so you install only what you use. Models download automatically on first use.</p>
+        <div class="formula-box"><pre><code>uv tool install .                      # install (cu128 index from pyproject)
+imagecli info                          # verify install + GPU
+imagecli generate "a cat in space"     # generate from anywhere
+imagecli generate prompt.md -e flux1-dev
+imagecli batch images/prompts_in/      # batch a directory</code></pre></div>
+        <p>Engines, the dispatcher, and the NATS satellite are all in the open.</p>
+        <ul class="feature-list">
+          <li><strong>The repo</strong> &middot; <a href="https://github.com/Roxabi/imageCLI" target="_blank" rel="noopener">github.com/Roxabi/imageCLI &rarr;</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero lab · Roxabi</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<style>
+  *,*::before,*::after{box-sizing:border-box} *{margin:0}
+  body{font-family:var(--font-sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.6;padding:0 var(--s-lg) var(--s-2xl)}
+  a{color:inherit;text-decoration:none}
+  .top{max-width:1280px;margin:0 auto;padding-block:var(--s-2xl) var(--s-lg)}
+  .eyebrow{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
+  h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;letter-spacing:-.04em;margin-top:var(--s-sm)}
+  .sub{color:var(--text-muted);margin-top:var(--s-sm);max-width:64ch}
+  /* filter bar */
+  .filters{position:sticky;top:0;z-index:20;max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;padding:var(--s-md) 0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px)}
+  .f{font-family:var(--font-mono);font-size:.8rem;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);border-radius:var(--r-full);padding:6px 14px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+  .f:hover{border-color:var(--border-hi);color:var(--text)}
+  .f .box{width:13px;height:13px;border:1.5px solid var(--text-dim);border-radius:3px;display:inline-grid;place-items:center;font-size:10px;line-height:1}
+  .f.on{color:var(--text);border-color:color-mix(in srgb,var(--accent) 50%,transparent)}
+  .f.on .box{background:var(--accent);border-color:var(--accent);color:var(--accent-on)}
+  .f .box::after{content:"✓";opacity:0}
+  .f.on .box::after{opacity:1}
+  /* sections */
+  .cat{max-width:1280px;margin:0 auto}
+  .cat h2{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);border-top:1px solid var(--border);padding-top:var(--s-md);margin:var(--s-xl) 0 var(--s-md)}
+  .cat h2 .c{color:var(--accent)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:var(--s-lg)}
+  .card{border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;background:var(--panel);transition:border-color .2s,transform .2s}
+  .card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .thumb{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;background:var(--bg);border-bottom:1px solid var(--border)}
+  .thumb iframe{position:absolute;top:0;left:0;width:1280px;height:800px;border:0;transform:scale(.281);transform-origin:top left;pointer-events:none}
+  .meta{display:flex;align-items:baseline;gap:var(--s-sm);padding:12px 16px}
+  .meta .n{font-family:var(--font-mono);font-size:.78rem;color:var(--accent)}
+  .meta .name{font-weight:600;font-size:.95rem}
+  .meta .tag{font-family:var(--font-mono);font-size:.6rem;color:var(--accent-on);background:var(--accent);border-radius:var(--r-full);padding:1px 7px}
+  .meta .open{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);margin-left:auto}
+  .card:hover .open{color:var(--accent)}
+  /* toggling */
+  body.hide-v17  [data-cat=v17],
+  body.hide-fav  [data-cat=fav],
+  body.hide-new  [data-cat=new],
+  body.hide-b1   [data-cat=b1],
+  body.hide-disc [data-cat=disc]{display:none}
+  footer{max-width:1280px;margin:var(--s-2xl) auto 0;color:var(--text-dim);font-family:var(--font-mono);font-size:.75rem}
+  @media (min-width:1340px){ .thumb iframe{transform:scale(.328)} }
+</style>
+</head>
+<body class="hide-disc">
+<div class="top">
+  <p class="eyebrow">Roxabi · design lab</p>
+  <h1>Hero — lab</h1>
+  <p class="sub">Toggle groups below to show/hide. Favorites = your picks (04/06/11/13/15); batch 3 = merges 16–25 of those. Click any card to open it full-screen.</p>
+</div>
+<div class="filters" id="filters">
+  <button class="f on" data-cat="v17"><span class="box"></span>17 · variations (3)</button>
+  <button class="f on" data-cat="fav"><span class="box"></span>★ Favorites (5)</button>
+  <button class="f on" data-cat="new"><span class="box"></span>New · 16–25</button>
+  <button class="f on" data-cat="b1"><span class="box"></span>Other kept (5)</button>
+  <button class="f"    data-cat="disc"><span class="box"></span>Discarded (5)</button>
+</div>
+
+<section class="cat" data-cat="v17">
+  <h2>17 · variations — <span class="c">depth occlusion: particles pass behind the cubes</span></h2>
+  <div class="grid">
+    <a class="card" href="./17-isogrid-particles.html"><div class="thumb"><iframe src="./17-isogrid-particles.html" loading="lazy" scrolling="no" title="17"></iframe></div><div class="meta"><span class="n">17</span><span class="name">Iso grid + dataflow</span><span class="tag">orig</span><span class="open">open →</span></div></a>
+    <a class="card" href="./17a-isogrid-depth.html"><div class="thumb"><iframe src="./17a-isogrid-depth.html" loading="lazy" scrolling="no" title="17a"></iframe></div><div class="meta"><span class="n">17a</span><span class="name">Depth occlusion</span><span class="tag">bigger</span><span class="open">open →</span></div></a>
+    <a class="card" href="./17b-isogrid-absorbed.html"><div class="thumb"><iframe src="./17b-isogrid-absorbed.html" loading="lazy" scrolling="no" title="17b"></iframe></div><div class="meta"><span class="n">17b</span><span class="name">Absorbed into core</span><span class="tag">big core</span><span class="open">open →</span></div></a>
+    <a class="card" href="./17c-isogrid-minimal.html"><div class="thumb"><iframe src="./17c-isogrid-minimal.html" loading="lazy" scrolling="no" title="17c"></iframe></div><div class="meta"><span class="n">17c</span><span class="name">Minimal depth</span><span class="tag">calm</span><span class="open">open →</span></div></a>
+  </div>
+</section>
+
+<section class="cat" data-cat="fav">
+  <h2>★ Favorites</h2>
+  <div class="grid">
+    <a class="card" href="./04-particle-hub.html"><div class="thumb"><iframe src="./04-particle-hub.html" loading="lazy" scrolling="no" title="04"></iframe></div><div class="meta"><span class="n">04</span><span class="name">Live particle hub</span><span class="open">open →</span></div></a>
+    <a class="card" href="./06-geometric-spotlight.html"><div class="thumb"><iframe src="./06-geometric-spotlight.html" loading="lazy" scrolling="no" title="06"></iframe></div><div class="meta"><span class="n">06</span><span class="name">Geometric spotlight</span><span class="open">open →</span></div></a>
+    <a class="card" href="./11-shader-curtain.html"><div class="thumb"><iframe src="./11-shader-curtain.html" loading="lazy" scrolling="no" title="11"></iframe></div><div class="meta"><span class="n">11</span><span class="name">Shader curtain</span><span class="open">open →</span></div></a>
+    <a class="card" href="./13-iso-module-grid.html"><div class="thumb"><iframe src="./13-iso-module-grid.html" loading="lazy" scrolling="no" title="13"></iframe></div><div class="meta"><span class="n">13</span><span class="name">Iso module grid</span><span class="open">open →</span></div></a>
+    <a class="card" href="./15-orbital-core.html"><div class="thumb"><iframe src="./15-orbital-core.html" loading="lazy" scrolling="no" title="15"></iframe></div><div class="meta"><span class="n">15</span><span class="name">Orbital core</span><span class="open">open →</span></div></a>
+  </div>
+</section>
+
+<section class="cat" data-cat="new">
+  <h2>New · batch 3 — <span class="c">merges of your favorites</span></h2>
+  <div class="grid">
+    <a class="card" href="./16-orbit-shader.html"><div class="thumb"><iframe src="./16-orbit-shader.html" loading="lazy" scrolling="no" title="16"></iframe></div><div class="meta"><span class="n">16</span><span class="name">Orbit + shader</span><span class="tag">15+11</span><span class="open">open →</span></div></a>
+    <a class="card" href="./17-isogrid-particles.html"><div class="thumb"><iframe src="./17-isogrid-particles.html" loading="lazy" scrolling="no" title="17"></iframe></div><div class="meta"><span class="n">17</span><span class="name">Iso grid + dataflow</span><span class="tag">13+04</span><span class="open">open →</span></div></a>
+    <a class="card" href="./18-block-orbit.html"><div class="thumb"><iframe src="./18-block-orbit.html" loading="lazy" scrolling="no" title="18"></iframe></div><div class="meta"><span class="n">18</span><span class="name">Block + orbit rings</span><span class="tag">06+15</span><span class="open">open →</span></div></a>
+    <a class="card" href="./19-exploded-block.html"><div class="thumb"><iframe src="./19-exploded-block.html" loading="lazy" scrolling="no" title="19"></iframe></div><div class="meta"><span class="n">19</span><span class="name">Exploded layered block</span><span class="tag">06+13</span><span class="open">open →</span></div></a>
+    <a class="card" href="./20-orbit-isogrid.html"><div class="thumb"><iframe src="./20-orbit-isogrid.html" loading="lazy" scrolling="no" title="20"></iframe></div><div class="meta"><span class="n">20</span><span class="name">Orbit on iso ground</span><span class="tag">15+13</span><span class="open">open →</span></div></a>
+    <a class="card" href="./21-constellation.html"><div class="thumb"><iframe src="./21-constellation.html" loading="lazy" scrolling="no" title="21"></iframe></div><div class="meta"><span class="n">21</span><span class="name">Constellation hub</span><span class="tag">04+15</span><span class="open">open →</span></div></a>
+    <a class="card" href="./22-shader-isogrid.html"><div class="thumb"><iframe src="./22-shader-isogrid.html" loading="lazy" scrolling="no" title="22"></iframe></div><div class="meta"><span class="n">22</span><span class="name">Shader + iso grid</span><span class="tag">11+13</span><span class="open">open →</span></div></a>
+    <a class="card" href="./23-block-ports.html"><div class="thumb"><iframe src="./23-block-ports.html" loading="lazy" scrolling="no" title="23"></iframe></div><div class="meta"><span class="n">23</span><span class="name">Block + channel ports</span><span class="tag">06+12</span><span class="open">open →</span></div></a>
+    <a class="card" href="./24-cursor-blueprint.html"><div class="thumb"><iframe src="./24-cursor-blueprint.html" loading="lazy" scrolling="no" title="24"></iframe></div><div class="meta"><span class="n">24</span><span class="name">Cursor-reactive blueprint</span><span class="tag">13+10</span><span class="open">open →</span></div></a>
+    <a class="card" href="./25-hub-blockcore.html"><div class="thumb"><iframe src="./25-hub-blockcore.html" loading="lazy" scrolling="no" title="25"></iframe></div><div class="meta"><span class="n">25</span><span class="name">Hub + block core</span><span class="tag">04+06</span><span class="open">open →</span></div></a>
+  </div>
+</section>
+
+<section class="cat" data-cat="b1">
+  <h2>Other kept — not favorited, not discarded</h2>
+  <div class="grid">
+    <a class="card" href="./01-terminal.html"><div class="thumb"><iframe src="./01-terminal.html" loading="lazy" scrolling="no" title="01"></iframe></div><div class="meta"><span class="n">01</span><span class="name">Terminal session</span><span class="open">open →</span></div></a>
+    <a class="card" href="./12-dataflow-pipeline.html"><div class="thumb"><iframe src="./12-dataflow-pipeline.html" loading="lazy" scrolling="no" title="12"></iframe></div><div class="meta"><span class="n">12</span><span class="name">Dataflow pipeline</span><span class="open">open →</span></div></a>
+    <a class="card" href="./14-live-status-panel.html"><div class="thumb"><iframe src="./14-live-status-panel.html" loading="lazy" scrolling="no" title="14"></iframe></div><div class="meta"><span class="n">14</span><span class="name">Live status panel</span><span class="open">open →</span></div></a>
+    <a class="card" href="./09-bento.html"><div class="thumb"><iframe src="./09-bento.html" loading="lazy" scrolling="no" title="09"></iframe></div><div class="meta"><span class="n">09</span><span class="name">Bento grid</span><span class="open">open →</span></div></a>
+    <a class="card" href="./10-interactive-3d.html"><div class="thumb"><iframe src="./10-interactive-3d.html" loading="lazy" scrolling="no" title="10"></iframe></div><div class="meta"><span class="n">10</span><span class="name">Interactive 3D blocks</span><span class="open">open →</span></div></a>
+  </div>
+</section>
+
+<section class="cat" data-cat="disc">
+  <h2>Discarded</h2>
+  <div class="grid">
+    <a class="card" href="./02-minimal-centered.html"><div class="thumb"><iframe src="./02-minimal-centered.html" loading="lazy" scrolling="no" title="02"></iframe></div><div class="meta"><span class="n">02</span><span class="name">Minimal centered</span><span class="open">open →</span></div></a>
+    <a class="card" href="./03-code-window.html"><div class="thumb"><iframe src="./03-code-window.html" loading="lazy" scrolling="no" title="03"></iframe></div><div class="meta"><span class="n">03</span><span class="name">Code window</span><span class="open">open →</span></div></a>
+    <a class="card" href="./05-editorial-bigtype.html"><div class="thumb"><iframe src="./05-editorial-bigtype.html" loading="lazy" scrolling="no" title="05"></iframe></div><div class="meta"><span class="n">05</span><span class="name">Editorial big-type</span><span class="open">open →</span></div></a>
+    <a class="card" href="./07-kinetic-marquee.html"><div class="thumb"><iframe src="./07-kinetic-marquee.html" loading="lazy" scrolling="no" title="07"></iframe></div><div class="meta"><span class="n">07</span><span class="name">Kinetic marquee</span><span class="open">open →</span></div></a>
+    <a class="card" href="./08-aurora-mesh.html"><div class="thumb"><iframe src="./08-aurora-mesh.html" loading="lazy" scrolling="no" title="08"></iframe></div><div class="meta"><span class="n">08</span><span class="name">Aurora mesh</span><span class="open">open →</span></div></a>
+  </div>
+</section>
+
+<footer>roxabi-site/lab/heroes/ · not in the SEO build · your show/hide choice is remembered per browser</footer>
+<script>
+(function () {
+  var KEY = 'lab-hidden', hidden;
+  try { hidden = JSON.parse(localStorage.getItem(KEY) || '["disc"]'); } catch (e) { hidden = ['disc']; }
+  var body = document.body, btns = document.querySelectorAll('.f');
+  function apply() {
+    ['v17','fav','new','b1','disc'].forEach(function (c) { body.classList.toggle('hide-' + c, hidden.indexOf(c) >= 0); });
+    btns.forEach(function (b) { b.classList.toggle('on', hidden.indexOf(b.dataset.cat) < 0); });
+  }
+  apply();
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var c = b.dataset.cat, i = hidden.indexOf(c);
+      if (i >= 0) hidden.splice(i, 1); else hidden.push(c);
+      try { localStorage.setItem(KEY, JSON.stringify(hidden)); } catch (e) {}
+      apply();
+    });
+  });
+})();
+</script>
+</body>
+</html>

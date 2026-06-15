@@ -1,0 +1,345 @@
+<main>
+<section class="doc-hero">
+  <div class="wrap">
+    <p class="section-label">OPEN-SOURCE PLUGINS</p>
+    <h1>roxabi-plugins</h1>
+    <p class="lead prose" style="margin:var(--s-md) auto 0">A Claude Code marketplace — the reusable layer on top of the agent. Its flagship, <code>dev-core</code>, turns one command into the full development lifecycle: frame, analyze, spec, plan, implement, review, ship. This is how <code>/dev</code> and its sub-skills work.</p>
+    <div class="doc-hero-tags"><span class="tag">Claude Code</span><span class="tag">Bun</span><span class="tag">MIT</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap constitution">
+    <nav class="toc" aria-label="Sections">
+      <span class="t">Sections</span>
+      <a href="#sec-1">1 — What it is</a>
+      <a href="#sec-2">2 — dev-core at a glance</a>
+      <a href="#sec-3">3 — /dev, the orchestrator</a>
+      <a href="#sec-4">4 — Three tiers</a>
+      <a href="#sec-5">5 — The pipeline: /dev's sub-skills</a>
+      <a href="#sec-6">6 — From issue to merged PR</a>
+      <a href="#sec-7">7 — The agent layer</a>
+    </nav>
+
+    <div class="const-body prose">
+
+      <div class="titre" id="sec-1">
+        <span class="label">01</span>
+        <h2>What it is</h2>
+        <p>Every team on Claude Code reinvents the same things — a <code>CLAUDE.md</code>, a custom review command, a way to structure CI prompts, a doc-sync ritual. It works, but none of it travels between projects. <strong>roxabi-plugins</strong> is that disposable layer made reusable: an open-source marketplace where each plugin ships an opinionated, battle-tested bundle for one domain.</p>
+        <p>A plugin is self-contained. It carries three kinds of thing, and Claude Code discovers them on install:</p>
+        <ul class="feature-list">
+          <li><strong>Skills</strong> — trigger-phrase workflows. You describe a task in plain language; the matching skill runs. No slash command to memorize.</li>
+          <li><strong>Agents</strong> — specialized sub-processes (a backend engineer, a security auditor) that a skill spawns to do focused work.</li>
+          <li><strong>Hooks</strong> — guardrails that fire on every tool call: secret scanning, formatter, test-command enforcement.</li>
+        </ul>
+        <div class="callout"><p>Plugins are <strong>project-agnostic</strong>. Each reads your stack from <code>.claude/stack.yml</code> at runtime — <code>{commands.test}</code>, <code>{backend.path}</code>, <code>{package_manager}</code> — so the same <code>dev-core</code> drives a NestJS monorepo and a Django service without changing a line.</p></div>
+        <p>Install is two commands: <code>claude plugin marketplace add Roxabi/roxabi-plugins</code>, then <code>claude plugin install dev-core</code>.</p>
+      </div>
+
+      <div class="titre" id="sec-2">
+        <span class="label">02</span>
+        <h2>dev-core at a glance</h2>
+        <p>The flagship plugin. It covers the whole arc from a GitHub issue to a merged PR, and it is the one we focus on here. Everything routes through a single entry point, <code>/dev</code>.</p>
+        <div class="kpi">
+          <div class="kpi-item"><span class="kpi-value">33</span><span class="kpi-label">skills</span></div>
+          <div class="kpi-item"><span class="kpi-value">9</span><span class="kpi-label">agents</span></div>
+          <div class="kpi-item"><span class="kpi-value">3</span><span class="kpi-label">safety hooks</span></div>
+          <div class="kpi-item"><span class="kpi-value">5</span><span class="kpi-label">workflow phases</span></div>
+        </div>
+        <p>The three hooks run on every tool call, no skill required — they are the floor under everything else.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Hook</th><th>Trigger</th><th>What it does</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Security check</strong></td><td>PreToolUse · Edit/Write</td><td>Blocks hardcoded secrets, SQL-injection and command-injection patterns</td></tr>
+              <tr><td><strong>Test guard</strong></td><td>PreToolUse · Bash</td><td>Forces <code>bun run test</code> over <code>bun test</code> — the latter uses the Bun runner and spins the CPU</td></tr>
+              <tr><td><strong>Auto-format</strong></td><td>PostToolUse · Edit/Write</td><td>Runs the formatter from <code>stack.yml</code> per file extension; silent no-op when unconfigured</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="titre" id="sec-3">
+        <span class="label">03</span>
+        <h2>/dev, the orchestrator</h2>
+        <p>This is the heart of the plugin. <code>/dev</code> is <strong>not</strong> a skill that writes code — it is a <strong>state machine</strong> that scans where the work stands, decides what comes next, and delegates to the right sub-skill. One door for the whole lifecycle.</p>
+        <p>You point it at an issue. It does the rest.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+            <tbody>
+              <tr><td><code>/dev #42</code></td><td>Resume / start from the issue</td></tr>
+              <tr><td><code>/dev "dark mode"</code></td><td>Find or create the issue, then start</td></tr>
+              <tr><td><code>/dev #42 --from spec</code></td><td>Jump to a step (warns if deps are missing)</td></tr>
+              <tr><td><code>/dev #42 --audit</code></td><td>Reasoning checkpoint before spec / plan / implement</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Each invocation runs the same silent loop: scan state, find the first unfinished step, gate if a human decision is due, delegate, then re-scan in the same turn and continue.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 860 200" role="img" aria-label="The /dev control loop: scan on-disk state, pick the first unfinished step, gate on a human decision when due, run the sub-skill, then re-scan in the same turn" style="width:100%;height:auto">
+            <defs>
+              <marker id="dl-a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--text-muted)"/></marker>
+              <marker id="dl-acc" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <rect x="24" y="36" width="178" height="64" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="113" y="62" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">scan state</text>
+            <text x="113" y="82" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">Σ · tier τ · seed tasks</text>
+            <line x1="202" y1="68" x2="234" y2="68" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#dl-a)"/>
+            <rect x="238" y="36" width="200" height="64" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="338" y="62" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)">find S*</text>
+            <text x="338" y="82" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">first unfinished step</text>
+            <line x1="438" y1="68" x2="470" y2="68" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#dl-a)"/>
+            <rect x="474" y="36" width="150" height="64" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="549" y="62" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">gate?</text>
+            <text x="549" y="82" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">human if due</text>
+            <line x1="624" y1="68" x2="656" y2="68" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#dl-a)"/>
+            <rect x="660" y="36" width="176" height="64" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="748" y="62" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)">run sub-skill</text>
+            <text x="748" y="82" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">/frame · /spec · /implement…</text>
+            <path d="M748 100 L748 162 L113 162 L113 102" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#dl-acc)"/>
+            <text x="430" y="154" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">re-scan — same turn</text>
+          </svg>
+          <figcaption>The /dev control loop — scan on-disk state (Σ), pick the first step that is neither done nor skipped, gate when a human decision is due, run the sub-skill, then re-scan in the same turn. Repeats until every step is done or skipped.</figcaption>
+        </figure>
+        <p>Progress is tracked in two places, so a session can die and resume cleanly:</p>
+        <ul class="feature-list">
+          <li><strong>Artifacts on disk</strong> — <code>frames/</code>, <code>analyses/</code>, <code>specs/</code>, <code>plans/</code>. Authoritative <em>across</em> sessions; this is how <code>/dev</code> knows you already wrote the spec last week.</li>
+          <li><strong>The task list</strong> — authoritative <em>within</em> a session, plus an in-memory state map for steps that leave no file (validate, review, fix).</li>
+        </ul>
+        <p>Three rules keep it honest and out of your way:</p>
+        <ul class="feature-list">
+          <li><strong>Human gates.</strong> Approval is requested at frame, spec, and plan — never auto-advanced past a decision.</li>
+          <li><strong>Silent transitions.</strong> No "Running /X…", no "Moving to Y" — the next skill's output <em>is</em> the message.</li>
+          <li><strong>Compact pause.</strong> After <code>/plan</code> (on F-lite / F-full), <code>/dev</code> stops and recommends <code>/compact</code> before building — the heavy planning context is dead weight for the fresh implementation agents.</li>
+        </ul>
+      </div>
+
+      <div class="titre" id="sec-4">
+        <span class="label">04</span>
+        <h2>Three tiers</h2>
+        <p>Before walking the pipeline, <code>/dev</code> sizes the work. The tier decides which steps run and which are skipped — a typo fix should not sit through deep analysis and a spec gate.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Tier</th><th>Criteria</th><th>Pipeline</th></tr></thead>
+            <tbody>
+              <tr><td><strong>S</strong></td><td>&le;3 files, no architecture, no risk</td><td>triage → implement → pr → validate → review → fix* → cleanup*</td></tr>
+              <tr><td><strong>F-lite</strong></td><td>Clear scope, single domain</td><td>frame → spec → plan → implement → verify → ship</td></tr>
+              <tr><td><strong>F-full</strong></td><td>New architecture, unclear reqs, &gt;2 domains</td><td>frame → analyze → spec → plan → implement → verify → ship</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><code>*</code> = conditional — runs only if applicable.</p>
+      </div>
+
+      <div class="titre" id="sec-5">
+        <span class="label">05</span>
+        <h2>The pipeline: /dev's sub-skills</h2>
+        <p>Five phases, fourteen steps. Each step is a standalone skill <code>/dev</code> delegates to — these are its sub-skills. They group into <strong>Frame → Shape → Build → Verify → Ship</strong>.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 860 316" role="img" aria-label="The five phases of the /dev pipeline — Frame, Shape, Build, Verify, Ship — each listing its sub-skills; amber-dotted steps are human gates, and the arc in Verify is the review-to-fix loop" style="width:100%;height:auto">
+            <defs>
+              <marker id="ph-a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--text-muted)"/></marker>
+              <marker id="ph-l" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <!-- Frame -->
+            <rect x="12" y="46" width="148" height="232" rx="10" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="24" y="67" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">01</text>
+            <text x="86" y="67" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)" letter-spacing="0.1em">FRAME</text>
+            <line x1="24" y1="76" x2="148" y2="76" stroke="var(--border)" stroke-width="1"/>
+            <rect x="24" y="88" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="86" y="107" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">triage</text>
+            <rect x="24" y="128" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="86" y="147" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">recheck</text>
+            <rect x="24" y="168" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="86" y="187" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">frame</text>
+            <circle cx="138" cy="183" r="3.5" fill="var(--accent)"/>
+            <!-- Frame → Shape -->
+            <line x1="162" y1="162" x2="178" y2="162" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ph-a)"/>
+            <!-- Shape -->
+            <rect x="180" y="46" width="148" height="232" rx="10" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="192" y="67" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">02</text>
+            <text x="254" y="67" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)" letter-spacing="0.1em">SHAPE</text>
+            <line x1="192" y1="76" x2="316" y2="76" stroke="var(--border)" stroke-width="1"/>
+            <rect x="192" y="88" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="254" y="107" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">analyze</text>
+            <rect x="192" y="128" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="254" y="147" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">spec</text>
+            <circle cx="306" cy="143" r="3.5" fill="var(--accent)"/>
+            <!-- Shape → Build -->
+            <line x1="330" y1="162" x2="346" y2="162" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ph-a)"/>
+            <!-- Build -->
+            <rect x="348" y="46" width="148" height="232" rx="10" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="360" y="67" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">03</text>
+            <text x="422" y="67" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)" letter-spacing="0.1em">BUILD</text>
+            <line x1="360" y1="76" x2="484" y2="76" stroke="var(--border)" stroke-width="1"/>
+            <rect x="360" y="88" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="422" y="107" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">plan</text>
+            <circle cx="474" cy="103" r="3.5" fill="var(--accent)"/>
+            <rect x="360" y="128" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="422" y="147" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">implement</text>
+            <rect x="360" y="168" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="422" y="187" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">pr</text>
+            <!-- Build → Verify -->
+            <line x1="498" y1="162" x2="514" y2="162" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ph-a)"/>
+            <!-- Verify -->
+            <rect x="516" y="46" width="148" height="232" rx="10" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="528" y="67" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">04</text>
+            <text x="590" y="67" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)" letter-spacing="0.1em">VERIFY</text>
+            <line x1="528" y1="76" x2="652" y2="76" stroke="var(--border)" stroke-width="1"/>
+            <rect x="528" y="88" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="590" y="107" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">ci-watch</text>
+            <rect x="528" y="128" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="590" y="147" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">validate</text>
+            <rect x="528" y="168" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="590" y="187" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">review</text>
+            <rect x="528" y="208" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="590" y="227" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">fix</text>
+            <path d="M652 222 C676 218 676 187 652 184" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ph-l)"/>
+            <text x="588" y="258" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">re-review (≤2)</text>
+            <!-- Verify → Ship -->
+            <line x1="666" y1="162" x2="682" y2="162" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ph-a)"/>
+            <!-- Ship -->
+            <rect x="684" y="46" width="148" height="232" rx="10" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="696" y="67" font-family="var(--font-mono)" font-size="10" fill="var(--text-dim)">05</text>
+            <text x="758" y="67" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)" letter-spacing="0.1em">SHIP</text>
+            <line x1="696" y1="76" x2="820" y2="76" stroke="var(--border)" stroke-width="1"/>
+            <rect x="696" y="88" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="758" y="107" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text-muted)">promote</text>
+            <rect x="696" y="128" width="124" height="30" rx="6" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
+            <text x="758" y="147" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--text)">cleanup</text>
+            <!-- legend -->
+            <circle cx="296" cy="298" r="3.5" fill="var(--accent)"/>
+            <text x="308" y="302" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">human gate</text>
+            <text x="430" y="302" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">amber arc = re-review loop · dashed = standalone</text>
+          </svg>
+          <figcaption>The five phases and their sub-skills. Amber-dotted steps (frame, spec, plan) are human gates; the arc in Verify is the review → fix loop (≤2 iterations); promote is dashed because it runs standalone, never auto-triggered.</figcaption>
+        </figure>
+        <p>Each step has a <strong>class</strong>: <em>gate</em> ⛓ asks for human approval, <em>adv</em> advances automatically, <em>verdict</em> branches on its outcome, <em>loop</em> iterates.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Phase</th><th>Step → skill</th><th>Class</th><th>What it does</th><th>Skipped when</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Frame</strong></td><td><code>triage</code> → /issue-triage</td><td>adv</td><td>Labels, size, priority, dependencies</td><td>already triaged</td></tr>
+              <tr><td></td><td><code>recheck</code> → /recheck</td><td>adv</td><td>Drift-check before coding (git-drift, missing symbol, resolved dep)</td><td>never</td></tr>
+              <tr><td></td><td><code>frame</code> → /frame</td><td><strong>gate</strong></td><td>Frames the problem from the issue</td><td>tier S</td></tr>
+              <tr><td><strong>Shape</strong></td><td><code>analyze</code> → /analyze</td><td>adv</td><td>Deep analysis + expert consultation</td><td>tiers S, F-lite</td></tr>
+              <tr><td></td><td><code>spec</code> → /spec</td><td><strong>gate</strong></td><td>Spec + acceptance criteria, smart splitting</td><td>tier S</td></tr>
+              <tr><td><strong>Build</strong></td><td><code>plan</code> → /plan</td><td><strong>gate</strong></td><td>Implementation plan as micro-tasks</td><td>tier S</td></tr>
+              <tr><td></td><td><code>implement</code> → /implement</td><td>adv</td><td>Writes code + tests via domain agents</td><td>—</td></tr>
+              <tr><td></td><td><code>pr</code> → /pr</td><td>adv</td><td>Opens the PR (Conventional Commits, links the issue)</td><td>—</td></tr>
+              <tr><td><strong>Verify</strong></td><td><code>ci-watch</code> → /ci-watch</td><td>adv</td><td>Live CI dashboard, dumps logs on failure</td><td>no PR</td></tr>
+              <tr><td></td><td><code>validate</code> → /validate</td><td>adv</td><td>Implementation vs spec, quality gates</td><td>—</td></tr>
+              <tr><td></td><td><code>review</code> → /code-review</td><td><strong>verdict</strong></td><td>Multi-domain review → approve or request changes</td><td>—</td></tr>
+              <tr><td></td><td><code>fix</code> → /fix</td><td><strong>loop</strong></td><td>Applies accepted findings (&le;2 iterations, then abort)</td><td>already applied</td></tr>
+              <tr><td><strong>Ship</strong></td><td><code>promote</code> → /promote</td><td>—</td><td>staging → production</td><td>always (standalone)</td></tr>
+              <tr><td></td><td><code>cleanup</code> → /cleanup</td><td>adv</td><td>Removes stale worktrees / branches</td><td>nothing stale</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout"><p>Before the first code step, <code>/dev</code> silently bootstraps a git worktree (<code>/setup-worktree</code>) under <code>.claude/worktrees/{N}-slug</code> on <code>feat/{N}-slug</code>. All tiers build in isolation — never on <code>main</code> or <code>staging</code>.</p></div>
+      </div>
+
+      <div class="titre" id="sec-6">
+        <span class="label">06</span>
+        <h2>From issue to merged PR</h2>
+        <p>Run end to end (F-full shown), the chain looks like this — amber outlines mark human gates, dashed nodes are user-triggered, and <code>code-review</code> is a verdict that either merges or loops back through <code>/fix</code>.</p>
+        <figure class="doc-figure">
+          <svg viewBox="0 0 640 712" role="img" aria-label="The full F-full chain from issue to merged PR: the gated Frame and Shape front, plan, a compact pause, implement, pr, CI and validate, then a code-review verdict that either loops through fix or merges to staging, cleanup, and a manual promote to production" style="width:100%;height:auto">
+            <defs>
+              <marker id="ch-a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--text-muted)"/></marker>
+              <marker id="ch-acc" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--accent)"/></marker>
+            </defs>
+            <!-- n1 Frame+Shape front (gated) -->
+            <rect x="160" y="16" width="220" height="46" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="270" y="38" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">Frame → Shape</text>
+            <text x="270" y="54" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">triage · recheck · frame · analyze · spec</text>
+            <line x1="270" y1="62" x2="270" y2="82" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ch-a)"/>
+            <!-- n2 plan (gate) -->
+            <rect x="160" y="84" width="220" height="42" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="270" y="110" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">plan</text>
+            <circle cx="366" cy="96" r="3.5" fill="var(--accent)"/>
+            <line x1="270" y1="126" x2="270" y2="146" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ch-a)"/>
+            <!-- n3 compact pause (user-triggered) -->
+            <rect x="160" y="148" width="220" height="44" rx="8" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5,4"/>
+            <text x="270" y="170" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">compact pause</text>
+            <text x="270" y="185" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">F-lite / F-full · before building</text>
+            <line x1="270" y1="192" x2="270" y2="212" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ch-a)"/>
+            <!-- n4 implement -->
+            <rect x="160" y="214" width="220" height="38" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="270" y="237" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)">implement</text>
+            <line x1="270" y1="252" x2="270" y2="272" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ch-a)"/>
+            <!-- n5 pr -->
+            <rect x="160" y="274" width="220" height="38" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="270" y="297" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)">pr</text>
+            <line x1="270" y1="312" x2="270" y2="332" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ch-a)"/>
+            <!-- n6 ci-watch + validate -->
+            <rect x="160" y="334" width="220" height="44" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="270" y="356" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)">ci-watch · validate</text>
+            <text x="270" y="371" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">quality gates</text>
+            <line x1="270" y1="378" x2="270" y2="392" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ch-a)"/>
+            <!-- n7 code-review (verdict diamond) -->
+            <polygon points="270,394 366,438 270,482 174,438" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+            <text x="270" y="434" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">code-review</text>
+            <text x="270" y="450" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">verdict</text>
+            <!-- CHANGES → fix -->
+            <line x1="366" y1="438" x2="426" y2="438" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ch-a)"/>
+            <text x="396" y="430" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">changes</text>
+            <rect x="430" y="416" width="180" height="44" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="520" y="438" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)">fix</text>
+            <text x="520" y="452" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">≤2 iterations</text>
+            <!-- fix loops back into review (left vertex), routed clear of the ci/validate box -->
+            <path d="M520 416 L520 386 L116 386 L116 438 L170 438" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ch-acc)"/>
+            <text x="92" y="404" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">re-review</text>
+            <!-- APPROVED → merge -->
+            <line x1="270" y1="482" x2="270" y2="506" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ch-acc)"/>
+            <text x="300" y="500" text-anchor="start" font-family="var(--font-mono)" font-size="9" fill="var(--accent)">approved</text>
+            <!-- n8 merge → staging -->
+            <rect x="160" y="506" width="220" height="44" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="270" y="533" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">merge → staging</text>
+            <line x1="270" y1="550" x2="270" y2="570" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ch-a)"/>
+            <!-- n9 cleanup -->
+            <rect x="160" y="570" width="220" height="38" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+            <text x="270" y="593" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--text)">cleanup</text>
+            <line x1="270" y1="608" x2="270" y2="636" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#ch-a)"/>
+            <text x="300" y="628" text-anchor="start" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">manual</text>
+            <!-- n10 promote (user-triggered) -->
+            <rect x="160" y="636" width="220" height="44" rx="8" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5,4"/>
+            <text x="270" y="658" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">/promote → production</text>
+            <text x="270" y="673" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--text-muted)">standalone · never auto</text>
+            <!-- legend -->
+            <circle cx="150" cy="699" r="3.5" fill="var(--accent)"/>
+            <text x="162" y="703" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">human gate</text>
+            <text x="300" y="703" font-family="var(--font-mono)" font-size="10" fill="var(--text-muted)">dashed = user-triggered</text>
+          </svg>
+          <figcaption>The full F-full chain. The amber-outlined front carries the human gates (frame, spec, plan); the dashed nodes — compact pause and /promote — are user-triggered, never automatic. code-review is a verdict: changes loop through /fix (≤2) and re-review; approved merges to staging, then cleanup.</figcaption>
+        </figure>
+        <div class="callout"><p>It is fully resumable. Kill the session mid-step, run <code>/dev #42</code> again — the re-scan reads the artifacts on disk and picks up exactly where it left off. Idempotent by construction.</p></div>
+      </div>
+
+      <div class="titre" id="sec-7">
+        <span class="label">07</span>
+        <h2>The agent layer</h2>
+        <p><code>/dev</code> orchestrates; it does not touch code itself. Skills like <code>implement</code> and <code>fix</code> spawn the <strong>agents</strong> — the only layer that writes. Nine of them, in three tiers. Each carries a config guard (fails fast if <code>stack.yml</code> is missing), an escalation path, and a confidence threshold: below 70–80% certainty it stops and asks instead of guessing.</p>
+        <div class="tbl-wrap">
+          <table class="data-table">
+            <thead><tr><th>Tier</th><th>Agents</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Domain</strong></td><td><code>frontend-dev</code> · <code>backend-dev</code> · <code>devops</code></td><td>Implementation — UI, services, infrastructure &amp; CI</td></tr>
+              <tr><td><strong>Quality</strong></td><td><code>tester</code> · <code>fixer</code> · <code>security-auditor</code></td><td>Tests, accepted review fixes, OWASP audit</td></tr>
+              <tr><td><strong>Strategy</strong></td><td><code>architect</code> · <code>product-lead</code> · <code>doc-writer</code></td><td>ADRs, analysis &amp; specs, documentation</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Read it from the source — the orchestrator, the sub-skills, and the agents all live in the open.</p>
+        <ul class="feature-list">
+          <li><strong>The repo</strong> · <a href="https://github.com/Roxabi/roxabi-plugins" target="_blank" rel="noopener">github.com/Roxabi/roxabi-plugins &rarr;</a></li>
+          <li><strong>dev-core</strong> · <a href="https://github.com/Roxabi/roxabi-plugins/blob/staging/plugins/dev-core/README.md" target="_blank" rel="noopener">plugins/dev-core/README.md &rarr;</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+</main>

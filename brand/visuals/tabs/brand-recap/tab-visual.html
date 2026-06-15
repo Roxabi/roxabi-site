@@ -1,0 +1,184 @@
+<div class="summary-card">
+  <div class="summary-title">Direction — Open Stack (dark + light)</div>
+  <div class="summary-body">
+    <p>Visual language rooted in brand values: <strong>movement, independence, forward momentum, openness</strong>. Color system, typography, and usage rules are locked. Logo mark is in active exploration — intentionally left open.</p>
+    <p><strong>v1.5 migration (2026-04-20):</strong> cool-dark family (<code>#0d1117</code>) replaces the prior warm-dark ground. Amber <code>#f0b429</code> kept across the migration. Warm off-white text <code>#f0ede6</code> retained against the cool ground as a deliberate signature.</p>
+  </div>
+</div>
+
+<div class="section-label triangle">§6.1 · Primary palette · dark (v1.5)</div>
+
+<div class="swatch-grid">
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#0d1117;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--bg</span>
+      <span class="swatch-hex">#0d1117</span>
+      <span class="swatch-use">Page background</span>
+    </div>
+  </div>
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#13191f;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--panel</span>
+      <span class="swatch-hex">#13191f</span>
+      <span class="swatch-use">Elevated panel / topnav surface</span>
+    </div>
+  </div>
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#161b22;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--surface</span>
+      <span class="swatch-hex">#161b22</span>
+      <span class="swatch-use">Cards, panels, raised surfaces</span>
+    </div>
+  </div>
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#f0b429;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--accent</span>
+      <span class="swatch-hex">#f0b429</span>
+      <span class="swatch-use">Amber — CTAs, forward accents, active states</span>
+    </div>
+  </div>
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#f0ede6;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--text</span>
+      <span class="swatch-hex">#f0ede6</span>
+      <span class="swatch-use">Body, headings — warm off-white on cool ground</span>
+    </div>
+  </div>
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#21262d;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--border</span>
+      <span class="swatch-hex">#21262d</span>
+      <span class="swatch-use">Dividers, card outlines</span>
+    </div>
+  </div>
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#30363d;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--border-hi</span>
+      <span class="swatch-hex">#30363d</span>
+      <span class="swatch-use">Hover / emphasis dividers</span>
+    </div>
+  </div>
+</div>
+
+<div class="section-label triangle">§6.1 · Primary palette · light</div>
+
+<div class="swatch-grid">
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#f8f7f4;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--bg</span>
+      <span class="swatch-hex">#f8f7f4</span>
+      <span class="swatch-use">Page background</span>
+    </div>
+  </div>
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#f0ede8;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--surface</span>
+      <span class="swatch-hex">#f0ede8</span>
+      <span class="swatch-use">Cards, panels</span>
+    </div>
+  </div>
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#d97706;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--accent</span>
+      <span class="swatch-hex">#d97706</span>
+      <span class="swatch-use">Amber — muted for readability on light</span>
+    </div>
+  </div>
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#1c1917;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--text</span>
+      <span class="swatch-hex">#1c1917</span>
+      <span class="swatch-use">Body text, headings</span>
+    </div>
+  </div>
+  <div class="swatch">
+    <span class="swatch-chip" style="background:#d6cfc8;" aria-hidden="true"></span>
+    <div class="swatch-meta">
+      <span class="swatch-token">--border</span>
+      <span class="swatch-hex">#d6cfc8</span>
+      <span class="swatch-use">Dividers, card outlines</span>
+    </div>
+  </div>
+</div>
+
+<div class="section-label triangle">§6.1 · Usage rules</div>
+
+<ul>
+  <li><strong>Amber is the signature color.</strong> Use it for CTAs, forward-pointing accents, active states, and key highlights — not decoration.</li>
+  <li><strong>Background and surface are the only two background tokens.</strong> Don't invent a third.</li>
+  <li><strong>Border should be barely visible</strong> — structural, not decorative.</li>
+  <li><strong>Text on amber:</strong> use <code>#0d1117</code> (dark bg token) for contrast. Never <code>#000000</code>.</li>
+</ul>
+
+<div class="section-label triangle">§6.2 · Typography</div>
+
+<div class="kv-strip">
+  <span class="kv"><b>Display / Hero</b> System-ui (Inter 850 in production) · weight 900 · tracking -0.04em</span>
+  <span class="kv"><b>Body</b> System-ui (Inter in production) · weight 400–500 · normal tracking</span>
+  <span class="kv"><b>Mono</b> JetBrains Mono preferred · weight 400–500</span>
+</div>
+
+<div class="callout">
+  <strong>Display treatment:</strong> Mixed case (sentence case) — not all-caps, not title-case. The weight and tight tracking carry the visual hierarchy. Avoid adding letter-spacing to body text.
+</div>
+
+<div class="section-label triangle">§6.3 · Logo — status</div>
+
+<div class="summary-card">
+  <div class="summary-title"><span class="status-chip">Open</span>&nbsp; The mark has not been designed</div>
+  <div class="summary-body">
+    <p>The v1.0 logo description ("Geometric R + amber slash") was a placeholder generated during exploration — never actually decided. Section 6 of the brand book locks palette, typography, and visual language. The mark itself is in active exploration.</p>
+  </div>
+</div>
+
+<h3>What the mark must communicate</h3>
+<ul>
+  <li>Complete and stable — not open, incomplete, or ambiguous</li>
+  <li>Forward momentum — the system runs; things compound; output exceeds input</li>
+  <li>Foundation / operating layer — the thing underneath, not above</li>
+  <li>Openness — accessible, forkable, yours to extend</li>
+</ul>
+
+<h3>Hard constraints</h3>
+<ul>
+  <li>Must work at 16px (favicon) and at 200px</li>
+  <li>No letterform requirement — the R is not a constraint</li>
+  <li>No diagonal elements that read as prohibition or cutting (slash = stop = wrong)</li>
+  <li>No open / incomplete forms that read as unstable or unfinished</li>
+</ul>
+
+<h3>Open questions</h3>
+<ul>
+  <li><strong>Curved vs geometric</strong> — the previous "no curves" constraint was never validated. Brand values of movement / independence / freedom may call for fluid forms. Both registers in play until one clearly wins.</li>
+  <li><strong>Structure vs flow</strong> — pure geometry can read as rigid; curves can communicate momentum. The right balance is undecided.</li>
+</ul>
+
+<div class="callout">
+  <strong>Animation principle (when decided):</strong> the mark should <em>build or arrive</em>, not sweep or cut. Amber is the last element to appear — it's the reveal.
+</div>
+
+<div class="section-label triangle">§6.4 · Portfolio amber family</div>
+
+<div class="callout">
+  <p>Lyra uses Hub Amber <code>#f0a030</code> — in the same amber family as Roxabi's <code>#f0b429</code>. The difference is intentional: Lyra's amber is warmer, Roxabi's is slightly cooler and higher.</p>
+  <p>On a page that references both, the family resemblance is visible and the distinction is legible. This creates visual portfolio coherence without identity confusion.</p>
+</div>
+
+<div class="section-label triangle">§6.5 · Code block rule</div>
+
+<div class="callout">
+  <strong>Code blocks are always dark terminal</strong>, regardless of page mode. On light pages, the code block brings its own dark surface. This is a design decision, not a failure to theme. Code is written in dark environments; a light-themed code block is a usability regression.
+  <br><br>
+  Dark code surface: <code>#0d1117</code> · syntax highlight: amber for keywords · text: <code>#f0ede6</code>.
+</div>

@@ -1,0 +1,39 @@
+# .claude/stack.yml — dev-core stack configuration
+# Commit this file with the project. Secrets live in .env only.
+schema_version: "1.0"
+
+runtime: python
+package_manager: none
+
+backend:
+  framework: none
+  path: src
+
+build:
+  formatter: none
+
+deploy:
+  platform: cloudflare-pages
+
+docs:
+  framework: none
+  path: docs
+  format: md
+
+commands:
+  dev: python3 -m http.server -d dist 8000
+  build: python3 src/build.py
+  test: ""
+  lint: ""
+  format: ""
+  typecheck: ""
+  install: ""
+
+artifacts:
+  analyses: artifacts/analyses
+  specs: artifacts/specs
+  frames: artifacts/frames
+  plans: artifacts/plans
+
+standards:
+  architecture: docs/architecture/

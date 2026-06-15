@@ -1,0 +1,723 @@
+# roxabi-site — build manifest (single source of truth)
+# Consumed by src/build.py. All SEO (canonical, hreflang, og:url, og:locale,
+# breadcrumbs) is DERIVED from (path, lang) below — never hand-written per page.
+
+base       = "https://roxabi.dev"
+github     = "https://github.com/Roxabi"
+org_name   = "Roxabi"
+lastmod    = "2026-06-02"          # sitemap <lastmod>; bump on content change
+
+# ── Per-language chrome strings (nav, footer, locale, og image) ──────────────
+[lang.en]
+prefix            = ""
+locale            = "en_US"
+locale_alt        = "fr_FR"
+og_image          = "/assets/og/roxabi-og.png"
+inlanguage        = ["en", "fr"]
+nav_primary_label = "Primary"
+nav_menu          = "Menu"
+skip_link         = "Skip to content"
+brand_aria        = "Roxabi home"
+nav_projects      = "Projects"
+nav_constitution  = "Constitution"
+nav_docs          = "Docs"
+doc_read          = "Read"
+doc_all           = "All documentation"
+doc_nav_aria      = "Document navigation"
+doc_filter_all    = "All"
+doc_filter_aria   = "Filter documentation by tag"
+doc_version       = "Version"
+doc_updated       = "Updated"
+github_aria       = "Roxabi on GitHub"
+theme_aria        = "Switch theme"
+lang_label        = "EN"           # shows CURRENT language (like the theme toggle)
+lang_hreflang     = "fr"           # the toggle points at the OTHER language
+lang_aria         = "Voir en français"
+lang_title        = "Français"
+home_crumb        = "Home"
+footer_note       = "Built in the open. No telemetry. No lock-in."
+footer_tagline    = "The operating layer for your agentic stack. Pre-wired. Open. Yours."
+f_product         = "Product"
+f_resources       = "Resources"
+f_portfolio       = "Portfolio"
+f_github          = "GitHub"
+f_docs_soon       = "Documentation"
+f_changelog_soon  = "Changelog (soon)"
+f_legal           = "Legal"
+f_legal_notice    = "Legal notice"
+f_sibling         = "Sibling brand, shared amber family."
+f_copyright       = "© 2026 Roxabi · AGPL-3.0 License"
+
+[lang.fr]
+prefix            = "/fr"
+locale            = "fr_FR"
+locale_alt        = "en_US"
+og_image          = "/assets/og/roxabi-og-fr.png"
+inlanguage        = ["fr", "en"]
+nav_primary_label = "Principale"
+nav_menu          = "Menu"
+skip_link         = "Aller au contenu"
+brand_aria        = "Accueil Roxabi"
+nav_projects      = "Projets"
+nav_constitution  = "Constitution"
+nav_docs          = "Docs"
+doc_read          = "Lire"
+doc_all           = "Toute la documentation"
+doc_nav_aria      = "Navigation des documents"
+doc_filter_all    = "Tout"
+doc_filter_aria   = "Filtrer la documentation par tag"
+doc_version       = "Version"
+doc_updated       = "Mis à jour"
+github_aria       = "Roxabi sur GitHub"
+theme_aria        = "Changer de thème"
+lang_label        = "FR"
+lang_hreflang     = "en"
+lang_aria         = "View in English"
+lang_title        = "English"
+home_crumb        = "Accueil"
+footer_note       = "Construit à ciel ouvert. Aucune télémétrie. Aucun verrouillage."
+footer_tagline    = "La couche d'exploitation de ta stack agentique. Pré-câblé. Ouvert. À toi."
+f_product         = "Produit"
+f_resources       = "Ressources"
+f_portfolio       = "Portfolio"
+f_github          = "GitHub"
+f_docs_soon       = "Documentation"
+f_changelog_soon  = "Changelog (bientôt)"
+f_legal           = "Légal"
+f_legal_notice    = "Mentions légales"
+f_sibling         = "Marque sœur, famille ambre partagée."
+f_copyright       = "© 2026 Roxabi · Licence AGPL-3.0"
+
+# ── Pages. `path` is lang-agnostic and lang-prefix-free ("" = site root). ─────
+# `active` highlights a nav item. `jsonld` selects the structured-data builder.
+
+[[page]]
+id          = "home"
+path        = ""
+body        = "home"
+og_type     = "website"
+footer      = "full"
+shader      = "kinetic-grid"
+active      = ""
+jsonld      = "home"
+og_alt      = true            # emit og:image:alt (= title)
+changefreq  = "weekly"
+priority    = "1.0"
+  [page.en]
+  title    = "Roxabi — One person. Team-scale output."
+  desc     = "Roxabi ships open-source primitives that compound — the operating layer for agentic systems. Pre-wired, open, yours. AGPL-3.0, self-hostable, no lock-in."
+  og_title = "Roxabi — One person. Team-scale output."
+  og_desc  = "Open-source primitives that compound. Pre-wired. Open. Yours."
+  org_desc = "Open-source primitives that compound — the operating layer for agentic systems."
+  [page.fr]
+  title    = "Roxabi — Une personne. Le rendement d'une équipe."
+  desc     = "Roxabi publie des primitives open-source qui se composent — la couche d'exploitation des systèmes agentiques. Pré-câblé, ouvert, à toi. AGPL-3.0, auto-hébergeable, sans verrouillage."
+  og_title = "Roxabi — Une personne. Le rendement d'une équipe."
+  og_desc  = "Des primitives open-source qui se composent. Pré-câblé. Ouvert. À toi."
+  org_desc = "Des primitives open-source qui se composent — la couche d'exploitation des systèmes agentiques."
+
+[[page]]
+id          = "constitution"
+path        = "constitution/"
+body        = "constitution"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "constitution"
+jsonld      = "breadcrumb"
+ancestors   = ["home"]
+changefreq  = "monthly"
+priority    = "0.7"
+  [page.en]
+  title    = "Constitution — Roxabi"
+  desc     = "The Constitution of Roxabi — the principles behind open-by-architecture infrastructure: the operating layer, sovereignty, compounding foundations, built for builders."
+  og_title = "Constitution — Roxabi"
+  og_desc  = "The principles behind open-by-architecture infrastructure."
+  crumb    = "Constitution"
+  [page.fr]
+  title    = "Constitution — Roxabi"
+  desc     = "La Constitution de Roxabi — les principes derrière une infrastructure ouverte par architecture : la couche d'exploitation, la souveraineté, des fondations qui se composent, faite pour les builders."
+  og_title = "Constitution — Roxabi"
+  og_desc  = "Les principes derrière une infrastructure ouverte par architecture."
+  crumb    = "Constitution"
+
+[[page]]
+id          = "projects"
+path        = "projects/"
+body        = "projects"
+og_type     = "website"
+footer      = "full"
+shader      = false
+active      = "projects"
+jsonld      = "breadcrumb"
+ancestors   = ["home"]
+changefreq  = "weekly"
+priority    = "0.8"
+  [page.en]
+  title    = "Projects — Roxabi"
+  desc     = "The Roxabi portfolio — open-source primitives you can fork and run. Each works standalone; together they compound. AGPL-3.0, self-hostable."
+  og_title = "Projects — Roxabi"
+  og_desc  = "Open-source primitives you can fork and run. Together they compound."
+  crumb    = "Projects"
+  [page.fr]
+  title    = "Projets — Roxabi"
+  desc     = "Le portfolio Roxabi — des primitives open-source à forker et exécuter. Chacune fonctionne seule ; ensemble, elles se composent. AGPL-3.0, auto-hébergeable."
+  og_title = "Projets — Roxabi"
+  og_desc  = "Des primitives open-source à forker et exécuter. Ensemble, elles se composent."
+  crumb    = "Projets"
+
+[[page]]
+id          = "proj-roxabi-plugins"
+path        = "projects/roxabi-plugins/"
+body        = "proj-roxabi-plugins"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "projects"
+jsonld      = "breadcrumb"
+ancestors   = ["home", "projects"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title    = "roxabi-plugins — Roxabi"
+  desc     = "roxabi-plugins is an open-source Claude Code marketplace. Its flagship, dev-core, drives the full dev lifecycle from one command — /dev and its sub-skills explained: tiers, gates, pipeline, agents."
+  og_title = "roxabi-plugins — Roxabi"
+  og_desc  = "Open-source Claude Code plugins. How dev-core's /dev orchestrator routes an issue through frame, spec, plan, implement, review, and ship."
+  crumb    = "roxabi-plugins"
+  [page.fr]
+  title    = "roxabi-plugins — Roxabi"
+  desc     = "roxabi-plugins est une marketplace Claude Code open-source. Son fer de lance, dev-core, pilote tout le cycle de dev depuis une commande — /dev et ses sous-skills expliqués : tiers, gates, pipeline, agents."
+  og_title = "roxabi-plugins — Roxabi"
+  og_desc  = "Plugins Claude Code open-source. Comment l'orchestrateur /dev de dev-core mène une issue de frame à spec, plan, implement, review et ship."
+  crumb    = "roxabi-plugins"
+
+[[page]]
+id            = "proj-voicecli"
+path          = "projects/voicecli/"
+body          = "proj-voicecli"
+og_type       = "article"
+footer        = "full"
+shader        = false
+active        = "projects"
+jsonld        = "breadcrumb+software"   # breadcrumb + SoftwareSourceCode (generalized)
+ancestors     = ["home", "projects"]
+changefreq    = "monthly"
+priority      = "0.6"
+software_name = "voiceCLI"
+repo          = "https://github.com/Roxabi/voiceCLI"
+  [page.en]
+  title         = "voiceCLI — Roxabi"
+  desc          = "voiceCLI is one local CLI for speech synthesis and transcription — Qwen3-TTS, Chatterbox, Faster Whisper and Kyutai engines behind one Markdown script, with a NATS satellite for cross-host voice. No cloud keys."
+  og_title      = "voiceCLI — Roxabi"
+  og_desc       = "One CLI for local TTS and STT: one Markdown script drives every engine, a built-in translator adapts it, and a NATS satellite serves voice across hosts."
+  crumb         = "voiceCLI"
+  software_desc = "Unified local CLI for speech synthesis and transcription — Qwen3-TTS, Chatterbox, Faster Whisper and Kyutai backends behind one Markdown script, with a NATS satellite for cross-host voice."
+  [page.fr]
+  title         = "voiceCLI — Roxabi"
+  desc          = "voiceCLI est une CLI locale unique pour la synthèse et la transcription vocales — moteurs Qwen3-TTS, Chatterbox, Faster Whisper et Kyutai derrière un seul script Markdown, avec un satellite NATS pour la voix multi-hôtes. Aucune clé cloud."
+  og_title      = "voiceCLI — Roxabi"
+  og_desc       = "Une CLI pour le TTS et le STT en local : un script Markdown pilote chaque moteur, un traducteur intégré l'adapte, et un satellite NATS sert la voix entre hôtes."
+  crumb         = "voiceCLI"
+  software_desc = "CLI locale unifiée pour la synthèse et la transcription vocale — moteurs Qwen3-TTS, Chatterbox, Faster Whisper et Kyutai derrière un seul script Markdown, avec un satellite NATS pour la voix multi-hôtes."
+
+[[page]]
+id            = "proj-roxabi-factory"
+path          = "projects/roxabi-factory/"
+body          = "proj-roxabi-factory"
+og_type       = "article"
+footer        = "full"
+shader        = false
+active        = "projects"
+jsonld        = "breadcrumb+software"   # breadcrumb + SoftwareSourceCode (generalized)
+ancestors     = ["home", "projects"]
+changefreq    = "monthly"
+priority      = "0.6"
+software_name = "roxabi-factory"
+repo          = "https://github.com/Roxabi/roxabi-factory"
+  [page.en]
+  title         = "roxabi-factory — Roxabi"
+  desc          = "roxabi-factory is a self-hostable agent engine — a hexagonal core, hub-and-spoke over a NATS bus, isolated per-scope agent pools, and a fleet of capability workers. Runs 24/7 on your own hardware. No cloud lock-in."
+  og_title      = "roxabi-factory — Roxabi"
+  og_desc       = "A self-hostable agent engine: hub-and-spoke over NATS, per-scope agent pools, five-level memory, and a worker fleet that plugs in over the bus. Your hardware, your data."
+  crumb         = "roxabi-factory"
+  software_desc = "Self-hostable AI agent engine — hexagonal core, hub-and-spoke over a NATS message bus, isolated per-scope agent pools, five-level memory, and a fleet of capability workers."
+  [page.fr]
+  title         = "roxabi-factory — Roxabi"
+  desc          = "roxabi-factory est un moteur d'agents auto-hébergeable — un cœur hexagonal, hub-and-spoke sur un bus NATS, des pools d'agents isolés par scope, et une flotte de workers de capacité. Tourne 24/7 sur ton propre matériel. Aucun verrouillage cloud."
+  og_title      = "roxabi-factory — Roxabi"
+  og_desc       = "Un moteur d'agents auto-hébergeable : hub-and-spoke sur NATS, pools d'agents par scope, mémoire à cinq niveaux, et une flotte de workers qui se branchent sur le bus. Ton matériel, tes données."
+  crumb         = "roxabi-factory"
+  software_desc = "Moteur d'agents IA auto-hébergeable — cœur hexagonal, hub-and-spoke sur un bus de messages NATS, pools d'agents isolés par scope, mémoire à cinq niveaux et une flotte de workers de capacité."
+
+[[page]]
+id            = "proj-llmcli"
+path          = "projects/llmcli/"
+body          = "proj-llmcli"
+og_type       = "article"
+footer        = "full"
+shader        = false
+active        = "projects"
+jsonld        = "breadcrumb+software"
+ancestors     = ["home", "projects"]
+changefreq    = "monthly"
+priority      = "0.6"
+software_name = "llmCLI"
+repo          = "https://github.com/Roxabi/llmCLI"
+  [page.en]
+  title         = "llmCLI — Roxabi"
+  desc          = "llmCLI serves local LLMs on your own GPU — llama.cpp + GGUF backends behind an OpenAI-compatible HTTP endpoint, hot-swappable from a TOML catalog, with a LiteLLM proxy any tool on your LAN can call. No cloud keys."
+  og_title      = "llmCLI — Roxabi"
+  og_desc       = "Serve local LLMs on your own GPU: llama.cpp + GGUF behind an OpenAI-compatible endpoint, hot-swap from a TOML catalog, one LiteLLM proxy for the whole LAN."
+  crumb         = "llmCLI"
+  software_desc = "Local LLM serving CLI — llama.cpp + GGUF backends behind an OpenAI-compatible HTTP endpoint, hot-swappable from a TOML catalog, with a shared LiteLLM proxy and a NATS inference worker."
+  [page.fr]
+  title         = "llmCLI — Roxabi"
+  desc          = "llmCLI sert des LLM en local sur ton propre GPU — moteurs llama.cpp + GGUF derrière un endpoint HTTP compatible OpenAI, hot-swappables depuis un catalogue TOML, avec un proxy LiteLLM que tout outil du LAN peut appeler. Aucune clé cloud."
+  og_title      = "llmCLI — Roxabi"
+  og_desc       = "Sers des LLM en local sur ton GPU : llama.cpp + GGUF derrière un endpoint compatible OpenAI, hot-swap depuis un catalogue TOML, un proxy LiteLLM pour tout le LAN."
+  crumb         = "llmCLI"
+  software_desc = "CLI de service LLM local — moteurs llama.cpp + GGUF derrière un endpoint HTTP compatible OpenAI, hot-swappables depuis un catalogue TOML, avec un proxy LiteLLM partagé et un worker d'inférence NATS."
+
+[[page]]
+id            = "proj-imagecli"
+path          = "projects/imagecli/"
+body          = "proj-imagecli"
+og_type       = "article"
+footer        = "full"
+shader        = false
+active        = "projects"
+jsonld        = "breadcrumb+software"
+ancestors     = ["home", "projects"]
+changefreq    = "monthly"
+priority      = "0.6"
+software_name = "imageCLI"
+repo          = "https://github.com/Roxabi/imageCLI"
+  [page.en]
+  title         = "imageCLI — Roxabi"
+  desc          = "imageCLI is one local CLI for image generation — FLUX.2, FLUX.1 (+ PuLID face lock) and SD3.5 backends via HuggingFace Diffusers, with quantization and VRAM management handled for you. Point it at a prompt, swap engines with one flag. No API costs."
+  og_title      = "imageCLI — Roxabi"
+  og_desc       = "One CLI for local image generation: FLUX.2, FLUX.1 (+ PuLID) and SD3.5 behind one command, quantization and VRAM handled, a NATS satellite for cross-host rendering."
+  crumb         = "imageCLI"
+  software_desc = "Unified local CLI for image generation — FLUX.2, FLUX.1 (+ PuLID face lock) and SD3.5 backends via HuggingFace Diffusers, with quantization, VRAM management and a NATS satellite for cross-host rendering."
+  [page.fr]
+  title         = "imageCLI — Roxabi"
+  desc          = "imageCLI est une CLI locale unique pour la génération d'images — moteurs FLUX.2, FLUX.1 (+ verrou de visage PuLID) et SD3.5 via HuggingFace Diffusers, quantization et gestion VRAM prises en charge. Pointe-la sur un prompt, change de moteur d'un flag. Aucun coût d'API."
+  og_title      = "imageCLI — Roxabi"
+  og_desc       = "Une CLI pour la génération d'images en local : FLUX.2, FLUX.1 (+ PuLID) et SD3.5 derrière une commande, quantization et VRAM gérées, un satellite NATS pour le rendu multi-hôtes."
+  crumb         = "imageCLI"
+  software_desc = "CLI locale unifiée pour la génération d'images — moteurs FLUX.2, FLUX.1 (+ verrou de visage PuLID) et SD3.5 via HuggingFace Diffusers, avec quantization, gestion VRAM et un satellite NATS pour le rendu multi-hôtes."
+
+[[page]]
+id            = "proj-roxabi-forge"
+path          = "projects/roxabi-forge/"
+body          = "proj-roxabi-forge"
+og_type       = "article"
+footer        = "full"
+shader        = false
+active        = "projects"
+jsonld        = "breadcrumb+software"
+ancestors     = ["home", "projects"]
+changefreq    = "monthly"
+priority      = "0.6"
+software_name = "roxabi-forge"
+repo          = "https://github.com/Roxabi/roxabi-forge"
+  [page.en]
+  title         = "roxabi-forge — Roxabi"
+  desc          = "roxabi-forge is a Claude Code plugin that turns 'explain this' into a self-contained HTML artifact — diagrams, galleries, decks, guides, presentations. Eight skills, brand-aware, file://-safe, one-command deploy to Cloudflare Pages."
+  og_title      = "roxabi-forge — Roxabi"
+  og_desc       = "A Claude Code plugin that turns 'explain this' into publication-grade HTML — diagrams, galleries, decks, guides. Eight skills, self-contained, one-command deploy."
+  crumb         = "roxabi-forge"
+  software_desc = "Claude Code plugin for HTML visual artifacts — diagrams, galleries, decks, guides and presentations through eight skills, producing brand-aware self-contained files with one-command Cloudflare Pages deploy."
+  [page.fr]
+  title         = "roxabi-forge — Roxabi"
+  desc          = "roxabi-forge est un plugin Claude Code qui transforme « explique-moi ça » en artefact HTML autonome — diagrammes, galeries, decks, guides, présentations. Huit skills, charte intégrée, compatible file://, déploiement Cloudflare Pages en une commande."
+  og_title      = "roxabi-forge — Roxabi"
+  og_desc       = "Un plugin Claude Code qui transforme « explique-moi ça » en HTML de qualité publication — diagrammes, galeries, decks, guides. Huit skills, autonome, déploiement en une commande."
+  crumb         = "roxabi-forge"
+  software_desc = "Plugin Claude Code pour artefacts visuels HTML — diagrammes, galeries, decks, guides et présentations via huit skills, produisant des fichiers autonomes à la charte Roxabi, déployables sur Cloudflare Pages en une commande."
+
+[[page]]
+id               = "proj-roxabi-boilerplate"
+path             = "projects/roxabi-boilerplate/"
+body             = "proj-roxabi-boilerplate"
+og_type          = "article"
+footer           = "full"
+shader           = false
+active           = "projects"
+jsonld           = "breadcrumb+software"
+ancestors        = ["home", "projects"]
+changefreq       = "monthly"
+priority         = "0.6"
+software_name    = "roxabi-boilerplate"
+repo             = "https://github.com/Roxabi/roxabi-boilerplate"
+language         = "TypeScript"
+software_license = "https://opensource.org/license/MIT"
+  [page.en]
+  title         = "roxabi-boilerplate — Roxabi"
+  desc          = "roxabi-boilerplate is a production-ready SaaS starter — a Bun + TurboRepo monorepo with auth, multi-tenancy, RBAC, API keys and email already wired, plus a built-in Claude agent team for the full dev lifecycle. Skip the plumbing, build the product."
+  og_title      = "roxabi-boilerplate — Roxabi"
+  og_desc       = "A production-ready SaaS starter: Bun + TurboRepo monorepo with auth, multi-tenancy, RBAC and email wired, plus a built-in Claude agent team for the dev lifecycle."
+  crumb         = "roxabi-boilerplate"
+  software_desc = "Production-ready SaaS boilerplate — a Bun + TurboRepo TypeScript monorepo (TanStack Start web, NestJS + Fastify API, Fumadocs) with auth, multi-tenancy, RBAC, API keys and email wired, plus an integrated Claude agent team."
+  [page.fr]
+  title         = "roxabi-boilerplate — Roxabi"
+  desc          = "roxabi-boilerplate est un starter SaaS prêt pour la production — un monorepo Bun + TurboRepo avec auth, multi-tenancy, RBAC, clés d'API et email déjà câblés, plus une équipe d'agents Claude intégrée pour tout le cycle de dev. Saute la plomberie, construis le produit."
+  og_title      = "roxabi-boilerplate — Roxabi"
+  og_desc       = "Un starter SaaS prêt pour la production : monorepo Bun + TurboRepo avec auth, multi-tenancy, RBAC et email câblés, plus une équipe d'agents Claude pour le cycle de dev."
+  crumb         = "roxabi-boilerplate"
+  software_desc = "Boilerplate SaaS prêt pour la production — un monorepo TypeScript Bun + TurboRepo (web TanStack Start, API NestJS + Fastify, Fumadocs) avec auth, multi-tenancy, RBAC, clés d'API et email câblés, plus une équipe d'agents Claude intégrée."
+
+[[page]]
+id          = "documentation"
+path        = "documentation/"
+body        = "documentation"
+og_type     = "website"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "breadcrumb"
+collection  = "documentation"
+ancestors   = ["home"]
+changefreq  = "monthly"
+priority    = "0.7"
+  [page.en]
+  title    = "Documentation — Roxabi"
+  desc     = "Roxabi documentation — public, plain-spoken guides and references across the open-source portfolio, organized by tag: architecture, cognition, and operating principles you can fork and run."
+  og_title = "Documentation — Roxabi"
+  og_desc  = "Public guides and references across the Roxabi portfolio, organized by tag."
+  crumb    = "Documentation"
+  [page.fr]
+  title    = "Documentation — Roxabi"
+  desc     = "Documentation Roxabi — guides et références publics et sans détour à travers le portfolio open-source, organisés par tags : architecture, cognition et principes que tu peux forker et exécuter."
+  og_title = "Documentation — Roxabi"
+  og_desc  = "Guides et références publics à travers le portfolio Roxabi, organisés par tags."
+  crumb    = "Documentation"
+
+# [[page]] "lyra" removed 2026-06-01 — Lyra product parked; repo renamed → roxabi-factory.
+# /projects/lyra/ now 301-redirects to /projects/ (static/_redirects). See artifacts/plans/lyra-to-roxabi-factory-rename.md
+
+[[page]]
+id          = "legal"
+path        = "legal/"
+body        = "legal"
+og_type     = "website"
+footer      = "full"
+shader      = false
+active      = ""
+jsonld      = "breadcrumb"
+ancestors   = ["home"]
+changefreq  = "yearly"
+priority    = "0.3"
+  [page.en]
+  title    = "Legal notice — Roxabi"
+  desc     = "Legal notice for roxabi.dev: publisher, hosting, intellectual property, and privacy. No analytics, no tracking cookies."
+  og_title = "Legal notice — Roxabi"
+  og_desc  = "Publisher, hosting, intellectual property, and privacy for roxabi.dev."
+  crumb    = "Legal notice"
+  [page.fr]
+  title    = "Mentions légales — Roxabi"
+  desc     = "Mentions légales de roxabi.dev : éditeur, hébergeur, propriété intellectuelle et données personnelles. Aucune analytique, aucun cookie de suivi."
+  og_title = "Mentions légales — Roxabi"
+  og_desc  = "Éditeur, hébergeur, propriété intellectuelle et données personnelles de roxabi.dev."
+  crumb    = "Mentions légales"
+
+# ── Documentation entries (collection="documentation"). Index page above. ──────
+# Each entry carries `tags` (organizing axis); the index groups & filters by tag.
+# Manifest order = reading order. Bodies authored from repo/forge sources.
+
+[[page]]
+id          = "doc-exocortex"
+path        = "documentation/exocortex/"
+body        = "doc-exocortex"
+version     = "1.0"
+updated     = "2026-06-02"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["Cortex"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "The Exocortex — Roxabi"
+  desc       = "Thousands of siloed agent sessions, zero consolidation — the exocortex is the cognitive organ that captures, structures, and feeds it all back."
+  og_title   = "The Exocortex — Roxabi"
+  og_desc    = "Overview of the exocortex: the problem of siloed agent data, the living-memory architecture, and the ouroboros feedback loop."
+  crumb      = "Exocortex"
+  card_title = "The Exocortex"
+  card_desc  = "Overview of the exocortex: the problem of siloed agent data, the living-memory architecture, and the ouroboros feedback loop."
+  [page.fr]
+  title      = "L'Exocortex — Roxabi"
+  desc       = "Des milliers de sessions agents cloisonnées, zéro consolidation — l'exocortex est l'organe cognitif qui capte, structure et restitue l'ensemble."
+  og_title   = "L'Exocortex — Roxabi"
+  og_desc    = "Vue d'ensemble de l'exocortex : données agents cloisonnées, architecture mémoire vivante et boucle feedback ouroboros."
+  crumb      = "Exocortex"
+  card_title = "L'Exocortex"
+  card_desc  = "Vue d'ensemble de l'exocortex : données agents cloisonnées, architecture mémoire vivante et boucle feedback ouroboros."
+
+[[page]]
+id          = "doc-cognitive-framework"
+path        = "documentation/cognitive-framework/"
+body        = "doc-cognitive-framework"
+version     = "1.0"
+updated     = "2026-06-02"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["Cortex"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Cognitive Framework — Roxabi"
+  desc       = "How three philosophical layers — Searle's speech acts, Husserl's schemas, and Tulving's memory lifecycle — give a reasoning agent innate, typed reflexes."
+  og_title   = "Cognitive Framework — Roxabi"
+  og_desc    = "The three-layer model (D1 Searle / D2 Husserl / D3 Tulving) that gives Roxabi Cortex principled, predictive cognitive structure."
+  crumb      = "Cognitive Framework"
+  card_title = "Cognitive Framework"
+  card_desc  = "The three-layer model (D1 Searle / D2 Husserl / D3 Tulving) that gives Roxabi Cortex principled, predictive cognitive structure."
+  [page.fr]
+  title      = "Cadre Cognitif — Roxabi"
+  desc       = "Comment trois couches philosophiques — les actes de langage de Searle, les schémas de Husserl et le cycle mémoriel de Tulving — dotent un agent raisonnant de réflexes typés et innés."
+  og_title   = "Cadre Cognitif — Roxabi"
+  og_desc    = "Le modèle en trois couches (D1 Searle / D2 Husserl / D3 Tulving) qui confère à Roxabi Cortex une structure cognitive rigoureuse et prédictive."
+  crumb      = "Cadre Cognitif"
+  card_title = "Cadre Cognitif"
+  card_desc  = "Le modèle en trois couches (D1 Searle / D2 Husserl / D3 Tulving) qui confère à Roxabi Cortex une structure cognitive rigoureuse et prédictive."
+
+[[page]]
+id          = "doc-observation-contract"
+path        = "documentation/observation-contract/"
+body        = "doc-observation-contract"
+version     = "1.0"
+updated     = "2026-06-02"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["Cortex"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "The Observation Contract — Roxabi"
+  desc       = "How Cortex splits memory formation across two services — encoding in the lake, consolidation in the warehouse — via a typed Observation contract."
+  og_title   = "The Observation Contract — Roxabi"
+  og_desc    = "The typed contract that separates fast, source-aware encoding from slow, graph-aware memory consolidation."
+  crumb      = "Observation"
+  card_title = "The Observation Contract"
+  card_desc  = "The typed contract that separates fast, source-aware encoding from slow, graph-aware memory consolidation."
+  [page.fr]
+  title      = "Le Contrat d'Observation — Roxabi"
+  desc       = "Comment Cortex répartit la formation des souvenirs sur deux services — encodage dans le lac, consolidation dans l'entrepôt — via un contrat Observation typé."
+  og_title   = "Le Contrat d'Observation — Roxabi"
+  og_desc    = "Le contrat typé qui sépare l'encodage rapide et source-spécifique de la consolidation lente dans le graphe mémoire."
+  crumb      = "Observation"
+  card_title = "Le Contrat d'Observation"
+  card_desc  = "Le contrat typé qui sépare l'encodage rapide et source-spécifique de la consolidation lente dans le graphe mémoire."
+
+[[page]]
+id          = "doc-entity-taxonomy"
+path        = "documentation/entity-taxonomy/"
+body        = "doc-entity-taxonomy"
+version     = "1.0"
+updated     = "2026-06-02"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["Cortex"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Entity Taxonomy — Roxabi"
+  desc       = "Why memory stays queryable instead of becoming a blob: the 2D grid that classifies every entity the Cortex holds."
+  og_title   = "Entity Taxonomy — Roxabi"
+  og_desc    = "The biomimetic data model behind the Cortex graph: referent axis, memory type axis, decay, and compiled truth."
+  crumb      = "Taxonomy"
+  card_title = "Entity Taxonomy"
+  card_desc  = "The biomimetic data model behind the Cortex graph: referent axis, memory type axis, decay, and compiled truth."
+  [page.fr]
+  title      = "Taxonomie des Entités — Roxabi"
+  desc       = "Pourquoi la mémoire reste interrogeable plutôt que de devenir un blob : la grille 2D qui classe chaque entité que le Cortex retient."
+  og_title   = "Taxonomie des Entités — Roxabi"
+  og_desc    = "Le modèle de données biomimétique du graphe Cortex : axe référent, axe type mémoire, déclin et vérité compilée."
+  crumb      = "Taxonomie"
+  card_title = "Taxonomie des Entités"
+  card_desc  = "Le modèle de données biomimétique du graphe Cortex : axe référent, axe type mémoire, déclin et vérité compilée."
+
+[[page]]
+id          = "doc-temporal-decay"
+path        = "documentation/temporal-decay/"
+body        = "doc-temporal-decay"
+version     = "1.0"
+updated     = "2026-06-02"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["Cortex"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Temporal Decay — Roxabi"
+  desc       = "Why a living memory must forget: the exponential decay and reinforcement-on-access model that keeps the knowledge graph sharp over time."
+  og_title   = "Temporal Decay — Roxabi"
+  og_desc    = "The forgetting-curve model behind Cortex memory: decay formulas, reinforcement on access, and the thresholds that silence stale knowledge."
+  crumb      = "Decay"
+  card_title = "Temporal Decay"
+  card_desc  = "The forgetting-curve model behind Cortex memory: decay formulas, reinforcement on access, and the thresholds that silence stale knowledge."
+  [page.fr]
+  title      = "La Décroissance Temporelle — Roxabi"
+  desc       = "Pourquoi une mémoire vivante doit oublier : le modèle de décroissance exponentielle et de renforcement par l'accès qui maintient la pertinence du graphe de connaissance."
+  og_title   = "La Décroissance Temporelle — Roxabi"
+  og_desc    = "Le modèle de courbe d'oubli du Cortex : formules de décroissance, renforcement par l'accès et seuils qui silencent les connaissances périmées."
+  crumb      = "Décroissance"
+  card_title = "La Décroissance Temporelle"
+  card_desc  = "Le modèle de courbe d'oubli du Cortex : formules de décroissance, renforcement par l'accès et seuils qui silencent les connaissances périmées."
+
+[[page]]
+id          = "doc-multi-agent-audit"
+path        = "documentation/multi-agent-audit/"
+body        = "doc-multi-agent-audit"
+version     = "1.0"
+updated     = "2026-06-02"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["Audit"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "The Multi-Agent Audit — Roxabi"
+  desc       = "How Roxabi audits a codebase with 67 parallel agents across eight analysis domains — partitioned, wave-scheduled, drift-checked two ways, then collapsed into one prioritized report with a technical-debt score."
+  og_title   = "The Multi-Agent Audit — Roxabi"
+  og_desc    = "Sixty-seven read-only agents, eight domains, two-step axial-drift verification, and a single synthesized report — with two real audit recaps explained."
+  crumb      = "Audit"
+  card_title = "The Multi-Agent Audit"
+  card_desc  = "Sixty-seven parallel agents across eight domains, two-step drift verification, and one prioritized report — the read half of the factory, with two real recaps in the open."
+  [page.fr]
+  title      = "L'Audit Multi-Agents — Roxabi"
+  desc       = "Comment Roxabi audite une base de code avec 67 agents parallèles sur huit domaines d'analyse — partitionné, ordonnancé par vagues, vérifié deux fois contre la dérive, puis condensé en un seul rapport priorisé avec un score de dette technique."
+  og_title   = "L'Audit Multi-Agents — Roxabi"
+  og_desc    = "Soixante-sept agents en lecture seule, huit domaines, une vérification de dérive axiale en deux temps et un rapport synthétisé unique — avec deux recaps d'audit réels expliqués."
+  crumb      = "Audit"
+  card_title = "L'Audit Multi-Agents"
+  card_desc  = "Soixante-sept agents parallèles sur huit domaines, vérification de dérive en deux temps, et un rapport priorisé unique — la moitié lecture de la factory, avec deux recaps réels en accès ouvert."
+
+[[page]]
+id          = "doc-autonomous-remediation"
+path        = "documentation/autonomous-remediation/"
+body        = "doc-autonomous-remediation"
+version     = "1.0"
+updated     = "2026-06-02"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["REX"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Autonomous Remediation — Roxabi"
+  desc       = "A field report: how Roxabi's agent factory turned an overnight Kimi audit into an Opus-derived epic, then autonomously drove 22 quality-audit findings to merged PRs in one afternoon — the workflow harness, the wave scheduling, the blockers, and the cost."
+  og_title   = "Autonomous Remediation — Roxabi"
+  og_desc    = "From a Kimi audit to an Opus-derived epic to an autonomous workflow: 22 quality-audit findings driven to merged PRs in an afternoon, with the harness explained."
+  crumb      = "Remediation"
+  card_title = "Autonomous Remediation"
+  card_desc  = "A field report: an overnight Kimi audit, an Opus-derived epic, and a workflow that drove 22 findings to merged PRs autonomously — harness, scheduling, blockers, and cost."
+  [page.fr]
+  title      = "Remédiation Autonome — Roxabi"
+  desc       = "Retour d'expérience : comment la factory d'agents Roxabi a transformé un audit nocturne avec Kimi en epic dérivé par Opus, puis mené 22 constats d'audit qualité jusqu'à des PR fusionnées en une après-midi, sans intervention humaine — le harnais workflow, l'ordonnancement par vagues, les blocages et le coût."
+  og_title   = "Remédiation Autonome — Roxabi"
+  og_desc    = "D'un audit Kimi à un epic dérivé par Opus jusqu'à un workflow autonome : 22 constats menés à des PR fusionnées en une après-midi, avec le harnais expliqué."
+  crumb      = "Remédiation"
+  card_title = "Remédiation Autonome"
+  card_desc  = "Retour d'expérience : un audit nocturne avec Kimi, un epic dérivé par Opus, et un workflow qui a mené 22 constats à des PR fusionnées de façon autonome — harnais, ordonnancement, blocages, coût."
+
+[[page]]
+id          = "doc-derived-reflexes"
+path        = "documentation/derived-reflexes/"
+body        = "doc-derived-reflexes"
+version     = "1.0"
+updated     = "2026-06-02"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["Cortex"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Derived Reflexes — Roxabi"
+  desc       = "A derived reflex is not a rule — it is the action sequence that emerges inevitably when an agent holds the right atomic beliefs simultaneously."
+  og_title   = "Derived Reflexes — Roxabi"
+  og_desc    = "How well-formed beliefs at Dilts level 4 automatically generate correct behavior at levels 2–3, with nine engineering maxims derived from first principles."
+  crumb      = "Reflexes"
+  card_title = "Derived Reflexes"
+  card_desc  = "How well-formed beliefs at Dilts level 4 automatically generate correct behavior at levels 2–3, with nine engineering maxims derived from first principles."
+  [page.fr]
+  title      = "Réflexes Dérivés — Roxabi"
+  desc       = "Un réflexe dérivé n'est pas une règle — c'est la séquence d'actions qui émerge inévitablement quand un agent tient simultanément les bonnes croyances atomiques."
+  og_title   = "Réflexes Dérivés — Roxabi"
+  og_desc    = "Comment des croyances bien formulées au niveau 4 de Dilts génèrent automatiquement le bon comportement aux niveaux 2–3, avec neuf maximes d'ingénierie dérivées de premiers principes."
+  crumb      = "Réflexes"
+  card_title = "Réflexes Dérivés"
+  card_desc  = "Comment des croyances bien formulées au niveau 4 de Dilts génèrent automatiquement le bon comportement aux niveaux 2–3, avec neuf maximes d'ingénierie dérivées de premiers principes."
+
+[[page]]
+id          = "doc-factory-roadmap"
+path        = "documentation/factory-roadmap/"
+body        = "doc-factory-roadmap"
+version     = "1.1"
+updated     = "2026-06-03"
+og_type     = "article"
+footer      = "full"
+shader      = false
+active      = "docs"
+jsonld      = "techarticle"
+collection  = "documentation"
+tags        = ["Factory"]
+ancestors   = ["home", "documentation"]
+changefreq  = "monthly"
+priority    = "0.6"
+  [page.en]
+  title      = "Roxabi Factory — Roadmap and Architecture — Roxabi"
+  desc       = "An agent engine extended with a jobs layer: the architecture choices — worker vs tool, a five-layer tool model, domains by nature — and the build roadmap."
+  og_title   = "Roxabi Factory — Roadmap and Architecture"
+  og_desc    = "Worker vs tool, a five-layer tool model, domains by nature, value before framework — the choices behind the Roxabi Factory and the order we build them in."
+  crumb      = "Factory Roadmap"
+  card_title = "The Roxabi Factory"
+  card_desc  = "An agent engine extended with a jobs layer — the architecture choices (worker vs tool, five tool layers, domains by nature) and the order we build them in."
+  [page.fr]
+  title      = "Roxabi Factory — Roadmap et architecture — Roxabi"
+  desc       = "Un moteur d'agents étendu d'une couche jobs : worker vs outil, un modèle d'outils à cinq couches, des domaines par nature, et la roadmap de construction."
+  og_title   = "Roxabi Factory — Roadmap et architecture"
+  og_desc    = "Worker vs outil, un modèle d'outils à cinq couches, des domaines par nature, la valeur avant le framework — les choix derrière la Roxabi Factory."
+  crumb      = "Roadmap Factory"
+  card_title = "La Roxabi Factory"
+  card_desc  = "Un moteur d'agents étendu d'une couche jobs — les choix d'architecture (worker vs outil, cinq couches d'outils, domaines par nature) et l'ordre de construction."

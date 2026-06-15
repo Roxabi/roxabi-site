@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero 16 — Orbit + shader · Roxabi lab</title>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="stylesheet" href="./_base.css">
+<style>
+  /* ── Canvas shader background ─────────────────────────── */
+  #hero-bg {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    opacity: .9;
+  }
+
+  /* Vignette: pool shader glow to the right/behind orbit,
+     keep copy-side dark for AA. */
+  .hero::after {
+    content: ""; position: absolute; inset: 0; z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 55% 80% at 72% 46%, transparent 10%, var(--bg) 52%),
+      radial-gradient(ellipse 30% 60% at 15% 50%, var(--bg) 30%, transparent 72%);
+  }
+
+  /* ── Two-column grid ────────────────────────────────────── */
+  .hero-grid {
+    display: grid;
+    gap: var(--s-2xl);
+    align-items: center;
+    width: 100%;
+  }
+  @media (min-width: 820px) {
+    .hero-grid { grid-template-columns: .92fr 1.08fr; }
+  }
+
+  /* ── Copy side ──────────────────────────────────────────── */
+  .sub  { color: var(--accent); font-weight: 600; }
+  .hero h1 { margin-block: var(--s-lg) 0; }
+  .hero .lead { font-size: 1.18rem; color: var(--text-muted); max-width: 44ch; margin-top: var(--s-lg); }
+  .cta  { display: flex; gap: var(--s-md); margin-top: var(--s-xl); flex-wrap: wrap; }
+
+  /* ── Orbital system ─────────────────────────────────────── */
+  .orbit {
+    position: relative;
+    width: 100%; max-width: 460px;
+    aspect-ratio: 1 / 1;
+    margin-inline: auto;
+  }
+  .rings { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .rings ellipse {
+    fill: none;
+    stroke: var(--accent);
+    stroke-opacity: .13;  /* slightly dimmed vs 15 so it harmonises with shader glow */
+    stroke-width: 1.2;
+  }
+  .core {
+    position: absolute; left: 50%; top: 50%;
+    width: 100px; height: 100px;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+  }
+  .core img {
+    width: 100%; height: 100%;
+    filter: drop-shadow(0 0 18px rgba(240,180,41,.38));  /* dimmed: shader adds ambient */
+  }
+  /* Reduced glow halo — shader provides ambient, avoid fighting it */
+  .core::before {
+    content: "";
+    position: absolute; left: 50%; top: 50%;
+    width: 200px; height: 200px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(240,180,41,.16), transparent 64%);
+    z-index: -1; pointer-events: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .core img { animation: corepulse 4s ease-in-out infinite; }
+  }
+  @keyframes corepulse {
+    50% { filter: drop-shadow(0 0 28px rgba(240,180,41,.55)); }
+  }
+
+  /* Satellite chips */
+  .sat {
+    position: absolute;
+    display: flex; align-items: center; gap: 6px;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    will-change: left, top, transform;
+  }
+  .sat .sd {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 7px var(--accent);
+    flex: none;
+  }
+  .sat .sl {
+    font-family: var(--font-mono); font-size: .74rem;
+    color: var(--text);
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    border: 1px solid var(--border-hi);
+    border-radius: var(--r-full);
+    padding: 2px 8px;
+  }
+
+  /* Responsive: on small screens stack orbit below copy */
+  @media (max-width: 819px) {
+    .hero-visual { max-width: 340px; margin-inline: auto; }
+    .orbit { max-width: 320px; }
+  }
+</style>
+</head>
+<body>
+<a class="lab-back" href="./index.html">← gallery</a>
+<span class="lab-tag">16 · orbit + shader</span>
+<header class="lab-nav">
+  <a class="brand" href="#"><img src="/assets/logo/foundation-block.svg" width="26" height="26" alt=""><span>Roxabi</span></a>
+  <nav class="lab-nav-links"><a href="#">Projects</a><a href="#">Constitution</a></nav>
+  <a class="btn btn-ghost btn-sm" href="#">GitHub</a>
+</header>
+<main>
+  <section class="hero">
+    <canvas id="hero-bg" aria-hidden="true"></canvas>
+    <div class="wrap hero-grid" style="position:relative;z-index:2;">
+      <!-- Copy left -->
+      <div class="hero-copy">
+        <span class="badge"><span class="dot"></span>AGPL-3.0 · Open by architecture</span>
+        <h1>One person. Team-scale output.</h1>
+        <p class="lead"><span class="sub">Pre-wired. Open. Yours.</span><br>An agent &amp; worker factory. Open-source tools plug in over NATS, CLI, skills, or API.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#">Explore the projects →</a>
+          <a class="btn btn-ghost" href="#">GitHub</a>
+        </div>
+      </div>
+      <!-- Orbital visual right -->
+      <div class="hero-visual">
+        <div class="orbit" id="orbit" role="img" aria-label="The roxabi-factory core with modules llmCLI, voiceCLI, imageCLI, cortex, intel, idna orbiting it">
+          <svg class="rings" viewBox="0 0 460 460" aria-hidden="true">
+            <ellipse cx="230" cy="230" rx="200" ry="84"  transform="rotate(-14 230 230)"/>
+            <ellipse cx="230" cy="230" rx="150" ry="120" transform="rotate(22 230 230)"/>
+            <ellipse cx="230" cy="230" rx="188" ry="64"  transform="rotate(6 230 230)"/>
+          </svg>
+          <div class="core">
+            <img src="/assets/logo/foundation-block.svg" alt="" width="100" height="100">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+/* ── Orbital animation (from hero 15) ─────────────────────── */
+(function () {
+  'use strict';
+  var orbit = document.getElementById('orbit');
+  if (!orbit) return;
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var VB = 460, C = 230, DEG = Math.PI / 180;
+
+  // ring: rx, ry, rotation(deg), angular speed (rad/s)
+  var rings = [
+    { rx: 200, ry: 84,  rot: -14, sp:  0.16 },
+    { rx: 150, ry: 120, rot:  22, sp: -0.20 },
+    { rx: 188, ry: 64,  rot:   6, sp:  0.13 }
+  ];
+
+  // satellites: ring index, start angle (deg), label
+  var defs = [
+    { r: 0, a: 0,   l: 'llmCLI'   },
+    { r: 0, a: 180, l: 'cortex'   },
+    { r: 1, a: 90,  l: 'voiceCLI' },
+    { r: 1, a: 270, l: 'intel'    },
+    { r: 2, a: 40,  l: 'imageCLI' },
+    { r: 2, a: 220, l: 'idna'     }
+  ];
+
+  var sats = defs.map(function (d) {
+    var el = document.createElement('span');
+    el.className = 'sat';
+    el.innerHTML = '<span class="sd"></span><span class="sl">' + d.l + '</span>';
+    orbit.appendChild(el);
+    return { el: el, ring: rings[d.r], ang: d.a * DEG };
+  });
+
+  function place(s) {
+    var rg = s.ring;
+    var lx = rg.rx * Math.cos(s.ang), ly = rg.ry * Math.sin(s.ang);
+    var cr = Math.cos(rg.rot * DEG), sr = Math.sin(rg.rot * DEG);
+    var x = C + lx * cr - ly * sr, y = C + lx * sr + ly * cr;
+    var front = Math.sin(s.ang);          // >0 → front, <0 → back
+    var t = (front + 1) / 2;              // 0..1
+    var scale = (0.62 + 0.5 * t).toFixed(3);
+    s.el.style.left      = (x / VB * 100).toFixed(2) + '%';
+    s.el.style.top       = (y / VB * 100).toFixed(2) + '%';
+    s.el.style.transform = 'translate(-50%,-50%) scale(' + scale + ')';
+    s.el.style.opacity   = (0.45 + 0.55 * t).toFixed(2);
+    s.el.style.zIndex    = front >= 0 ? 20 : 5;
+  }
+
+  sats.forEach(place);
+  if (reduce) return;  // static depth-sorted frame for reduced-motion
+
+  var last = 0, running = true, raf = 0;
+  function frame(ts) {
+    if (!running) return;
+    if (!last) last = ts;
+    var dt = Math.min((ts - last) / 1000, 0.05);
+    last = ts;
+    sats.forEach(function (s) { s.ang += s.ring.sp * dt; place(s); });
+    raf = requestAnimationFrame(frame);
+  }
+  function start() { running = true; last = 0; raf = requestAnimationFrame(frame); }
+  function stop()  { running = false; cancelAnimationFrame(raf); }
+
+  start();
+  document.addEventListener('visibilitychange', function () {
+    document.hidden ? stop() : start();
+  });
+})();
+</script>
+<script src="/assets/vendor/aurora-curtain.js"></script>
+</body>
+</html>
