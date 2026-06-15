@@ -1,0 +1,225 @@
+# Merge-on-green — App-token auto-merge, uniform across the Roxabi vitrine sites
+# (bouly-site, roxabi-site, factory-site). Re-evaluates the PR on every relevant
+# event and merges directly once ALL of these hold:
+#   1. the PR carries the `reviewed` label (human sign-off via /code-review)
+#   2. every check run on the head commit is completed + green
+#   3. the PR is mergeable (no conflicts) and not a draft
+#
+# Merge method: merge commit (¬squash) — see ~/projects/CLAUDE.md "Release Convention".
+#
+# SPLIT-TOKEN design (why two github-script steps):
+#   - The GREEN GATE must read check runs (`GET .../commits/{sha}/check-runs`). That
+#     needs `checks:read`, which a FINE-GRAINED PAT CANNOT be granted — GitHub exposes
+#     no "Checks" permission for fine-grained tokens (cli/cli#8842).
+#     So the gate runs on the built-in GITHUB_TOKEN, which gets `checks:read` via the
+#     `permissions:` block below.
+#   - The MERGE uses the `roxabi-ci` App token (org creds ROXABI_CI_APP_ID +
+#     ROXABI_CI_APP_PRIVATE_KEY, visibility=all → inherited by these public repos),
+#     NOT GITHUB_TOKEN, because:
+#       · GitHub refuses GITHUB_TOKEN merges of PRs touching .github/workflows/*
+#         (the `workflows` permission is ungrantable to the built-in token) → would block
+#         every github-actions/dependabot workflow-file PR. The App token clears that.
+#       · an App-token merge cascades to any `push: main` workflow, which a GITHUB_TOKEN
+#         merge would not trigger. (Deploys don't ride on this: Cloudflare Pages is
+#         git-connected and builds merges itself.)
+#   → step 1 (GITHUB_TOKEN) decides which PRs are green; step 2 (App token) merges them.
+#   The App token needs only Contents+Pull-requests+Workflows write. Shared pattern with
+#   bouly-site / roxabi-1page / roxabi-forge.
+name: Merge on Green
+
+on:
+  pull_request:
+    types: [labeled, synchronize, reopened, closed]
+  check_suite:
+    types: [completed]
+  workflow_run:
+    # check_suite:completed is unreliable with multiple separate workflows — the re-wake
+    # after CI finishes is often missed, leaving a green+reviewed PR unmerged until a manual
+    # nudge. workflow_run fires a reliable wake when each gating workflow completes; the LAST
+    # one to finish triggers the merge. KEEP THIS LIST = every PR-gating workflow (¬"Merge on
+    # Green" itself, to avoid self-trigger). Add new gating workflows here.
+    workflows: [CI, PR Title, Secret Scan]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: PR number to evaluate (optional; blank = all reviewed open PRs)
+        required: false
+
+# These govern the built-in GITHUB_TOKEN used by step 1 (gate) + close-linked-issues.
+# The merge step authenticates with the roxabi-ci App token instead, so its rights come from the App.
+permissions:
+  contents: read
+  pull-requests: read
+  issues: write
+  checks: read
+  statuses: read
+
+concurrency:
+  # One merge evaluation at a time per ref — avoid racing two events onto the same PR.
+  group: merge-on-green-${{ github.event.pull_request.number || github.event.check_suite.head_sha || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  merge-on-green:
+    name: merge-on-green
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # roxabi-ci App token (ephemeral, 1 h) — replaces the shared org PAT: its pushes
+      # re-trigger CI and it can merge workflow-file PRs, which GITHUB_TOKEN cannot.
+      - name: Mint app token (roxabi-ci)
+        id: app
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1  # v3.2.0
+        with:
+          app-id: ${{ vars.ROXABI_CI_APP_ID }}
+          private-key: ${{ secrets.ROXABI_CI_APP_PRIVATE_KEY }}
+
+      # ---- Step 1: GATE with GITHUB_TOKEN (can read check runs; a fine-grained PAT cannot).
+      - name: Evaluate green PRs
+        id: evaluate
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}   # checks:read is grantable here, not on a fine-grained PAT
+          script: |
+            const SELF_JOB = 'merge-on-green';        // exclude our own check run from the green gate
+            const REQUIRED_LABEL = 'reviewed';
+            const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+            const toMerge = [];
+
+            // ---- 1. Collect candidate PR numbers from the triggering event --------
+            const candidates = new Set();
+            const dispatchPr = context.payload.inputs && context.payload.inputs.pr;
+            if (dispatchPr) {
+              candidates.add(parseInt(dispatchPr, 10));
+            } else if (context.payload.pull_request) {
+              candidates.add(context.payload.pull_request.number);
+            } else if (context.payload.check_suite) {
+              for (const pr of context.payload.check_suite.pull_requests || []) {
+                candidates.add(pr.number);
+              }
+            } else if (context.payload.workflow_run) {
+              for (const pr of context.payload.workflow_run.pull_requests || []) {
+                candidates.add(pr.number);
+              }
+            }
+            // Fallback / dispatch-all: every open PR carrying the reviewed label.
+            if (candidates.size === 0) {
+              const { data: open } = await github.rest.pulls.list({
+                owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100,
+              });
+              for (const pr of open) {
+                if (pr.labels.some((l) => l.name === REQUIRED_LABEL)) candidates.add(pr.number);
+              }
+            }
+
+            for (const number of candidates) {
+              const tag = `PR #${number}`;
+
+              // ---- 2. Re-fetch full PR (mergeable can be null until GitHub computes it)
+              let pr;
+              for (let i = 0; i < 6; i++) {
+                ({ data: pr } = await github.rest.pulls.get({
+                  owner: context.repo.owner, repo: context.repo.repo, pull_number: number,
+                }));
+                if (pr.mergeable !== null || pr.state !== 'open') break;
+                await sleep(3000);
+              }
+              if (pr.state !== 'open') { core.info(`${tag}: not open (${pr.state}) — skip.`); continue; }
+              if (pr.draft)           { core.info(`${tag}: draft — skip.`); continue; }
+              if (pr.merged)          { core.info(`${tag}: already merged — skip.`); continue; }
+
+              // ---- 3. Gate: reviewed label present -------------------------------
+              if (!pr.labels.some((l) => l.name === REQUIRED_LABEL)) {
+                core.info(`${tag}: no '${REQUIRED_LABEL}' label — skip.`); continue;
+              }
+
+              // ---- 4. Gate: no merge conflict ------------------------------------
+              if (pr.mergeable === false) { core.info(`${tag}: not mergeable (conflict) — skip.`); continue; }
+              if (pr.mergeable === null)  { core.info(`${tag}: mergeability still computing — skip, will retry on next event.`); continue; }
+
+              // ---- 5. Gate: every check run on head SHA is completed + green -----
+              const sha = pr.head.sha;
+              const runs = await github.paginate(github.rest.checks.listForRef, {
+                owner: context.repo.owner, repo: context.repo.repo, ref: sha, per_page: 100,
+              });
+              const others = runs.filter((r) => r.name !== SELF_JOB);
+              const pending = others.filter((r) => r.status !== 'completed');
+              const failed = others.filter(
+                (r) => r.status === 'completed' && !['success', 'neutral', 'skipped'].includes(r.conclusion),
+              );
+              if (pending.length) {
+                core.info(`${tag}: ${pending.length} check(s) still running (${pending.map((r) => r.name).join(', ')}) — skip.`);
+                continue;
+              }
+              if (failed.length) {
+                core.info(`${tag}: ${failed.length} check(s) not green (${failed.map((r) => `${r.name}=${r.conclusion}`).join(', ')}) — skip.`);
+                continue;
+              }
+
+              // ---- 6. Gate: legacy commit statuses (if any) are success ----------
+              const { data: combined } = await github.rest.repos.getCombinedStatusForRef({
+                owner: context.repo.owner, repo: context.repo.repo, ref: sha,
+              });
+              if (combined.total_count > 0 && combined.state !== 'success') {
+                core.info(`${tag}: combined commit status = ${combined.state} — skip.`); continue;
+              }
+
+              // ---- 7. All gates pass → queue for the PAT merge step --------------
+              core.info(`${tag}: reviewed + all checks green → queued for merge.`);
+              toMerge.push(number);
+            }
+
+            core.setOutput('to_merge', JSON.stringify(toMerge));
+            if (toMerge.length === 0) core.info('No PRs ready to merge.');
+
+      # ---- Step 2: MERGE with the App token (workflow-file PRs + push:main cascade).
+      - name: Merge green PRs
+        if: steps.evaluate.outputs.to_merge != '' && steps.evaluate.outputs.to_merge != '[]'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          TO_MERGE: ${{ steps.evaluate.outputs.to_merge }}
+        with:
+          github-token: ${{ steps.app.outputs.token }}   # App token: merges workflow-file PRs + cascades push:main
+          script: |
+            const toMerge = JSON.parse(process.env.TO_MERGE || '[]');
+            for (const number of toMerge) {
+              const tag = `PR #${number}`;
+              try {
+                await github.rest.pulls.merge({
+                  owner: context.repo.owner, repo: context.repo.repo, pull_number: number,
+                  merge_method: 'merge',
+                });
+                core.notice(`${tag}: merged (merge commit) — reviewed + all checks green.`);
+              } catch (e) {
+                core.warning(`${tag}: merge call failed: ${e.message}`);
+              }
+            }
+
+  close-linked-issues:
+    name: Close linked issues
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
+    timeout-minutes: 5
+    steps:
+      - name: Close issues referenced with closing keywords
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const body = context.payload.pull_request.body || '';
+            const pattern = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+#(\d+)/gi;
+            const issues = new Set();
+            let match;
+            while ((match = pattern.exec(body)) !== null) issues.add(parseInt(match[1], 10));
+            if (issues.size === 0) { core.info('No closing keywords in PR body.'); return; }
+            for (const number of issues) {
+              try {
+                await github.rest.issues.update({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  issue_number: number, state: 'closed', state_reason: 'completed',
+                });
+                core.info(`Closed issue #${number}`);
+              } catch (e) {
+                core.warning(`Failed to close issue #${number}: ${e.message}`);
+              }
+            }
