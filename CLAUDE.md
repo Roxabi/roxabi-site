@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `roxabi-site` — the static bilingual marketing + portfolio site for Roxabi, served at [roxabi.dev](https://roxabi.dev). EN lives at `/`, FR at `/fr/`. No runtime framework, no JS app — every page is pre-rendered static HTML.
 
+Brand canon: `brand/BRAND-BOOK.md` **v1.9** — ambition + culture lead §1; hero copy locked in §1 table (do not improvise home hero). Recap companion: `brand/visuals/brand-recap.html`.
+
 Two reader arcs shape the content (Brand Book §5 / `docs/architecture/information-architecture.md`):
 - **Marco** (multiplier) → output-first. Owns the **home/landing** and CTAs.
 - **Nadia** (autonomy seeker) → sovereignty-first. Owns the **Constitution**.
@@ -42,6 +44,8 @@ Parked products keep their old URLs alive via `static/_redirects` (e.g. `/projec
 | `make clean` | Remove `dist/` |
 
 `ROXABI_DIST=/tmp/foo python3 src/build.py` builds into an isolated dir (used for parallel visual QA — see memory).
+
+**Ship = `git push`.** Cloudflare Pages auto-deploys staging + main on push — `make deploy` is redundant (re-uploads identical content). Don't run it unless explicitly asked.
 
 Deploy one-time bootstrap: `npx wrangler login` once, then `npx wrangler pages project create roxabi-site --production-branch=main` (or dashboard). After that, only `.env` token needed.
 
