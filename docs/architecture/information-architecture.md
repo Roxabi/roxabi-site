@@ -1,7 +1,7 @@
 # Information Architecture — roxabi.dev
 
-Derived from Brand Book v1.5 (`brand/BRAND-BOOK.md`).
-Status: **proposed** — 2026-06-01.
+Derived from Brand Book v1.9 (`brand/BRAND-BOOK.md`).
+Status: **as-built** — last reconciled 2026-06-25 (sitemap grew beyond initial 8-page proposal).
 
 ## Principle
 
@@ -9,31 +9,34 @@ Two audiences, two arcs (Brand Book §5):
 
 - **Marco (Multiplier, P1)** → output-first. Owns the **landing + CTAs**. Wants
   to see the foundation before the philosophy.
-- **Nadia (Autonomy Seeker, P2)** → sovereignty as survival. Owns the **About**
-  page. Philosophy lives here, never in the hero.
+- **Nadia (Autonomy Seeker, P2)** → sovereignty as survival. Owns **`/constitution/`**
+  (not a separate About page). Philosophy lives here, never in the hero.
 
-> When in doubt, write for Marco. CTAs belong to Marco. Philosophy belongs on About.
+> When in doubt, write for Marco. CTAs belong to Marco. Philosophy belongs on the Constitution.
 
-## Sitemap (as built, 2026-06-01)
+## Sitemap (as built)
 
 Bilingual by URL — **`/*` = EN, `/fr/*` = FR** (SEO-correct: distinct indexable
-URLs + reciprocal `hreflang`). Each EN page has a 1:1 FR mirror.
+URLs + reciprocal `hreflang`). Each EN page has a 1:1 FR mirror. Trailing-slash
+dir URLs (e.g. `/constitution/`, `/projects/`).
+
+**Core pages (initial launch):**
 
 ```
 EN                              FR                                 page
 /                               /fr/                               Home (landing) — Marco arc
-/constitution.html             /fr/constitution.html              Constitution — Nadia arc
-/projects/                     /fr/projects/                      Portfolio listing
-/projects/lyra.html            /fr/projects/lyra.html             Project page (template + Lyra)
+/constitution/                  /fr/constitution/                  Constitution — Nadia arc
+/projects/                      /fr/projects/                      Portfolio listing
+/projects/<slug>/               /fr/projects/<slug>/              Per-project pages
+/documentation/                 /fr/documentation/                 Docs index + tagged articles
+/legal/                         /fr/legal/                         Legal notice
 ```
 
-8 pages total (4 × 2 langs). This hit ADR-0001's ">8 pages" revisit trigger;
-resolved by **[ADR-0002](adr/0002-mini-build.md)** — a zero-dependency Python
-generator (`src/build.py`) renders both trees into `dist/` from `src/site.toml`
-+ templates/partials + `src/bodies/{en,fr}/`. Chrome is deduped; all SEO below
-(canonical, hreflang, og, breadcrumbs, sitemap) is **derived from `(path, lang)`**,
-not hand-written. To add a page, edit the manifest + drop two body fragments. See
-`README.md`.
+Lyra product page retired (v1.8) — `/projects/lyra/` 301→`/projects/`. Page count
+grew past the initial 8-page proposal; **[ADR-0002](adr/0002-mini-build.md)** Python
+generator (`src/build.py`) renders both trees from `src/site.toml` + templates +
+`src/bodies/{en,fr}/`. SEO (canonical, hreflang, og, breadcrumbs, sitemap) is
+**derived from `(path, lang)`**. See `README.md` and `src/site.toml` for the full manifest.
 
 Site-level SEO files: `/sitemap.xml` (all 8 URLs + `xhtml:link` alternates),
 `/robots.txt`, `/site.webmanifest`, `/assets/og/roxabi-og{,-fr}.png` (1200×630),
@@ -67,7 +70,7 @@ static file.
 | # | Section | Content | Source |
 |---|---|---|---|
 | 1 | Nav (sticky) | logo · Docs · GitHub ★count · `Get started` button (amber) | survey |
-| 2 | **Hero** | eyebrow badge `AGPL-3.0 · Self-host · v0.x` · H1 **"One person. Team-scale output."** · sub **"Pre-wired. Open. Yours."** + 1 sentence · dual CTA `[Get started][★ GitHub]` · terminal/code block · `fluid-amber` bg @ ~18% opacity | Taglines §5 |
+| 2 | **Hero** | badge `AGPL-3.0 · Open by architecture` · H1 **"One person. Team-scale output."** · sub **"Pre-wired. Open. Yours."** · lead **"A factory for the AI era…"** (locked §1) · dual CTA · `kinetic-grid` shader bg | BRAND-BOOK §1 hero table |
 | 3 | Install | "Start in 30s" — one copyable command | survey (Bun/Deno) |
 | 4 | Social proof | used-by logos OR 3 stat-cards (★ stars · AGPL · community) | survey |
 | 5 | Pillars | **the 4 brand pillars** — Operating Layer · Open by Architecture · Compounding Foundations · Built for Builders. Do NOT invent generic pillars. | Pillars §5 |
@@ -95,11 +98,11 @@ Owner: **Jordan/Priya** (assembler/commons). The portfolio *is* the
 "compounding" proof — show real primitives that build on each other.
 
 - Card per primitive: name, one-line JTBD, "standalone + composes with X", GitHub link, license badge.
-- Candidates (from `~/projects/CLAUDE.md`): lyra, voiceCLI, llmCLI, imageCLI,
-  roxabi-vault, roxabi-forge, roxabi-plugins… (curate — lead with the strongest).
+- Candidates: roxabi-factory, voiceCLI, llmCLI, imageCLI, roxabi-forge,
+  roxabi-plugins, roxabi-boilerplate… (curate — lead with the strongest; Lyra parked).
 - Optional: a small dependency-graph visual (compounding made visible).
 
-### `/about` — Philosophy / open by architecture
+### `/constitution/` — Philosophy / open by architecture
 Owner: **Nadia**. Register: deeper, sovereignty-first.
 
 | Section | Content |
@@ -116,7 +119,7 @@ trigger an ADR-0001 revisit if it needs a generator).
 
 ## Global chrome
 
-- **Nav**: Roxabi (logo → `/`) · Projects · About · Docs · GitHub (icon, right).
+- **Nav**: Roxabi (logo → `/`) · Projects · Constitution · Docs · GitHub (icon, right).
 - **Footer**: GitHub · AGPL-3.0 License · Mentions légales · (portfolio note: Lyra is
   a sibling project, shared amber family).
 - **Theme**: dark is the marketing default (`#0d1117`). Light mode authorized for
