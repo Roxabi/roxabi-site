@@ -3,6 +3,25 @@
 All notable changes to roxabi-site are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/). Entries are generated automatically by `/promote` and committed to staging before the promotion PR.
 
+## [v0.2.0] - 2026-07-05
+
+On-brand 404, brand v1.9 alignment, WCAG-AA contrast fixes, and CI hardening since v0.1.0.
+
+### Added
+- feat(site): on-brand 404 page (EN+FR) (#3)
+- ci: normalize site workflows to bouly-site reference (#4)
+- ci: enable WCAG-AA contrast gate in `check_build.py` (#5)
+- chore: auto-merge and merge-on-green workflows
+- chore: context-lint workflow (Grok + Claude harness paths)
+- chore(grok): project LSP configuration
+
+### Fixed
+- fix(a11y): lift AA-failing contrast tokens — dark `--text-dim`, light `--accent` (#1)
+
+### Changed
+- docs(brand): align v1.9 canon across site, recap, SEO text, and OG images (#7)
+- chore(ci): pin pr-title action to commit SHA (#6)
+
 ## [v0.1.0] - 2026-06-11
 
 First production release: full bilingual (EN/FR) static site, built by the zero-dependency Python mini-build (ADR-0002), deployed on Cloudflare Pages.
