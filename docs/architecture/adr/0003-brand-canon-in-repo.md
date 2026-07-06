@@ -46,7 +46,7 @@ everything exploratory is archived out of the forge into a categorized data dir.
 
 | File | Why it is a deliverable |
 |---|---|
-| `BRAND-BOOK.md` | The canon — authoritative single source of truth (v1.8). |
+| `BRAND-BOOK.md` | The canon — authoritative single source of truth (v1.9). |
 | `DESIGN.md` | Design tokens (implemented as `assets/css/tokens.css`). |
 | `V1.5-MIGRATION-LOG.md` | Canon changelog companion, cited by BRAND-BOOK §9. |
 | `logo/foundation-block.svg`, `logo/foundation-block-16.svg` | The **decided** logo (v1.6, live on the site). |

@@ -1,6 +1,6 @@
 # Roxabi — Brand Book
 
-**Version:** 1.8 (2026-06-01) — Lyra product parked & repo `lyra` → `roxabi-factory` (reality C: factory + plug-in tools). See §9 changelog.
+**Version:** 1.9 (2026-06-20) — §1 rewritten: ambition + culture first; factory as practice; brand-recap synced. See §9 changelog.
 **Status:** Authoritative. Replaces all prior exploration artifacts as the single source of truth for brand decisions.
 **Scope:** Marketing, product copy, visual identity, messaging, and portfolio context.
 
@@ -10,22 +10,55 @@
 
 ## 1. Brand Overview
 
+### Ambition
+
+> **We believe one builder should not be structurally capped by missing foundations.**
+> The gap between what one person can ship and what a full team can ship is not about talent — it's about who had time to build the layer underneath. Roxabi exists to remove that disadvantage: so the interesting work starts on day one, and output compounds instead of resetting every project.
+
+**In one line:** Close the structural gap. One person. Team-scale output.
+
 > "I'm not trying to replace people — I genuinely enjoy working alone. What I'm trying to do is not be the bottleneck. Every time I build something that runs without me, I get a day back. I want a hundred of those things running."
 > — Marco, The Multiplier
 
+### Culture
+
+Roxabi is a **building culture**, not a product catalogue.
+
+| We practice | What it means |
+|-------------|---------------|
+| **Not the bottleneck** | Every system that runs without you buys a day back. The goal is a hundred of those running. |
+| **Proof in the open** | Claims ship with repos, not slides. Inspect before you trust. |
+| **Compounding over restarting** | What you add today is where the next builder starts tomorrow. |
+| **Ownership by default** | Fork it, run it, extend it. No seat, no gate, no phone-home. |
+| **Honest scope** | Built for solo developers and small teams who ship — not for enterprises with dedicated infra teams. |
+
+**The creed (visitor-facing):** Pre-wired. Open. Yours.
+
+**The factory (v1.8):** How this culture shows up in practice — agents, workers, tools and skills composed into one foundation you own. Not a closed product: a way of building where each piece is forkable and the stack grows with what you add.
+
+**Three-layer framing** (cross-ref `bouly-site/brand/BRAND-BOOK.md` §3): Mickael authors and practices the creed → Roxabi publishes creed + primitives → the Guild gathers around builders who fork, run, and contribute back. This book wins on the *what* (creed, naming, values, copy-tone, visual identity). The Bouly book wins on *how Mickael voices it* on personal surfaces.
+
 ### What is Roxabi?
 
-Roxabi ships open-source primitives that compound — routing, state, orchestration, agent harnesses, tool connectors. Each primitive works standalone. Together they give a solo developer or small team a full-stack foundation that a 50-person org would otherwise build internally. Open by architecture: inspectable, forkable, no telemetry, yours to own the moment you clone it.
+> Roxabi is the **operating layer and creed** for builders who refuse to be the bottleneck. Open-source primitives that compound — each inspectable, each forkable, each yours the moment you clone. Together they form a factory mindset: compose agents, workers, tools and skills on a foundation that doesn't reset between projects.
 
-**Important scope note:** Agents are one kind of primitive Roxabi delivers — not the defining category. Roxabi ships primitives across routing, state, orchestration, and tooling. An agent harness is one primitive in that set. Copy and positioning should reflect the breadth; agent use cases can lead as the primary example without becoming the only noun.
+**Technical scope note:** Agents are one kind of primitive Roxabi delivers — not the defining category. Roxabi ships primitives across routing, state, orchestration, and tooling. An agent harness is one primitive in that set. Copy and positioning should reflect the breadth; agent use cases can lead as the primary example without becoming the only noun. *(Mechanism detail — routing, state, harnesses — belongs in §5 pillars and project docs, not in §1 openings.)*
 
 ### Mission
 
-Give a solo developer or small team the same composable foundation a 50-person engineering org has — open-source pieces that compound, pre-wired, theirs to own.
+Give solo developers and small teams the **same cultural starting position** as a well-funded engineering org: shared foundations, compounding by design, sovereignty by architecture — so they ship like a team without becoming one.
 
 ### Category
 
 **Open-source compounding primitives** — each one works standalone, builds on the others, and belongs to the builder the moment they fork it.
+
+### Hero copy — locked (canonical, site live)
+
+| Slot | Copy |
+|------|------|
+| H1 | One person. Team-scale output. |
+| Sub | Pre-wired. Open. Yours. |
+| Lead | A factory for the AI era. Roxabi compounds agents, workers, tools and skills into one foundation — all open source, yours to fork. |
 
 ---
 
@@ -125,7 +158,7 @@ OSS maintainer, blogs about what she builds, gives back without expectation. Bel
 
 **When in doubt, write for Marco.** He wants output, not philosophy. He responds to: things that run without him, specific proof points, and the promise that he is not the bottleneck. He will not wait through a manifesto to get to the product. He needs to see the foundation before he reads about the philosophy.
 
-The OSS thesis leads with Nadia (sovereignty as a practical survival tool), not with Priya (ideology). Philosophy belongs on the About page. CTAs belong to Marco.
+The OSS thesis leads with Nadia (sovereignty as a practical survival tool), not with Priya (ideology). Philosophy belongs on the Constitution page (`/constitution/`). CTAs belong to Marco.
 
 ---
 
@@ -191,7 +224,7 @@ Failure mode: Copy tries to include everyone. Language expands to cover enterpri
 
 | Context | Register | Principle | Example |
 |---------|----------|-----------|---------|
-| Landing page hero | Sharp, declarative, 8 seconds | Lead with capability, not belief. Name the pain before offering the solution. Compounding = structural fact, not promise. | "You've already built the scaffolding three times. Roxabi is the part of the stack that doesn't change — so the part that does can compound." |
+| Landing page hero | Sharp, declarative, 8 seconds | Locked copy in §1 — do not improvise. H1 names output; Sub = creed; Lead = factory framing. | H1: "One person. Team-scale output." · Sub: "Pre-wired. Open. Yours." · Lead: "A factory for the AI era…" (full table §1) |
 | Docs / README | Functional, peer-level | No preamble. Every sentence answers: what does this do, how do I use it, what breaks. | "The harness wraps your agent loop with routing, state, and a recoverable error surface. Wire it to whatever model layer you're using — it doesn't care." |
 | GitHub Discussions | Colleague on Slack | One or two sentences is right. Acknowledge the attempt before redirecting. | "Yeah, that's the right instinct. The issue is the state layer doesn't flush on error by default — there's a config flag for that." |
 | UI microcopy | Functional, minimal | State what happened, not what to feel. Empty states describe the next concrete action. | "Run stopped — last checkpoint at 14:32. Resume from checkpoint or restart from the beginning." |
@@ -242,8 +275,8 @@ Note: "Ownership" is vague. Describe the specific properties: forkable, self-hos
 
 **Rule 09 — One idea per sentence in key positions**
 Before: "Roxabi is an open-source agentic infrastructure platform that enables solo developers and small teams to build, orchestrate, and deploy AI agent systems with enterprise-grade capability."
-After: "Roxabi is the operating layer for agentic systems. Pre-wired. Open. Yours to extend."
-Note: In hero positions and key headings, one idea per sentence is a requirement. Readers scan first.
+After: "One person. Team-scale output. Pre-wired. Open. Yours."
+Note: In hero positions and key headings, one idea per sentence is a requirement. Readers scan first. Canonical hero = §1 locked table.
 
 **Rule 10 — If you can't cut the word, the sentence is wrong**
 Before: "Roxabi essentially provides developers with a comprehensive set of pre-built foundational components that can seamlessly integrate into their existing workflows."
@@ -306,7 +339,7 @@ Note: "Essentially," "comprehensive," "seamlessly," "various," and "existing" ar
 **Pillar 1 — The Operating Layer** (lead pillar)
 Building an agentic system means building two things at once: the system you want, and the scaffolding required to build it. Routing, state, orchestration, error recovery, tool management — these are the same for everyone. Roxabi is the part that doesn't change. You start from there and build what's specific to you.
 
-> "The operating layer for your agentic stack. Pre-wired. Open. Yours."
+> "The operating layer for your agentic stack. Pre-wired. Open. Yours." *(Pillar epigraph — not the site hero; hero = §1 locked table.)*
 
 Verifiable proof: The Roxabi foundation includes routing, state persistence, harness scaffolding, and error recovery out of the box. Clone, wire in a first agent, working system in under 30 minutes.
 
@@ -347,7 +380,7 @@ Verifiable proof: No sales call required. No enterprise tier. The README is the 
 | Use case | Tagline |
 |---------|---------|
 | Hero sub-headline / CTA | Pre-wired. Open. Yours. |
-| About page / philosophy | Roxabi extends open source. Open source extends Roxabi. |
+| Constitution / philosophy | Roxabi extends open source. Open source extends Roxabi. |
 | Builders / solo founders | Build what used to take a team. |
 | Compounding thread | Every piece compounds. Every fork extends the foundation. |
 
@@ -365,7 +398,7 @@ CTA: Get the foundations. Wire up your first agent system. Run what used to take
 
 ---
 
-**Nadia's version (secondary — About page, deeper stack)**
+**Nadia's version (secondary — Constitution page, deeper stack)**
 
 Problem: Every closed system is a future tax. The tool you relied on for a year raises prices 300% during a funding round — with two weeks notice and no migration path. The SaaS you built client workflows on top of announces it's shutting down. You had 30 days to move everything.
 
@@ -493,7 +526,7 @@ Dark code surface: `#0d1117` (the background token). Syntax highlight: use amber
 **Why it works:** It positions Roxabi correctly as infrastructure, not a tool. It implies persistence (the layer exists before your specific work starts and after it ends). It implies composability (anything that runs on the layer can use the layer). It sets the competitive frame correctly — against frameworks and closed platforms, not against other tools.
 
 **How to use it in copy:**
-- "Roxabi is the operating layer for your agentic stack." — in hero, positioning, About
+- "Roxabi is the operating layer for your agentic stack." — in positioning, pillars, Constitution (not the locked site hero — see §1)
 - "The layer that doesn't change between projects." — in differentiator context
 - "Start from the operating layer, not before it." — in CTA context
 - Avoid: "operating system" (implies more than is correct); "platform" (banned)
@@ -505,7 +538,7 @@ Dark code surface: `#0d1117` (the background token). Syntax highlight: use amber
 **Copy applications:**
 - "Every piece you add compounds." — factual claim about the module system
 - "Built on what came before. Extended by what comes next." — for commons/contribution context
-- "The foundations grow with the people who use them." — for community/About context
+- "The foundations grow with the people who use them." — for community / Constitution context
 - Avoid using "compound" as a noun ("the compounding we've created") or motivational energy ("let's compound together")
 
 ### "The stack is yours"
@@ -527,7 +560,7 @@ All files in `brand/`:
 
 | File | Description |
 |------|-------------|
-| `BRAND-BOOK.md` | **This document.** Version 1.6 — authoritative single source of truth for all brand decisions. |
+| `BRAND-BOOK.md` | **This document.** Version 1.9 — authoritative single source of truth for all brand decisions. |
 | `roxabi-positioning-exploration.html` | Phase 2 exploration — 6-section interactive document. Category definitions (A/B/C), positioning angles, competitive scatter plot, differentiator rankings, anti-positioning cards, visual palette directions. Use for historical context only. Superseded by this document. |
 | `roxabi-customer-personas.html` | Phase 1 personas — original credential-forward profiles. Superseded by v2. |
 | `roxabi-customer-personas-v2.html` | Phase 4 personas — full rewrite. Four builder-forward archetypes: Jordan (Assembler), Nadia (Autonomy Seeker), Marco (Multiplier), Priya (Commons Builder). Complete day-in-life, pain points, goals, objections, triggers, watering holes, JTBD, and customer voice for each. Primary reference for persona details. |
@@ -544,6 +577,7 @@ The creed is written and **revisable, not law** (cf. LINEAGE §8 anti-pattern "d
 
 | Version | Date | Change | Creed principle advanced |
 |---|---|---|---|
+| **1.9** | 2026-06-20 | **§1 rewritten** — ambition + culture lead (mindset before mechanism); factory framed as building practice; hero copy locked in §1; three-layer cross-ref aligned to Bouly book §3; `brand-recap` synced (v1.9, AGPL-3.0). | *Peer-to-peer* — visitors understand the ambition and culture before the stack. |
 | **1.8** | 2026-06-01 | **Lyra product parked** (may return). Repo `lyra` → `roxabi-factory` (the agent & worker hub); tools plug in over NATS/CLI/skills/API (reality C — no single foundation package). Lyra persists as a config-seeded agent inside the factory. Site: Lyra page retired, `/projects/lyra/` 301→`/projects/`, hero reworked to the factory schéma. | *Direct about scope* — name what the thing is now; don't keep a parked product live. |
 | **1.7** | 2026-06-01 | **Licensing corrected** MIT → AGPL-3.0 (copyleft reciprocity); added §2 *Licensing & Reciprocity*. Org governance (CLA/DCO/CONTRIBUTING) added in `Roxabi/.github`. | *Open by architecture* — the license is the mechanism, stated not preached. |
 | **1.6** | 2026-06-01 | **Logo decided**: Foundation Block (concept #17, ref. C "Open top") — now canonical (`foundation-block.svg`), live on the site (navbar + favicon); §6 logo note rewritten from "open exploration" to "decided". Added this Creed Changelog (§9). | *Built for builders* — ship only what is actually decided; record the decision. |

@@ -1,0 +1,31 @@
+name: CI
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+  workflow_dispatch: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # Cancel only on feature branches; protected branches run to completion so every
+  # merge-commit SHA has a recorded status.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/staging' }}
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      # Zero-dependency Python-stdlib SSG: ubuntu-latest ships Python 3.12 (>= 3.11),
+      # so no setup step is needed. The gate builds dist/ and asserts the audit
+      # invariants (HTML balance, WCAG-AA contrast, FR a11y tree, NNBSP).
+      - name: Build + verify invariants
+        run: python3 tools/check_build.py

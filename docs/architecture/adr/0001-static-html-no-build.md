@@ -17,8 +17,8 @@ decisions here stand.
 ## Context
 
 `roxabi-site` is the hub marketing site (roxabi.dev). It is a content site:
-a landing page, a portfolio of the open-source primitives, an About/philosophy
-page, and outbound links to GitHub + docs. There is no user state, no
+a landing page, a portfolio of the open-source primitives, a Constitution/philosophy
+page (`/constitution/`), and outbound links to GitHub + docs. There is no user state, no
 authentication, no dynamic data, no form processing required at launch.
 
 The brand is **"open by architecture — inspectable, forkable, nothing calls
