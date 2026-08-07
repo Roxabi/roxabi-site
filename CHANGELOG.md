@@ -1,7 +1,12 @@
 # Changelog
 
 All notable changes to roxabi-site are documented here.
-Format: [Keep a Changelog](https://keepachangelog.com/). Entries are generated automatically by `/promote` and committed to staging before the promotion PR.
+Format: [Keep a Changelog](https://keepachangelog.com/). Entries are added when cutting a release (component tag `roxabi-site/vX.Y.Z`).
+
+## [Unreleased]
+
+### Changed
+- chore(release): drop `staging` branch — trunk on `main` only (prod = main)
 
 ## [v0.3.0] - 2026-08-07
 

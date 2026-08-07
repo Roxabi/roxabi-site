@@ -46,7 +46,9 @@ Parked products keep their old URLs alive via `static/_redirects` (e.g. `/projec
 
 `ROXABI_DIST=/tmp/foo python3 src/build.py` builds into an isolated dir (used for parallel visual QA — see memory).
 
-**Ship = `git push`.** Cloudflare Pages auto-deploys staging + main on push — `make deploy` is redundant (re-uploads identical content). Don't run it unless explicitly asked.
+**Ship = merge to `main`.** Trunk model: feature branch → PR → `main`. Cloudflare Pages production branch is `main` (roxabi.dev). Preview deploys may still fire on non-main branches. `make deploy` is redundant for git-connected Pages — don't run it unless explicitly asked.
+
+There is **no `staging` branch**. Do not open promote PRs; `/promote` is a no-op here.
 
 Deploy one-time bootstrap: `npx wrangler login` once, then `npx wrangler pages project create roxabi-site --production-branch=main` (or dashboard). After that, only `.env` token needed.
 
