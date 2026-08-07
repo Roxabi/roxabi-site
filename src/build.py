@@ -311,6 +311,8 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
     nav = render(nav_t, ctx)
     footer = render(foot_full_t if p["footer"] == "full" else foot_min_t, ctx)
     body = load(SRC / "bodies" / lang / f"{p['body']}.html").rstrip("\n")
+    # Shared chrome URLs available in bodies (single SSOT in site.toml).
+    body = body.replace("{{discord}}", SITE["discord"])
     # Give the skip-link a focus target (bodies author a bare <main>).
     body = body.replace("<main>", '<main id="main" tabindex="-1">', 1)
     # Derive readable section anchors from each <h2> (sec-N → title slug).

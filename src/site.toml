@@ -162,15 +162,15 @@ changefreq  = "weekly"
 priority    = "0.8"
   [page.en]
   title    = "Circle — Roxabi"
-  desc     = "Roxabi Circle — a gated Discord room for AI + open-source builders. GitHub is the door. High signal, no hype."
+  desc     = "Roxabi Circle — Discord for AI + open-source builders. High-signal intent; membership filter in construction. Join while the gate is wired."
   og_title = "Circle — Roxabi"
-  og_desc  = "Gated Discord for AI + OSS builders. Filtered entry. High signal."
+  og_desc  = "Discord for AI + OSS builders. Density first. Filter shipping next."
   crumb    = "Circle"
   [page.fr]
   title    = "Circle — Roxabi"
-  desc     = "Roxabi Circle — un Discord filtré pour builders IA + open source. GitHub est la porte. Haute densité, zéro hype."
+  desc     = "Roxabi Circle — Discord pour builders IA + open source. Intention haute densité ; filtre d'entrée en construction. Rejoins pendant qu'on câble la porte."
   og_title = "Circle — Roxabi"
-  og_desc  = "Discord filtré pour builders IA + OSS. Entrée filtrée. Haute densité."
+  og_desc  = "Discord pour builders IA + OSS. Densité d'abord. Filtre en cours."
   crumb    = "Circle"
 
 [[page]]
