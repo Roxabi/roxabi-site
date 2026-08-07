@@ -279,15 +279,18 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
     ctx.update({
         "lang": lang,
         "github": github,
+        "discord": SITE["discord"],
         # nav
         "home_href": href("", lang),
         "projects_href": href("projects/", lang),
         "constitution_href": href("constitution/", lang),
+        "circle_href": href("circle/", lang),
         "documentation_href": href("documentation/", lang),
         "legal_href": href("legal/", lang),
         "lang_alt_href": href(path, other),
         "projects_current": ' aria-current="page"' if p["active"] == "projects" else "",
         "constitution_current": ' aria-current="page"' if p["active"] == "constitution" else "",
+        "circle_current": ' aria-current="page"' if p["active"] == "circle" else "",
         "docs_current": ' aria-current="page"' if p["active"] == "docs" else "",
         # head / SEO (derived)
         "title": pl["title"],
