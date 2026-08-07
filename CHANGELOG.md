@@ -3,6 +3,21 @@
 All notable changes to roxabi-site are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/). Entries are generated automatically by `/promote` and committed to staging before the promotion PR.
 
+## [v0.3.0] - 2026-08-07
+
+Roxabi Circle surfaces on the marketing site, plus CI draft-PR skip.
+
+### Added
+- feat(site): surface Roxabi Circle and Discord across the site — `/circle/` EN+FR, home Guild section, nav/footer Discord (#10)
+
+### Fixed
+- fix(site): honest Circle MVP copy (filter in construction) and Discord URL SSOT via `{{discord}}` (#10)
+
+### Changed
+- ci: skip full CI on draft pull requests (#9)
+- chore(claude): declare dev-core + dev-init via roxabi-marketplace
+- chore(release): set `release.component: roxabi-site` for component-scoped tags
+
 ## [v0.2.0] - 2026-07-05
 
 On-brand 404, brand v1.9 alignment, WCAG-AA contrast fixes, and CI hardening since v0.1.0.

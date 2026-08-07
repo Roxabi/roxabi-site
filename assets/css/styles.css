@@ -235,6 +235,30 @@ a.proj-card:hover .arrow { transform: translateX(3px); }
 .stat .n { font-size: 1.75rem; font-weight: 900; color: var(--accent); font-family: var(--font-mono); }
 .stat .l { font-size: .8rem; color: var(--text-muted); margin-top: 4px; }
 
+/* Circle topics list */
+.circle-topics {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; gap: var(--s-sm);
+  max-width: 640px;
+}
+.circle-topics li {
+  position: relative;
+  padding: 12px 16px 12px 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font-size: .95rem;
+}
+.circle-topics li::before {
+  content: "";
+  position: absolute; left: 14px; top: 50%;
+  width: 8px; height: 8px; border-radius: var(--r-full);
+  background: var(--accent);
+  transform: translateY(-50%);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
 /* ── Final CTA band ───────────────────────────────────── */
 .cta-band { text-align: center; position: relative; overflow: hidden; border-top: 1px solid var(--border); }
 .cta-band::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 50% 0%, rgba(240,180,41,.10), transparent 70%); pointer-events: none; }
