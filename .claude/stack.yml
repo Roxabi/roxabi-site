@@ -15,9 +15,11 @@ build:
 deploy:
   platform: cloudflare-pages
 
-# Release model — /promote (component-scoped tags: roxabi-site/vX.Y.Z)
+# Release model — trunk: feature PRs → main = prod (no staging branch).
+# Tags: component-scoped roxabi-site/vX.Y.Z (manual or future auto-release.yml).
+# /promote is a no-op under pure trunk without a staging branch.
 release:
-  model: staging-train
+  model: trunk
   class: NONE
   component: roxabi-site
   version_files: []

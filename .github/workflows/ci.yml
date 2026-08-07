@@ -5,17 +5,17 @@ permissions:
 
 on:
   push:
-    branches: [main, staging]
+    branches: [main]
   pull_request:
-    branches: [main, staging]
+    branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch: {}
 
 concurrency:
   group: ci-${{ github.ref }}
-  # Cancel only on feature branches; protected branches run to completion so every
+  # Cancel only on feature branches; protected main runs to completion so every
   # merge-commit SHA has a recorded status.
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/staging' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   ci:

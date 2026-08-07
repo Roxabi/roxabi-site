@@ -41,23 +41,24 @@ python3 -m http.server -d dist 8000   # http://localhost:8000
 
 ## Deploy (Cloudflare Pages)
 
-Same pattern as `roxabi-1page` / `roxabi-forge`: build → `wrangler pages deploy`.
+**Production = `main`.** Feature work lands via PR into `main`; there is no
+staging branch. Cloudflare Pages builds on push (production branch: `main` →
+[roxabi.dev](https://roxabi.dev)).
 
-**Cloudflare-side build (recommended)** — builds on git push, no local Wrangler:
+Cloudflare-side build:
 - Build command: `python3 src/build.py`
 - Output directory: `dist`
-- Python 3.11+ (for `tomllib`).
+- Python 3.11+ (for `tomllib`)
 
-**Or push from local** (token-auth, same convention as `roxabi-forge` — no
-interactive login at deploy time):
+**Or push from local** (token-auth — no interactive login at deploy time):
 
 ```sh
 cp .env.example.cloudflare .env     # fill CLOUDFLARE_ACCOUNT_ID + CLOUDFLARE_API_TOKEN
 make deploy                         # build + wrangler pages deploy dist (refuses a dirty tree)
 ```
 
-One-time bootstrap (create the Pages project): `npx wrangler login` once, then
-`npx wrangler pages project create roxabi-site --production-branch=main` (or just
-create it in the dashboard). After that, deploys only need the `.env` token.
+One-time bootstrap: `npx wrangler login` once, then
+`npx wrangler pages project create roxabi-site --production-branch=main` (or the
+dashboard). After that, deploys only need the `.env` token.
 
 `make build` / `make serve` / `make clean` also available.

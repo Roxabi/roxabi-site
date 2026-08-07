@@ -1,7 +1,8 @@
 # Auto-merge PRs that have been reviewed and passed all required checks.
 # Adds the PR to GitHub's merge queue (merge commit) once the "reviewed" label is present.
 # GitHub natively waits for all required status checks before merging.
-# Uses merge commit (not squash) to preserve history — required for staging→main promotions.
+# Uses merge commit (not squash) to preserve history — required for release
+# derivation on merge-to-main (2-parent merges).
 #
 # Dependabot guard: semver-major bumps are never auto-merged — they require
 # manual validation before merge.
@@ -16,7 +17,7 @@ on:
   check_suite:
     types: [completed]
   push:
-    branches: [staging, main]
+    branches: [main]
 
 permissions:
   contents: write
