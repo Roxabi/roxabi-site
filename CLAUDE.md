@@ -23,6 +23,7 @@ URLs are dir-style (`path/` → `path/index.html`); every EN page has a 1:1 FR m
 |---|---|---|---|---|
 | `home` | `/` | Landing — value prop, pillars, CTAs. Has the hero shader. | `home` | `home` (Organization + WebSite) |
 | `constitution` | `/constitution/` | The principles / philosophy (Nadia arc). | `constitution` | `breadcrumb` |
+| `circle` | `/circle/` | Roxabi Circle — Discord Guild layer (filter in construction). | `circle` | `breadcrumb` |
 | `projects` | `/projects/` | Portfolio listing of open-source primitives (hand-authored card grid). | `projects` | `breadcrumb` |
 | `proj-*` | `/projects/<name>/` | Per-project detail pages (`roxabi-plugins`, `voicecli`). | `proj-<name>` | `breadcrumb` or `breadcrumb+software` |
 | `documentation` | `/documentation/` | Docs hub — derived index of all doc-collection pages, tag-filtered. | `documentation` | `breadcrumb` |

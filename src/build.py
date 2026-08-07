@@ -279,15 +279,18 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
     ctx.update({
         "lang": lang,
         "github": github,
+        "discord": SITE["discord"],
         # nav
         "home_href": href("", lang),
         "projects_href": href("projects/", lang),
         "constitution_href": href("constitution/", lang),
+        "circle_href": href("circle/", lang),
         "documentation_href": href("documentation/", lang),
         "legal_href": href("legal/", lang),
         "lang_alt_href": href(path, other),
         "projects_current": ' aria-current="page"' if p["active"] == "projects" else "",
         "constitution_current": ' aria-current="page"' if p["active"] == "constitution" else "",
+        "circle_current": ' aria-current="page"' if p["active"] == "circle" else "",
         "docs_current": ' aria-current="page"' if p["active"] == "docs" else "",
         # head / SEO (derived)
         "title": pl["title"],
@@ -308,6 +311,8 @@ def build_page(p: dict, lang: str, tmpl, nav_t, foot_full_t, foot_min_t) -> None
     nav = render(nav_t, ctx)
     footer = render(foot_full_t if p["footer"] == "full" else foot_min_t, ctx)
     body = load(SRC / "bodies" / lang / f"{p['body']}.html").rstrip("\n")
+    # Shared chrome URLs available in bodies (single SSOT in site.toml).
+    body = body.replace("{{discord}}", SITE["discord"])
     # Give the skip-link a focus target (bodies author a bare <main>).
     body = body.replace("<main>", '<main id="main" tabindex="-1">', 1)
     # Derive readable section anchors from each <h2> (sec-N → title slug).
