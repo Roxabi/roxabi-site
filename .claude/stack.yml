@@ -15,6 +15,13 @@ build:
 deploy:
   platform: cloudflare-pages
 
+# Release model — /promote (component-scoped tags: roxabi-site/vX.Y.Z)
+release:
+  model: staging-train
+  class: NONE
+  component: roxabi-site
+  version_files: []
+
 docs:
   framework: none
   path: docs
